@@ -116,21 +116,17 @@ export const ResumesPage: FC = () => {
       />
 
       {/* Search and Filters */}
-      <div className="flex items-center space-x-4">
-        <div ref={searchRef} className="floating-input flex-1 bg-background">
-          <div className="relative">
-            <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full bg-transparent border-0 pl-6 pr-0 py-4 text-base text-foreground outline-none"
-              style={{ borderBottom: '2px solid hsl(var(--border))' }}
-            />
-          </div>
-          <label className="absolute left-6 text-muted-foreground transition-all duration-300 pointer-events-none top-2.25rem text-base">
-            Search resumes...
-          </label>
+      <div className="flex items-end space-x-4">
+        <div ref={searchRef} className="floating-input flex-1">
+          <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
+          <input
+            type="search"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="pl-6"
+            autoComplete="off"
+          />
+          <label htmlFor="search">Search resumes...</label>
         </div>
         <Button variant="outline" className="h-12 px-4">
           <Filter className="mr-2 h-4 w-4" />
