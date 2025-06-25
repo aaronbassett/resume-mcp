@@ -76,10 +76,10 @@ export const ResumesPage: FC = () => {
               <input
                 type="search"
                 placeholder="Search resumes..."
-                className="w-full rounded-lg border border-input bg-background pl-10 pr-4 py-2 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                className="h-10 w-full rounded-lg border border-input bg-background pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               />
             </div>
-            <Button variant="outline">
+            <Button variant="outline" className="h-10">
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
