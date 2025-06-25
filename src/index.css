@@ -155,7 +155,7 @@ body {
 }
 
 .auth-background .floating-input input {
-  @apply block py-2.5 px-0 w-full text-base text-white bg-transparent border-0 border-b-2 border-white/20 appearance-none focus:outline-none focus:ring-0 focus:border-transparent peer;
+  @apply block py-2.5 px-0 w-full text-base text-white bg-transparent border-0 border-b-2 border-white/20 appearance-none focus:outline-none focus:ring-0 focus:border-transparent;
 }
 
 .auth-background .floating-input label {
@@ -168,7 +168,7 @@ body {
 }
 
 .floating-input:not(.auth-background .floating-input) input {
-  @apply block py-2.5 px-0 w-full text-base text-foreground bg-transparent border-0 border-b-2 border-border appearance-none focus:outline-none focus:ring-0 focus:border-primary peer;
+  @apply block py-2.5 px-0 w-full text-base text-foreground bg-transparent border-0 border-b-2 border-border appearance-none focus:outline-none focus:ring-0 focus:border-primary;
 }
 
 .floating-input:not(.auth-background .floating-input) label {
