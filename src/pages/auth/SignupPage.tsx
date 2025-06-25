@@ -1,0 +1,283 @@
+import type { FC } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Zap, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAuthStore } from '../../store/auth';
+
+export const SignupPage: FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [error, setError] = useState('');
+  const { signup, isLoading } = useAuthStore();
+  const navigate = useNavigate();
+  
+  const emailRef = useRef<HTMLDivElement>(null);
+  const passwordRef = useRef<HTMLDivElement>(null);
+
+  // Handle floating label state based on input values
+  useEffect(() => {
+    if (emailRef.current) {
+      if (email) {
+        emailRef.current.classList.add('has-value');
+      } else {
+        emailRef.current.classList.remove('has-value');
+      }
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (passwordRef.current) {
+      if (password) {
+        passwordRef.current.classList.add('has-value');
+      } else {
+        passwordRef.current.classList.remove('has-value');
+      }
+    }
+  }, [password]);
+
+  useEffect(() => {
+    const handleFocus = (ref: React.RefObject<HTMLDivElement>) => {
+      if (ref.current) {
+        ref.current.classList.add('beam-border', 'active');
+      }
+    };
+
+    const handleBlur = (ref: React.RefObject<HTMLDivElement>) => {
+      if (ref.current) {
+        ref.current.classList.remove('active');
+        setTimeout(() => {
+          if (ref.current) {
+            ref.current.classList.remove('beam-border');
+          }
+        }, 300);
+      }
+    };
+
+    const emailInput = emailRef.current?.querySelector('input');
+    const passwordInput = passwordRef.current?.querySelector('input');
+
+    if (emailInput) {
+      emailInput.addEventListener('focus', () => handleFocus(emailRef));
+      emailInput.addEventListener('blur', () => handleBlur(emailRef));
+    }
+
+    if (passwordInput) {
+      passwordInput.addEventListener('focus', () => handleFocus(passwordRef));
+      passwordInput.addEventListener('blur', () => handleBlur(passwordRef));
+    }
+
+    return () => {
+      if (emailInput) {
+        emailInput.removeEventListener('focus', () => handleFocus(emailRef));
+        emailInput.removeEventListener('blur', () => handleBlur(emailRef));
+      }
+      if (passwordInput) {
+        passwordInput.removeEventListener('focus', () => handleFocus(passwordRef));
+        passwordInput.removeEventListener('blur', () => handleBlur(passwordRef));
+      }
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (!agreedToTerms) {
+      setError('Please agree to the Terms of Service and Privacy Policy');
+      return;
+    }
+
+    const result = await signup(email, password);
+    
+    if (result.error) {
+      setError(result.error);
+    } else {
+      // Successfully signed up and automatically signed in - navigate to dashboard
+      navigate('/dashboard');
+    }
+  };
+
+  return (
+    <div className="min-h-screen auth-background flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+        {/* Left side - Branding */}
+        <motion.div 
+          className="hidden lg:block text-white space-y-8"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="space-y-6">
+            <Link to="/" className="flex items-center space-x-4 hover:opacity-80 transition-opacity">
+              <div className="gradient-primary rounded-2xl p-4 glow-primary animate-pulse-glow">
+                <Zap className="h-10 w-10 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">Resume MCP</h1>
+                <p className="text-white/70">AI-Powered Professional Profiles</p>
+              </div>
+            </Link>
+            
+            <div className="space-y-4">
+              <h2 className="text-5xl font-bold leading-tight">
+                Join the
+                <span className="block gradient-primary bg-clip-text text-transparent">
+                  Resume Revolution
+                </span>
+              </h2>
+              <p className="text-xl text-white/80 leading-relaxed">
+                Create intelligent resume agents that work 24/7 to land you better opportunities. 
+                Your professional profile becomes an AI-powered advocate.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-8">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <span className="text-white/80">AI agents that negotiate on your behalf</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <span className="text-white/80">Smart analytics and performance tracking</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <span className="text-white/80">Modular blocks for dynamic resumes</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right side - Signup Form */}
+        <motion.div 
+          className="w-full max-w-md mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div className="glass-card rounded-3xl p-8 glow-secondary">
+            <div className="text-center mb-8">
+              <Link to="/" className="lg:hidden gradient-primary rounded-2xl p-3 w-fit mx-auto mb-4 glow-primary inline-block hover:opacity-80 transition-opacity">
+                <Zap className="h-8 w-8 text-white" />
+              </Link>
+              <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+              <p className="text-white/70">Start building AI-powered resumes today</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <motion.div 
+                  className="flex items-center space-x-3 text-sm text-red-400 bg-red-500/10 p-4 rounded-xl border border-red-500/20"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+
+              <div className="space-y-6">
+                <div ref={emailRef} className="floating-input">
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    autoComplete="email"
+                  />
+                  <label htmlFor="email">Email Address</label>
+                </div>
+
+                <div ref={passwordRef} className="floating-input">
+                  <div className="relative">
+                    <input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-12"
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="password-toggle"
+                      disabled={isLoading}
+                      tabIndex={0}
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  <label htmlFor="password">Password (min. 6 characters)</label>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <label className="custom-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    disabled={isLoading}
+                  />
+                  <span className="checkbox-box"></span>
+                  <span className="checkbox-text">
+                    I agree to the{' '}
+                    <Link to="/terms" className="text-primary hover:text-primary/80 transition-colors focus-ring rounded px-1">
+                      Terms of Service
+                    </Link>
+                    {' '}and{' '}
+                    <Link to="/privacy" className="text-primary hover:text-primary/80 transition-colors focus-ring rounded px-1">
+                      Privacy Policy
+                    </Link>
+                  </span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="auth-button text-white"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Creating Account...</span>
+                  </div>
+                ) : (
+                  'Create Account'
+                )}
+              </button>
+
+              <div className="text-center">
+                <span className="text-white/60">Already have an account? </span>
+                <Link 
+                  to="/auth/login" 
+                  className="text-primary hover:text-primary/80 transition-colors font-semibold focus-ring rounded px-1"
+                >
+                  Sign in
+                </Link>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
