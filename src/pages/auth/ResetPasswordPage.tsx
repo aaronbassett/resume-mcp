@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Zap, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -15,9 +15,6 @@ export const ResetPasswordPage: FC = () => {
   const [success, setSuccess] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  
-  const passwordRef = useRef<HTMLDivElement>(null);
-  const confirmPasswordRef = useRef<HTMLDivElement>(null);
 
   // Check if we have the required tokens
   const accessToken = searchParams.get('access_token');
@@ -32,70 +29,6 @@ export const ResetPasswordPage: FC = () => {
       });
     }
   }, [accessToken, refreshToken]);
-
-  // Handle floating label state based on input values
-  useEffect(() => {
-    if (passwordRef.current) {
-      if (password) {
-        passwordRef.current.classList.add('has-value');
-      } else {
-        passwordRef.current.classList.remove('has-value');
-      }
-    }
-  }, [password]);
-
-  useEffect(() => {
-    if (confirmPasswordRef.current) {
-      if (confirmPassword) {
-        confirmPasswordRef.current.classList.add('has-value');
-      } else {
-        confirmPasswordRef.current.classList.remove('has-value');
-      }
-    }
-  }, [confirmPassword]);
-
-  useEffect(() => {
-    const handleFocus = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.add('beam-border', 'active');
-      }
-    };
-
-    const handleBlur = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.remove('active');
-        setTimeout(() => {
-          if (ref.current) {
-            ref.current.classList.remove('beam-border');
-          }
-        }, 300);
-      }
-    };
-
-    const passwordInput = passwordRef.current?.querySelector('input');
-    const confirmPasswordInput = confirmPasswordRef.current?.querySelector('input');
-
-    if (passwordInput) {
-      passwordInput.addEventListener('focus', () => handleFocus(passwordRef));
-      passwordInput.addEventListener('blur', () => handleBlur(passwordRef));
-    }
-
-    if (confirmPasswordInput) {
-      confirmPasswordInput.addEventListener('focus', () => handleFocus(confirmPasswordRef));
-      confirmPasswordInput.addEventListener('blur', () => handleBlur(confirmPasswordRef));
-    }
-
-    return () => {
-      if (passwordInput) {
-        passwordInput.removeEventListener('focus', () => handleFocus(passwordRef));
-        passwordInput.removeEventListener('blur', () => handleBlur(passwordRef));
-      }
-      if (confirmPasswordInput) {
-        confirmPasswordInput.removeEventListener('focus', () => handleFocus(confirmPasswordRef));
-        confirmPasswordInput.removeEventListener('blur', () => handleBlur(confirmPasswordRef));
-      }
-    };
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,7 +256,7 @@ export const ResetPasswordPage: FC = () => {
               )}
 
               <div className="space-y-6">
-                <div ref={passwordRef} className="floating-input">
+                <div className="floating-input">
                   <div className="relative">
                     <input
                       id="password"
@@ -333,6 +266,7 @@ export const ResetPasswordPage: FC = () => {
                       className="pr-12"
                       disabled={isLoading}
                       autoComplete="new-password"
+                      placeholder=" "
                     />
                     <button
                       type="button"
@@ -347,7 +281,7 @@ export const ResetPasswordPage: FC = () => {
                   <label htmlFor="password">New Password (min. 6 characters)</label>
                 </div>
 
-                <div ref={confirmPasswordRef} className="floating-input">
+                <div className="floating-input">
                   <div className="relative">
                     <input
                       id="confirmPassword"
@@ -357,6 +291,7 @@ export const ResetPasswordPage: FC = () => {
                       className="pr-12"
                       disabled={isLoading}
                       autoComplete="new-password"
+                      placeholder=" "
                     />
                     <button
                       type="button"

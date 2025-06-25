@@ -1,5 +1,4 @@
 import type { FC } from 'react';
-import { useState, useRef, useEffect } from 'react';
 import { Plus, Search, Filter, Eye, Edit, BarChart3, Copy, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -50,20 +49,6 @@ const resumes = [
 ];
 
 export const ResumesPage: FC = () => {
-  const [searchValue, setSearchValue] = useState('');
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  // Handle floating label state based on input values
-  useEffect(() => {
-    if (searchRef.current) {
-      if (searchValue) {
-        searchRef.current.classList.add('has-value');
-      } else {
-        searchRef.current.classList.remove('has-value');
-      }
-    }
-  }, [searchValue]);
-
   return (
     <div className="space-y-8">
       <PageHeader
@@ -84,12 +69,12 @@ export const ResumesPage: FC = () => {
 
       {/* Search and Filters */}
       <div className="flex items-end space-x-4">
-        <div ref={searchRef} className="floating-input flex-1">
+        <div className="floating-input flex-1">
           <input
             type="search"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            id="search"
             className="pl-6"
+            placeholder=" "
             autoComplete="off"
           />
           <label htmlFor="search" className="flex items-center space-x-2">

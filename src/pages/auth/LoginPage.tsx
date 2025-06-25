@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Zap, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,73 +12,6 @@ export const LoginPage: FC = () => {
   const [error, setError] = useState('');
   const { login, isLoading } = useAuthStore();
   const navigate = useNavigate();
-  
-  const emailRef = useRef<HTMLDivElement>(null);
-  const passwordRef = useRef<HTMLDivElement>(null);
-
-  // Handle floating label state based on input values
-  useEffect(() => {
-    if (emailRef.current) {
-      if (email) {
-        emailRef.current.classList.add('has-value');
-      } else {
-        emailRef.current.classList.remove('has-value');
-      }
-    }
-  }, [email]);
-
-  useEffect(() => {
-    if (passwordRef.current) {
-      if (password) {
-        passwordRef.current.classList.add('has-value');
-      } else {
-        passwordRef.current.classList.remove('has-value');
-      }
-    }
-  }, [password]);
-
-  useEffect(() => {
-    const handleFocus = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.add('beam-border', 'active');
-      }
-    };
-
-    const handleBlur = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.remove('active');
-        setTimeout(() => {
-          if (ref.current) {
-            ref.current.classList.remove('beam-border');
-          }
-        }, 300);
-      }
-    };
-
-    const emailInput = emailRef.current?.querySelector('input');
-    const passwordInput = passwordRef.current?.querySelector('input');
-
-    if (emailInput) {
-      emailInput.addEventListener('focus', () => handleFocus(emailRef));
-      emailInput.addEventListener('blur', () => handleBlur(emailRef));
-    }
-
-    if (passwordInput) {
-      passwordInput.addEventListener('focus', () => handleFocus(passwordRef));
-      passwordInput.addEventListener('blur', () => handleBlur(passwordRef));
-    }
-
-    return () => {
-      if (emailInput) {
-        emailInput.removeEventListener('focus', () => handleFocus(emailRef));
-        emailInput.removeEventListener('blur', () => handleBlur(emailRef));
-      }
-      if (passwordInput) {
-        passwordInput.removeEventListener('focus', () => handleFocus(passwordRef));
-        passwordInput.removeEventListener('blur', () => handleBlur(passwordRef));
-      }
-    };
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,7 +113,7 @@ export const LoginPage: FC = () => {
               )}
 
               <div className="space-y-6">
-                <div ref={emailRef} className="floating-input">
+                <div className="floating-input">
                   <input
                     id="email"
                     type="email"
@@ -188,11 +121,12 @@ export const LoginPage: FC = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoading}
                     autoComplete="email"
+                    placeholder=" "
                   />
                   <label htmlFor="email">Email Address</label>
                 </div>
 
-                <div ref={passwordRef} className="floating-input">
+                <div className="floating-input">
                   <div className="relative">
                     <input
                       id="password"
@@ -202,6 +136,7 @@ export const LoginPage: FC = () => {
                       className="pr-12"
                       disabled={isLoading}
                       autoComplete="current-password"
+                      placeholder=" "
                     />
                     <button
                       type="button"

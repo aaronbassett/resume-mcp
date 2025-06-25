@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, AlertCircle, CheckCircle, ArrowLeft, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -10,52 +10,6 @@ export const ForgotPasswordPage: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  
-  const emailRef = useRef<HTMLDivElement>(null);
-
-  // Handle floating label state based on input values
-  useEffect(() => {
-    if (emailRef.current) {
-      if (email) {
-        emailRef.current.classList.add('has-value');
-      } else {
-        emailRef.current.classList.remove('has-value');
-      }
-    }
-  }, [email]);
-
-  useEffect(() => {
-    const handleFocus = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.add('beam-border', 'active');
-      }
-    };
-
-    const handleBlur = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.remove('active');
-        setTimeout(() => {
-          if (ref.current) {
-            ref.current.classList.remove('beam-border');
-          }
-        }, 300);
-      }
-    };
-
-    const emailInput = emailRef.current?.querySelector('input');
-
-    if (emailInput) {
-      emailInput.addEventListener('focus', () => handleFocus(emailRef));
-      emailInput.addEventListener('blur', () => handleBlur(emailRef));
-    }
-
-    return () => {
-      if (emailInput) {
-        emailInput.removeEventListener('focus', () => handleFocus(emailRef));
-        emailInput.removeEventListener('blur', () => handleBlur(emailRef));
-      }
-    };
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -283,7 +237,7 @@ export const ForgotPasswordPage: FC = () => {
                 </motion.div>
               )}
 
-              <div ref={emailRef} className="floating-input">
+              <div className="floating-input">
                 <input
                   id="email"
                   type="email"
@@ -291,6 +245,7 @@ export const ForgotPasswordPage: FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
                   autoComplete="email"
+                  placeholder=" "
                 />
                 <label htmlFor="email">Email Address</label>
               </div>

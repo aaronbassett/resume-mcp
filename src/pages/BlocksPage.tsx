@@ -91,24 +91,25 @@ export const BlocksPage: FC = () => {
       </div>
 
       {/* Search and Filters */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search blocks..."
-                className="w-full rounded-lg border border-input bg-background pl-10 pr-4 py-2 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              />
-            </div>
-            <Button variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-end space-x-4">
+        <div className="floating-input flex-1">
+          <input
+            type="search"
+            id="search"
+            className="pl-6"
+            placeholder=" "
+            autoComplete="off"
+          />
+          <label htmlFor="search" className="flex items-center space-x-2">
+            <Search className="h-4 w-4" />
+            <span>Search blocks...</span>
+          </label>
+        </div>
+        <Button variant="outline" className="h-12 px-4">
+          <Filter className="mr-2 h-4 w-4" />
+          Filter
+        </Button>
+      </div>
 
       {/* Recent Blocks */}
       <Card>
