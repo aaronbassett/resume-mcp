@@ -251,7 +251,7 @@ body {
   border-radius: 6px;
 }
 
-/* Enhanced beam effect */
+/* Enhanced beam effect - ONLY applies when .beam-border class is present */
 .beam-border {
   position: relative;
   overflow: hidden; /* Critical for proper clipping */
@@ -276,7 +276,8 @@ body {
   background: hsl(var(--border));
 }
 
-.beam-border::after {
+/* Animated gradient beam - ONLY when .active class is present */
+.beam-border.active::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -292,10 +293,6 @@ body {
     transparent
   );
   animation: beam-move 3s ease-in-out infinite;
-}
-
-.beam-border.active::after {
-  animation-play-state: running;
 }
 
 @keyframes beam-move {
