@@ -84,7 +84,7 @@ export const ResumesPage: FC = () => {
 
       {/* Search and Filters */}
       <div className="flex items-end space-x-4">
-        <div ref={searchRef} className="flex-1">
+        <div ref={searchRef} className="floating-input flex-1">
           <input
             type="search"
             value={searchValue}
