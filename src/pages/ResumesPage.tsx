@@ -118,7 +118,6 @@ export const ResumesPage: FC = () => {
       {/* Search and Filters */}
       <div className="flex items-end space-x-4">
         <div ref={searchRef} className="floating-input flex-1">
-          <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
           <input
             type="search"
             value={searchValue}
@@ -126,7 +125,10 @@ export const ResumesPage: FC = () => {
             className="pl-6"
             autoComplete="off"
           />
-          <label htmlFor="search">Search resumes...</label>
+          <label htmlFor="search" className="flex items-center space-x-2">
+            <Search className="h-4 w-4" />
+            <span>Search resumes...</span>
+          </label>
         </div>
         <Button variant="outline" className="h-12 px-4">
           <Filter className="mr-2 h-4 w-4" />
