@@ -155,9 +155,21 @@ body {
 }
 
 .floating-input input {
-  @apply w-full bg-transparent border-0 px-0 py-4 text-base text-white outline-none;
+  @apply w-full bg-transparent border-0 px-0 py-4 text-base outline-none;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   transition: border-color 0.3s ease;
+}
+
+/* For auth pages - white text */
+.auth-background .floating-input input {
+  @apply text-white;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* For regular pages - use theme colors */
+.floating-input:not(.auth-background .floating-input) input {
+  @apply text-foreground;
+  border-bottom: 2px solid hsl(var(--border));
 }
 
 /* Hide all placeholder text completely */
@@ -194,10 +206,20 @@ body {
 }
 
 .floating-input label {
-  @apply absolute left-0 text-white/60 transition-all duration-300 pointer-events-none;
+  @apply absolute left-0 transition-all duration-300 pointer-events-none;
   top: 2.25rem; /* Position in center of input */
   font-size: 1rem;
   transform-origin: left top;
+}
+
+/* Auth pages - white labels */
+.auth-background .floating-input label {
+  @apply text-white/60;
+}
+
+/* Regular pages - theme colors */
+.floating-input:not(.auth-background .floating-input) label {
+  @apply text-muted-foreground;
 }
 
 /* Floating state - move label up and make smaller - ONLY on focus or when has-value class is present */
@@ -282,7 +304,16 @@ body {
   left: 0;
   right: 0;
   height: 2px;
+}
+
+/* Auth pages - white border */
+.auth-background .beam-border::before {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Regular pages - theme border */
+.beam-border:not(.auth-background .beam-border)::before {
+  background: hsl(var(--border));
 }
 
 .beam-border::after {

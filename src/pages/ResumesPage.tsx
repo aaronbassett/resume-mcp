@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Plus, Search, Filter, Eye, Edit, BarChart3, Copy, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -49,6 +50,53 @@ const resumes = [
 ];
 
 export const ResumesPage: FC = () => {
+  const [searchValue, setSearchValue] = useState('');
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Handle floating label state based on input values
+  useEffect(() => {
+    if (searchRef.current) {
+      if (searchValue) {
+        searchRef.current.classList.add('has-value');
+      } else {
+        searchRef.current.classList.remove('has-value');
+      }
+    }
+  }, [searchValue]);
+
+  useEffect(() => {
+    const handleFocus = (ref: React.RefObject<HTMLDivElement>) => {
+      if (ref.current) {
+        ref.current.classList.add('beam-border', 'active');
+      }
+    };
+
+    const handleBlur = (ref: React.RefObject<HTMLDivElement>) => {
+      if (ref.current) {
+        ref.current.classList.remove('active');
+        setTimeout(() => {
+          if (ref.current) {
+            ref.current.classList.remove('beam-border');
+          }
+        }, 300);
+      }
+    };
+
+    const searchInput = searchRef.current?.querySelector('input');
+
+    if (searchInput) {
+      searchInput.addEventListener('focus', () => handleFocus(searchRef));
+      searchInput.addEventListener('blur', () => handleBlur(searchRef));
+    }
+
+    return () => {
+      if (searchInput) {
+        searchInput.removeEventListener('focus', () => handleFocus(searchRef));
+        searchInput.removeEventListener('blur', () => handleBlur(searchRef));
+      }
+    };
+  }, []);
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -68,24 +116,27 @@ export const ResumesPage: FC = () => {
       />
 
       {/* Search and Filters */}
-      <Card>
-        <CardContent className="pl-2 pr-2 pt-2 pb-2">
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search resumes..."
-                className="h-10 w-full rounded-lg border border-input bg-background pl-10 pr-4 py-2 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              />
-            </div>
-            <Button variant="outline" className="h-10 px-4">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
+      <div className="flex items-center space-x-4">
+        <div ref={searchRef} className="floating-input flex-1 bg-background">
+          <div className="relative">
+            <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="w-full bg-transparent border-0 pl-6 pr-0 py-4 text-base text-foreground outline-none"
+              style={{ borderBottom: '2px solid hsl(var(--border))' }}
+            />
           </div>
-        </CardContent>
-      </Card>
+          <label className="absolute left-6 text-muted-foreground transition-all duration-300 pointer-events-none top-2.25rem text-base">
+            Search resumes...
+          </label>
+        </div>
+        <Button variant="outline" className="h-12 px-4">
+          <Filter className="mr-2 h-4 w-4" />
+          Filter
+        </Button>
+      </div>
 
       {/* Resumes Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
