@@ -64,39 +64,6 @@ export const ResumesPage: FC = () => {
     }
   }, [searchValue]);
 
-  useEffect(() => {
-    const handleFocus = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.add('beam-border', 'active');
-      }
-    };
-
-    const handleBlur = (ref: React.RefObject<HTMLDivElement>) => {
-      if (ref.current) {
-        ref.current.classList.remove('active');
-        setTimeout(() => {
-          if (ref.current) {
-            ref.current.classList.remove('beam-border');
-          }
-        }, 300);
-      }
-    };
-
-    const searchInput = searchRef.current?.querySelector('input');
-
-    if (searchInput) {
-      searchInput.addEventListener('focus', () => handleFocus(searchRef));
-      searchInput.addEventListener('blur', () => handleBlur(searchRef));
-    }
-
-    return () => {
-      if (searchInput) {
-        searchInput.removeEventListener('focus', () => handleFocus(searchRef));
-        searchInput.removeEventListener('blur', () => handleBlur(searchRef));
-      }
-    };
-  }, []);
-
   return (
     <div className="space-y-8">
       <PageHeader

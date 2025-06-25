@@ -147,29 +147,68 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Floating label input with animated beam border */
-.floating-input {
+/* Floating label input with animated beam border - FOR AUTH PAGES ONLY */
+.auth-background .floating-input {
   position: relative;
-  padding-top: 1.5rem; /* Add space for floating label */
-  overflow: hidden; /* Ensure beam border is properly clipped */
+  padding-top: 1.5rem;
+  overflow: hidden;
 }
 
-.floating-input input {
-  @apply w-full bg-transparent border-0 px-0 py-4 text-base outline-none;
+.auth-background .floating-input input {
+  @apply w-full bg-transparent border-0 px-0 py-4 text-base text-white outline-none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease;
+}
+
+.auth-background .floating-input input:focus {
+  outline: none;
+  border-bottom-color: transparent;
+}
+
+.auth-background .floating-input label {
+  @apply absolute left-0 text-white/60 transition-all duration-300 pointer-events-none;
+  top: 2.25rem;
+  font-size: 1rem;
+  transform-origin: left top;
+}
+
+.auth-background .floating-input input:focus + label,
+.auth-background .floating-input.has-value label {
+  @apply text-primary text-sm;
+  top: 0.25rem;
+  transform: scale(0.85);
+}
+
+/* Regular floating input - FOR REGULAR PAGES */
+.floating-input:not(.auth-background .floating-input) {
+  position: relative;
+  padding-top: 1.5rem;
+  overflow: hidden;
+}
+
+.floating-input:not(.auth-background .floating-input) input {
+  @apply w-full bg-transparent border-0 px-0 py-4 text-base text-foreground outline-none;
   border-bottom: 1px solid hsl(var(--border));
   transition: border-color 0.3s ease;
 }
 
-/* For auth pages - white text and borders */
-.auth-background .floating-input input {
-  @apply text-white;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.floating-input:not(.auth-background .floating-input) input:focus {
+  outline: none;
+  border-bottom-color: hsl(var(--primary));
 }
 
-/* For regular pages - use theme colors */
-.floating-input:not(.auth-background .floating-input) input {
-  @apply text-foreground;
-  border-bottom: 1px solid hsl(var(--border));
+.floating-input:not(.auth-background .floating-input) label {
+  @apply absolute left-0 text-muted-foreground transition-all duration-300 pointer-events-none;
+  top: 2.25rem;
+  font-size: 1rem;
+  transform-origin: left top;
+}
+
+.floating-input:not(.auth-background .floating-input) input:focus + label,
+.floating-input:not(.auth-background .floating-input).has-value label {
+  @apply text-primary text-sm;
+  top: 0.25rem;
+  transform: scale(0.85);
 }
 
 /* Hide all placeholder text completely */
@@ -178,13 +217,11 @@ body {
   opacity: 0 !important;
 }
 
-/* Ensure password dots don't show placeholder */
 .floating-input input[type="password"]::placeholder {
   color: transparent !important;
   opacity: 0 !important;
 }
 
-/* WebKit specific placeholder hiding */
 .floating-input input::-webkit-input-placeholder {
   color: transparent !important;
   opacity: 0 !important;
@@ -200,36 +237,6 @@ body {
   opacity: 0 !important;
 }
 
-.floating-input input:focus {
-  outline: none;
-  border-bottom-color: transparent;
-}
-
-.floating-input label {
-  @apply absolute left-0 transition-all duration-300 pointer-events-none;
-  top: 2.25rem; /* Position in center of input */
-  font-size: 1rem;
-  transform-origin: left top;
-}
-
-/* Auth pages - white labels */
-.auth-background .floating-input label {
-  @apply text-white/60;
-}
-
-/* Regular pages - theme colors */
-.floating-input:not(.auth-background .floating-input) label {
-  @apply text-muted-foreground;
-}
-
-/* Floating state - move label up and make smaller - ONLY on focus or when has-value class is present */
-.floating-input input:focus + label,
-.floating-input.has-value label {
-  @apply text-primary text-sm;
-  top: 0.25rem; /* Move to top with padding */
-  transform: scale(0.85);
-}
-
 /* Special handling for password field with show/hide button */
 .floating-input input.pr-12 {
   padding-right: 3rem;
@@ -238,7 +245,6 @@ body {
 /* Password field button styling - improved focus handling */
 .floating-input .password-toggle {
   @apply absolute right-0 top-1/2 -translate-y-1/2 p-2 text-white/60 hover:text-white transition-colors rounded;
-  /* Remove default focus ring and use custom styling */
   outline: none;
   border: none;
   background: transparent;
@@ -246,38 +252,27 @@ body {
 
 .floating-input .password-toggle:focus-visible {
   @apply text-white;
-  /* Custom focus ring that stays within bounds */
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
   border-radius: 6px;
 }
 
-/* Enhanced beam effect - ONLY applies when .beam-border class is present */
-.beam-border {
+/* Enhanced beam effect - ONLY FOR AUTH PAGES */
+.auth-background .beam-border {
   position: relative;
-  overflow: hidden; /* Critical for proper clipping */
+  overflow: hidden;
 }
 
-.beam-border::before {
+.auth-background .beam-border::before {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 1px;
-}
-
-/* Auth pages - white border */
-.auth-background .beam-border::before {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Regular pages - theme border */
-.beam-border:not(.auth-background .beam-border)::before {
-  background: hsl(var(--border));
-}
-
-/* Animated gradient beam - ONLY when .active class is present */
-.beam-border.active::after {
+.auth-background .beam-border.active::after {
   content: '';
   position: absolute;
   bottom: 0;
