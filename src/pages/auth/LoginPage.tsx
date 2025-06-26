@@ -158,7 +158,7 @@ export const LoginPage: FC = () => {
                           }
                         }}
                       />
-                      <FloatingLabel variant="filled" label="Label" />
+                      
                       <FloatingLabel
                         htmlFor="email"
                         value="Email Address"
