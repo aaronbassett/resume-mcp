@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Zap, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { Zap, AlertCircle, CheckCircle, Eye, EyeOff, SquareAsterisk } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TextInput, FloatingLabel } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
@@ -275,6 +275,7 @@ export const ResetPasswordPage: FC = () => {
                         id="password"
                         type={showPassword ? 'text' : 'password'}
                         value={password}
+                        icon={SquareAsterisk}
                         onChange={(e) => setPassword(e.target.value)}
                         onFocus={() => setPasswordFocused(true)}
                         onBlur={() => setPasswordFocused(false)}
@@ -320,6 +321,7 @@ export const ResetPasswordPage: FC = () => {
                         id="confirmPassword"
                         type={showConfirmPassword ? 'text' : 'password'}
                         value={confirmPassword}
+                        icon={SquareAsterisk}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         onFocus={() => setConfirmPasswordFocused(true)}
                         onBlur={() => setConfirmPasswordFocused(false)}
