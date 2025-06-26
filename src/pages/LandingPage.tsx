@@ -102,7 +102,7 @@ export const LandingPage: FC = () => {
                 headingText="Turn Your Resume into"
                 auroraTexts={auroraTexts}
                 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl"
-                pauseDuration={2400}
+                pauseDuration={6000}
                 fadeDuration={0.3}
               />
               <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto">
