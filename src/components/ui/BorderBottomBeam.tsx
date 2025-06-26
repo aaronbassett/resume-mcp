@@ -106,13 +106,13 @@ export const BorderBottomBeam = ({
   const shouldRepeat = loop === -1 || (loop > 0 && loopCount < loop - 1);
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative rounded-lg", className)}>
       {children}
       {play && (
         <div className="pointer-events-none absolute inset-0 rounded-[inherit] overflow-hidden">
           <motion.div
             key={loopType === 'pacman' ? animationKey : undefined}
-            className="rounded-lg absolute bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-from)] to-[var(--color-to)]"
+            className="absolute bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-from)] to-[var(--color-to)]"
             style={
               {
                 width: `${size}%`,
