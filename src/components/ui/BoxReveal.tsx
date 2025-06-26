@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 
 type AnimationState = 'initial-reveal' | 'reveal' | 'cover';
 
@@ -22,63 +23,119 @@ export const BoxReveal: FC<BoxRevealProps> = ({
   onAnimationComplete,
   className = '',
 }) => {
-  const getBoxVariants = () => {
+  // Extract text content and split into words
+  const words = useMemo(() => {
+    const extractText = (node: React.ReactNode): string => {
+      if (typeof node === 'string') return node;
+      if (typeof node === 'number') return node.toString();
+      if (React.isValidElement(node)) {
+        if (node.props.children) {
+          return extractText(node.props.children);
+        }
+      }
+      if (Array.isArray(node)) {
+        return node.map(extractText).join('');
+      }
+      return '';
+    };
+
+    const text = extractText(children);
+    return text.split(/(\s+)/).filter(word => word.trim().length > 0);
+  }, [children]);
+
+  const getBoxVariants = (wordIndex: number) => {
+    const staggerDelay = wordIndex * 0.1; // Stagger each word by 100ms
+    
     switch (animationState) {
       case 'initial-reveal':
-        return {
-          initial: { left: 0 },
-          animate: { left: '100%' },
-        };
       case 'reveal':
         return {
-          initial: { left: 0 },
-          animate: { left: '100%' },
+          initial: { 
+            x: '0%',
+            opacity: 1
+          },
+          animate: { 
+            x: '100%',
+            opacity: 1
+          },
+          transition: {
+            duration,
+            delay: delay + staggerDelay,
+            ease: 'easeInOut'
+          }
         };
       case 'cover':
         return {
-          initial: { left: '100%' },
-          animate: { left: 0 },
+          initial: { 
+            x: '-100%',
+            opacity: 1
+          },
+          animate: { 
+            x: '0%',
+            opacity: 1
+          },
+          transition: {
+            duration,
+            delay: delay + staggerDelay,
+            ease: 'easeInOut'
+          }
         };
       default:
         return {
-          initial: { left: 0 },
-          animate: { left: '100%' },
+          initial: { x: '0%' },
+          animate: { x: '100%' },
+          transition: { duration, delay: delay + staggerDelay }
         };
     }
   };
 
-  const boxVariants = getBoxVariants();
+  // Handle animation completion - only call once when the last word finishes
+  const handleWordAnimationComplete = (wordIndex: number) => {
+    if (wordIndex === words.length - 1 && onAnimationComplete) {
+      onAnimationComplete();
+    }
+  };
 
   return (
-    <div className={`relative overflow-hidden ${className}`} style={{ width: 'fit-content' }}>
-      <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 1 }}
-        className="relative"
-      >
+    <div className={`relative ${className}`} style={{ width: 'fit-content' }}>
+      {/* Render the actual content */}
+      <div className="relative z-10">
         {children}
-      </motion.div>
+      </div>
 
-      <motion.div
-        variants={boxVariants}
-        initial="initial"
-        animate="animate"
-        transition={{ 
-          duration, 
-          delay, 
-          ease: 'easeInOut' 
-        }}
-        onAnimationComplete={onAnimationComplete}
-        style={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          right: 0,
-          width: '100%',
-          zIndex: 20,
-          background: boxGradient,
-        }}
-      />
+      {/* Render individual word boxes */}
+      <div className="absolute inset-0 z-20 flex flex-wrap">
+        {words.map((word, index) => {
+          const variants = getBoxVariants(index);
+          
+          return (
+            <div
+              key={`${word}-${index}`}
+              className="relative overflow-hidden"
+              style={{ 
+                width: 'fit-content',
+                marginRight: index < words.length - 1 ? '0.25em' : '0'
+              }}
+            >
+              {/* Invisible text to maintain proper spacing */}
+              <span className="invisible whitespace-pre">{word}</span>
+              
+              {/* Sliding box */}
+              <motion.div
+                initial={variants.initial}
+                animate={variants.animate}
+                transition={variants.transition}
+                onAnimationComplete={() => handleWordAnimationComplete(index)}
+                className="absolute inset-0"
+                style={{
+                  background: boxGradient,
+                  transformOrigin: 'left center'
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
