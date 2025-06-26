@@ -117,6 +117,11 @@ export const LoginPage: FC = () => {
               )}
 
               <div className="space-y-6">
+                <div className="grid grid-flow-col justify-stretch space-x-4">
+      <FloatingLabel variant="filled" label="Label" />
+      <FloatingLabel variant="outlined" label="Label" />
+      <FloatingLabel variant="standard" label="Label" />
+    </div>
                 {/* Email Input */}
                 <div className="relative">
                   <BorderBottomBeam 
