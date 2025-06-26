@@ -71,7 +71,7 @@ export const LoginPage: FC = () => {
             
             <div className="space-y-4">
               <SwitchRevealHeading
-                headingText="Welcome Back to the"
+                headingText="Join the Resume"
                 auroraTexts={resumeTexts}
                 className="text-5xl font-bold leading-tight"
                 pauseDuration={6000}
