@@ -28,7 +28,7 @@ export const customTheme: CustomFlowbiteTheme = {
           warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
           success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500",
           // Custom auth color for authentication pages
-          auth: "bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0 focus:border-b-3"
+          auth: "bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0 focus:border-b-5"
         },
         withRightIcon: {
           on: "pr-10",
