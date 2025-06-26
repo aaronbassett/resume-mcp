@@ -282,7 +282,8 @@ export const ResetPasswordPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="new-password"
                         placeholder="New Password"
-                        theme="authInput"
+                        color="auth"
+                        sizing="md"
                       />
                       <button
                         type="button"
@@ -319,7 +320,8 @@ export const ResetPasswordPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="new-password"
                         placeholder="Confirm New Password"
-                        theme="authInput"
+                        color="auth"
+                        sizing="md"
                       />
                       <button
                         type="button"

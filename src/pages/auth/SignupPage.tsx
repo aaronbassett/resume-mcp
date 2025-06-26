@@ -149,7 +149,8 @@ export const SignupPage: FC = () => {
                       autoComplete="email"
                       placeholder="Email Address"
                       icon={AtSign}
-                      theme="authInput"
+                      color="auth"
+                      sizing="md"
                     />
                   </BorderBottomBeam>
                 </div>
@@ -176,7 +177,8 @@ export const SignupPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="new-password"
                         placeholder="Password (min. 6 characters)"
-                        theme="authInput"
+                        color="auth"
+                        sizing="md"
                       />
                       <button
                         type="button"

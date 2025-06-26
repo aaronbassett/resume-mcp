@@ -26,7 +26,9 @@ export const customTheme: CustomFlowbiteTheme = {
           info: "border-cyan-500 bg-cyan-50 text-cyan-900 placeholder-cyan-700 focus:border-cyan-500 focus:ring-cyan-500 dark:border-cyan-400 dark:bg-cyan-100 dark:focus:border-cyan-500 dark:focus:ring-cyan-500",
           failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
           warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
-          success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
+          success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500",
+          // Custom auth color for authentication pages
+          auth: "bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0 focus:border-transparent"
         },
         withRightIcon: {
           on: "pr-10",
@@ -43,100 +45,6 @@ export const customTheme: CustomFlowbiteTheme = {
         withShadow: {
           on: "shadow-sm dark:shadow-sm-light",
           off: ""
-        }
-      }
-    },
-    // Custom auth input theme for authentication pages
-    authInput: {
-      base: "flex",
-      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
-      field: {
-        base: "relative w-full",
-        icon: {
-          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-          svg: "h-5 w-5 text-white/60"
-        },
-        rightIcon: {
-          base: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-          svg: "h-5 w-5 text-white/60"
-        },
-        input: {
-          base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
-          sizes: {
-            sm: "py-2 text-sm",
-            md: "py-2.5 text-base",
-            lg: "py-4 text-lg"
-          },
-          colors: {
-            gray: "text-white border-white/20 focus:border-transparent placeholder-white/60",
-            info: "text-white border-white/20 focus:border-transparent placeholder-white/60",
-            failure: "text-white border-white/20 focus:border-transparent placeholder-white/60",
-            warning: "text-white border-white/20 focus:border-transparent placeholder-white/60",
-            success: "text-white border-white/20 focus:border-transparent placeholder-white/60"
-          },
-          withRightIcon: {
-            on: "pr-12",
-            off: ""
-          },
-          withIcon: {
-            on: "pl-10",
-            off: ""
-          },
-          withAddon: {
-            on: "",
-            off: ""
-          },
-          withShadow: {
-            on: "",
-            off: ""
-          }
-        }
-      }
-    },
-    // Custom underline theme
-    underline: {
-      base: "flex",
-      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
-      field: {
-        base: "relative w-full",
-        icon: {
-          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-          svg: "h-5 w-5 text-white/60"
-        },
-        rightIcon: {
-          base: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-          svg: "h-5 w-5 text-white/60"
-        },
-        input: {
-          base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
-          sizes: {
-            sm: "py-2 text-sm",
-            md: "py-2.5 text-base",
-            lg: "py-4 text-lg"
-          },
-          colors: {
-            gray: "text-white border-white/20 focus:border-transparent",
-            info: "text-white border-white/20 focus:border-transparent",
-            failure: "text-white border-white/20 focus:border-transparent",
-            warning: "text-white border-white/20 focus:border-transparent",
-            success: "text-white border-white/20 focus:border-transparent"
-          },
-          withRightIcon: {
-            on: "pr-10",
-            off: ""
-          },
-          withIcon: {
-            on: "pl-10",
-            off: ""
-          },
-          withAddon: {
-            on: "",
-            off: ""
-          },
-          withShadow: {
-            on: "",
-            off: ""
-          }
         }
       }
     }

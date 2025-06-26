@@ -261,7 +261,8 @@ export const ForgotPasswordPage: FC = () => {
                     autoComplete="email"
                     placeholder="Email Address"
                     icon={AtSign}
-                    theme="authInput"
+                    color="auth"
+                    sizing="md"
                   />
                 </BorderBottomBeam>
               </div>
