@@ -5,7 +5,19 @@ import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk } from 'lucide-re
 import { motion } from 'framer-motion';
 import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
+import { SwitchRevealHeading } from '../../components/ui/SwitchRevealHeading';
 import { useAuthStore } from '../../store/auth';
+
+const resumeTexts = [
+  'Future of Resumes',
+  'Next Generation',
+  'AI Revolution',
+  'Smart Era',
+  'Digital Age',
+  'Intelligent World',
+  'Automated Future',
+  'Tech Evolution',
+];
 
 export const LoginPage: FC = () => {
   const [email, setEmail] = useState('');
@@ -58,12 +70,14 @@ export const LoginPage: FC = () => {
             </Link>
             
             <div className="space-y-4">
-              <h2 className="text-5xl font-bold leading-tight">
-                Welcome Back to the
-                <span className="block gradient-primary bg-clip-text text-transparent">
-                  Future of Resumes
-                </span>
-              </h2>
+              <SwitchRevealHeading
+                headingText="Welcome Back to the"
+                auroraTexts={resumeTexts}
+                className="text-5xl font-bold leading-tight"
+                pauseDuration={6000}
+                fadeDuration={0.3}
+                auroraHueSkew={[180, 210, 240, 270, 300]}
+              />
               <p className="text-xl text-white/80 leading-relaxed">
                 Your intelligent resume agents are waiting. Sign in to continue building 
                 AI-powered professional profiles that work for you 24/7.

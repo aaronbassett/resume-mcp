@@ -5,7 +5,19 @@ import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk } from 'lucide-re
 import { motion } from 'framer-motion';
 import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
+import { SwitchRevealHeading } from '../../components/ui/SwitchRevealHeading';
 import { useAuthStore } from '../../store/auth';
+
+const resumeTexts = [
+  'Revolution',
+  'Evolution',
+  'Transformation',
+  'Movement',
+  'Reinvention',
+  'Upgrade',
+  'Reimagining',
+  'Breakthrough',
+];
 
 export const SignupPage: FC = () => {
   const [email, setEmail] = useState('');
@@ -69,12 +81,14 @@ export const SignupPage: FC = () => {
             </Link>
             
             <div className="space-y-4">
-              <h2 className="text-5xl font-bold leading-tight">
-                Join the
-                <span className="block gradient-primary bg-clip-text text-transparent">
-                  Resume Revolution
-                </span>
-              </h2>
+              <SwitchRevealHeading
+                headingText="Join the Resume"
+                auroraTexts={resumeTexts}
+                className="text-5xl font-bold leading-tight"
+                pauseDuration={6000}
+                fadeDuration={0.3}
+                auroraHueSkew={[240, 270, 300, 30, 60]}
+              />
               <p className="text-xl text-white/80 leading-relaxed">
                 Create intelligent resume agents that work 24/7 to land you better opportunities. 
                 Your professional profile becomes an AI-powered advocate.
