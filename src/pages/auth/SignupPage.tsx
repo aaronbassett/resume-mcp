@@ -149,20 +149,7 @@ export const SignupPage: FC = () => {
                       autoComplete="email"
                       placeholder="Email Address"
                       icon={AtSign}
-                      theme={{
-                        field: {
-                          input: {
-                            base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pl-10",
-                            sizes: {
-                              md: "py-2.5 text-base"
-                            }
-                          },
-                          icon: {
-                            base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-                            svg: "h-5 w-5 text-white/60"
-                          }
-                        }
-                      }}
+                      theme="authInput"
                     />
                   </BorderBottomBeam>
                 </div>
@@ -189,16 +176,7 @@ export const SignupPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="new-password"
                         placeholder="Password (min. 6 characters)"
-                        theme={{
-                          field: {
-                            input: {
-                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pr-12",
-                              sizes: {
-                                md: "py-2.5 text-base"
-                              }
-                            }
-                          }
-                        }}
+                        theme="authInput"
                       />
                       <button
                         type="button"

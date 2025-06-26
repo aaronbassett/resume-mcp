@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TextInput, FloatingLabel } from 'flowbite-react';
+import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
 import { useAuthStore } from '../../store/auth';
 
@@ -138,20 +138,7 @@ export const LoginPage: FC = () => {
                         autoComplete="email"
                         placeholder="Email Address"
                         icon={AtSign}
-                        theme={{
-                          field: {
-                            input: {
-                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pl-10",
-                              sizes: {
-                                md: "py-2.5 text-base"
-                              }
-                            },
-                            icon: {
-                              base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-                              svg: "h-5 w-5 text-white/60"
-                            }
-                          }
-                        }}
+                        theme="authInput"
                       />
                   </BorderBottomBeam>
                 </div>
@@ -178,16 +165,7 @@ export const LoginPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="current-password"
                         placeholder="Password"
-                        theme={{
-                          field: {
-                            input: {
-                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pr-12",
-                              sizes: {
-                                md: "py-2.5 text-base"
-                              }
-                            }
-                          }
-                        }}
+                        theme="authInput"
                       />
                       <button
                         type="button"

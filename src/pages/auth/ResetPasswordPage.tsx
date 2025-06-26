@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Zap, AlertCircle, CheckCircle, Eye, EyeOff, SquareAsterisk } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TextInput, FloatingLabel } from 'flowbite-react';
+import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
 import { supabase } from '../../lib/supabase';
 
@@ -282,16 +282,7 @@ export const ResetPasswordPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="new-password"
                         placeholder="New Password"
-                        theme={{
-                          field: {
-                            input: {
-                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pr-12",
-                              sizes: {
-                                md: "py-2.5 text-base"
-                              }
-                            }
-                          }
-                        }}
+                        theme="authInput"
                       />
                       <button
                         type="button"
@@ -328,16 +319,7 @@ export const ResetPasswordPage: FC = () => {
                         disabled={isLoading}
                         autoComplete="new-password"
                         placeholder="Confirm New Password"
-                        theme={{
-                          field: {
-                            input: {
-                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pr-12",
-                              sizes: {
-                                md: "py-2.5 text-base"
-                              }
-                            }
-                          }
-                        }}
+                        theme="authInput"
                       />
                       <button
                         type="button"

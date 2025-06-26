@@ -46,6 +46,53 @@ export const customTheme: CustomFlowbiteTheme = {
         }
       }
     },
+    // Custom auth input theme for authentication pages
+    authInput: {
+      base: "flex",
+      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
+      field: {
+        base: "relative w-full",
+        icon: {
+          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
+          svg: "h-5 w-5 text-white/60"
+        },
+        rightIcon: {
+          base: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
+          svg: "h-5 w-5 text-white/60"
+        },
+        input: {
+          base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+          sizes: {
+            sm: "py-2 text-sm",
+            md: "py-2.5 text-base",
+            lg: "py-4 text-lg"
+          },
+          colors: {
+            gray: "text-white border-white/20 focus:border-transparent placeholder-white/60",
+            info: "text-white border-white/20 focus:border-transparent placeholder-white/60",
+            failure: "text-white border-white/20 focus:border-transparent placeholder-white/60",
+            warning: "text-white border-white/20 focus:border-transparent placeholder-white/60",
+            success: "text-white border-white/20 focus:border-transparent placeholder-white/60"
+          },
+          withRightIcon: {
+            on: "pr-12",
+            off: ""
+          },
+          withIcon: {
+            on: "pl-10",
+            off: ""
+          },
+          withAddon: {
+            on: "",
+            off: ""
+          },
+          withShadow: {
+            on: "",
+            off: ""
+          }
+        }
+      }
+    },
     // Custom underline theme
     underline: {
       base: "flex",
