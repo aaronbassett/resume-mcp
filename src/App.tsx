@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Flowbite } from 'flowbite-react';
 import { ThemeProvider } from './components/ThemeProvider';
 import { AppShell } from './components/layout/AppShell';
 import { LandingPage } from './pages/LandingPage';
@@ -11,6 +12,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ResumesPage } from './pages/ResumesPage';
 import { BlocksPage } from './pages/BlocksPage';
 import { useAuthStore } from './store/auth';
+import { customTheme } from './flowbite-theme';
 
 // Placeholder components for routes not yet implemented
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -53,48 +55,52 @@ function App() {
   if (isLoading) {
     return (
       <ThemeProvider>
-        <LoadingScreen />
+        <Flowbite theme={{ theme: customTheme }}>
+          <LoadingScreen />
+        </Flowbite>
       </ThemeProvider>
     );
   }
 
   return (
     <ThemeProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/auth/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
-          <Route path="/auth/signup" element={<AuthRoute><SignupPage /></AuthRoute>} />
-          <Route path="/auth/forgot-password" element={<AuthRoute><ForgotPasswordPage /></AuthRoute>} />
-          <Route path="/auth/reset-password" element={<AuthRoute><ResetPasswordPage /></AuthRoute>} />
-          <Route path="/u/:username/:resumeId" element={<PlaceholderPage title="Public Resume View" />} />
+      <Flowbite theme={{ theme: customTheme }}>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
+            <Route path="/auth/signup" element={<AuthRoute><SignupPage /></AuthRoute>} />
+            <Route path="/auth/forgot-password" element={<AuthRoute><ForgotPasswordPage /></AuthRoute>} />
+            <Route path="/auth/reset-password" element={<AuthRoute><ResetPasswordPage /></AuthRoute>} />
+            <Route path="/u/:username/:resumeId" element={<PlaceholderPage title="Public Resume View" />} />
 
-          {/* Protected Routes */}
-          <Route path="/" element={<AppShell />}>
-            <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/auth/login" />} />
-            <Route path="/settings" element={isAuthenticated ? <PlaceholderPage title="Account Settings" /> : <Navigate to="/auth/login" />} />
-            
-            {/* Resume Routes */}
-            <Route path="/resumes" element={isAuthenticated ? <ResumesPage /> : <Navigate to="/auth/login" />} />
-            <Route path="/resumes/new" element={isAuthenticated ? <PlaceholderPage title="Create New Resume" /> : <Navigate to="/auth/login" />} />
-            <Route path="/resumes/:resumeId" element={isAuthenticated ? <PlaceholderPage title="Edit Resume" /> : <Navigate to="/auth/login" />} />
-            <Route path="/resumes/:resumeId/settings" element={isAuthenticated ? <PlaceholderPage title="Resume Settings" /> : <Navigate to="/auth/login" />} />
-            <Route path="/resumes/:resumeId/analytics" element={isAuthenticated ? <PlaceholderPage title="Resume Analytics" /> : <Navigate to="/auth/login" />} />
-            
-            {/* Block Routes */}
-            <Route path="/blocks" element={isAuthenticated ? <BlocksPage /> : <Navigate to="/auth/login" />} />
-            <Route path="/blocks/:blockType" element={isAuthenticated ? <PlaceholderPage title="Block Type View" /> : <Navigate to="/auth/login" />} />
-            <Route path="/blocks/:blockType/:blockId" element={isAuthenticated ? <PlaceholderPage title="Edit Block" /> : <Navigate to="/auth/login" />} />
-            
-            {/* Analytics */}
-            <Route path="/analytics" element={isAuthenticated ? <PlaceholderPage title="Analytics Dashboard" /> : <Navigate to="/auth/login" />} />
-          </Route>
+            {/* Protected Routes */}
+            <Route path="/" element={<AppShell />}>
+              <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/auth/login" />} />
+              <Route path="/settings" element={isAuthenticated ? <PlaceholderPage title="Account Settings" /> : <Navigate to="/auth/login" />} />
+              
+              {/* Resume Routes */}
+              <Route path="/resumes" element={isAuthenticated ? <ResumesPage /> : <Navigate to="/auth/login" />} />
+              <Route path="/resumes/new" element={isAuthenticated ? <PlaceholderPage title="Create New Resume" /> : <Navigate to="/auth/login" />} />
+              <Route path="/resumes/:resumeId" element={isAuthenticated ? <PlaceholderPage title="Edit Resume" /> : <Navigate to="/auth/login" />} />
+              <Route path="/resumes/:resumeId/settings" element={isAuthenticated ? <PlaceholderPage title="Resume Settings" /> : <Navigate to="/auth/login" />} />
+              <Route path="/resumes/:resumeId/analytics" element={isAuthenticated ? <PlaceholderPage title="Resume Analytics" /> : <Navigate to="/auth/login" />} />
+              
+              {/* Block Routes */}
+              <Route path="/blocks" element={isAuthenticated ? <BlocksPage /> : <Navigate to="/auth/login" />} />
+              <Route path="/blocks/:blockType" element={isAuthenticated ? <PlaceholderPage title="Block Type View" /> : <Navigate to="/auth/login" />} />
+              <Route path="/blocks/:blockType/:blockId" element={isAuthenticated ? <PlaceholderPage title="Edit Block" /> : <Navigate to="/auth/login" />} />
+              
+              {/* Analytics */}
+              <Route path="/analytics" element={isAuthenticated ? <PlaceholderPage title="Analytics Dashboard" /> : <Navigate to="/auth/login" />} />
+            </Route>
 
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} />} />
-        </Routes>
-      </Router>
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} />} />
+          </Routes>
+        </Router>
+      </Flowbite>
     </ThemeProvider>
   );
 }

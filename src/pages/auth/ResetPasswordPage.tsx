@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Zap, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { TextInput, FloatingLabel } from 'flowbite-react';
+import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
 import { supabase } from '../../lib/supabase';
 
 export const ResetPasswordPage: FC = () => {
@@ -10,6 +12,8 @@ export const ResetPasswordPage: FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -256,54 +260,106 @@ export const ResetPasswordPage: FC = () => {
               )}
 
               <div className="space-y-6">
-                <div className="floating-input">
-                  <div className="relative">
-                    <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pr-12"
-                      disabled={isLoading}
-                      autoComplete="new-password"
-                      placeholder=" "
+                {/* Password Input */}
+                <div className="relative">
+                  <BorderBottomBeam 
+                    play={passwordFocused}
+                    colorFrom="#6366f1"
+                    colorTo="#ec4899"
+                    duration={2}
+                    size={60}
+                  >
+                    <div className="relative">
+                      <TextInput
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => setPasswordFocused(false)}
+                        disabled={isLoading}
+                        autoComplete="new-password"
+                        placeholder=" "
+                        theme={{
+                          field: {
+                            input: {
+                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pr-12",
+                              sizes: {
+                                md: "py-2.5 text-base"
+                              }
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="password-toggle"
+                        disabled={isLoading}
+                        tabIndex={0}
+                      >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                    <FloatingLabel
+                      htmlFor="password"
+                      value="New Password (min. 6 characters)"
+                      variant="standard"
+                      sizing="md"
+                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="password-toggle"
-                      disabled={isLoading}
-                      tabIndex={0}
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                  <label htmlFor="password">New Password (min. 6 characters)</label>
+                  </BorderBottomBeam>
                 </div>
 
-                <div className="floating-input">
-                  <div className="relative">
-                    <input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pr-12"
-                      disabled={isLoading}
-                      autoComplete="new-password"
-                      placeholder=" "
+                {/* Confirm Password Input */}
+                <div className="relative">
+                  <BorderBottomBeam 
+                    play={confirmPasswordFocused}
+                    colorFrom="#6366f1"
+                    colorTo="#ec4899"
+                    duration={2}
+                    size={60}
+                  >
+                    <div className="relative">
+                      <TextInput
+                        id="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onFocus={() => setConfirmPasswordFocused(true)}
+                        onBlur={() => setConfirmPasswordFocused(false)}
+                        disabled={isLoading}
+                        autoComplete="new-password"
+                        placeholder=" "
+                        theme={{
+                          field: {
+                            input: {
+                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pr-12",
+                              sizes: {
+                                md: "py-2.5 text-base"
+                              }
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="password-toggle"
+                        disabled={isLoading}
+                        tabIndex={0}
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                    <FloatingLabel
+                      htmlFor="confirmPassword"
+                      value="Confirm New Password"
+                      variant="standard"
+                      sizing="md"
+                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="password-toggle"
-                      disabled={isLoading}
-                      tabIndex={0}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                  <label htmlFor="confirmPassword">Confirm New Password</label>
+                  </BorderBottomBeam>
                 </div>
               </div>
 

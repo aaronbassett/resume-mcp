@@ -1,12 +1,15 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, AlertCircle, CheckCircle, ArrowLeft, Mail } from 'lucide-react';
+import { Zap, AlertCircle, CheckCircle, ArrowLeft, Mail, AtSign } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { TextInput, FloatingLabel } from 'flowbite-react';
+import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
 import { supabase } from '../../lib/supabase';
 
 export const ForgotPasswordPage: FC = () => {
   const [email, setEmail] = useState('');
+  const [emailFocused, setEmailFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -237,17 +240,49 @@ export const ForgotPasswordPage: FC = () => {
                 </motion.div>
               )}
 
-              <div className="floating-input">
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                  autoComplete="email"
-                  placeholder=" "
-                />
-                <label htmlFor="email">Email Address</label>
+              {/* Email Input */}
+              <div className="relative">
+                <BorderBottomBeam 
+                  play={emailFocused}
+                  colorFrom="#6366f1"
+                  colorTo="#ec4899"
+                  duration={2}
+                  size={60}
+                >
+                  <TextInput
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                    disabled={isLoading}
+                    autoComplete="email"
+                    placeholder=" "
+                    icon={AtSign}
+                    theme={{
+                      field: {
+                        input: {
+                          base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pl-10",
+                          sizes: {
+                            md: "py-2.5 text-base"
+                          }
+                        },
+                        icon: {
+                          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
+                          svg: "h-5 w-5 text-white/60"
+                        }
+                      }
+                    }}
+                  />
+                  <FloatingLabel
+                    htmlFor="email"
+                    value="Email Address"
+                    variant="standard"
+                    sizing="md"
+                    className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  />
+                </BorderBottomBeam>
               </div>
 
               <button

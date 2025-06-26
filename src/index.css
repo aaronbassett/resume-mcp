@@ -147,99 +147,18 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Floating label inputs using Tailwind peer pattern */
-
-/* Auth page floating inputs with white styling and beam animation */
-.auth-background .floating-input {
-  @apply relative;
-}
-
-.auth-background .floating-input input {
-  @apply block py-2.5 px-0 w-full text-base text-white bg-transparent border-0 border-b-2 border-white/20 appearance-none focus:outline-none focus:ring-0 focus:border-transparent;
-}
-
-.auth-background .floating-input label {
-  @apply absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6;
-}
-
-/* Regular page floating inputs with theme-aware styling */
-.floating-input:not(.auth-background .floating-input) {
-  @apply relative;
-}
-
-.floating-input:not(.auth-background .floating-input) input {
-  @apply block py-2.5 px-0 w-full text-base text-foreground bg-transparent border-0 border-b-2 border-border appearance-none focus:outline-none focus:ring-0 focus:border-primary;
-}
-
-.floating-input:not(.auth-background .floating-input) label {
-  @apply absolute text-base text-muted-foreground duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6;
-}
-
-/* Password toggle button positioning */
-.floating-input .password-toggle {
-  @apply absolute right-0 top-1/2 -translate-y-1/2 p-2 transition-colors rounded;
+/* Password toggle button styling */
+.password-toggle {
+  @apply absolute right-0 top-1/2 -translate-y-1/2 p-2 text-white/60 hover:text-white transition-colors rounded;
   outline: none;
   border: none;
   background: transparent;
 }
 
-/* Auth page password toggle */
-.auth-background .floating-input .password-toggle {
-  @apply text-white/60 hover:text-white;
-}
-
-.auth-background .floating-input .password-toggle:focus-visible {
+.password-toggle:focus-visible {
   @apply text-white;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
   border-radius: 6px;
-}
-
-/* Regular page password toggle */
-.floating-input:not(.auth-background .floating-input) .password-toggle {
-  @apply text-muted-foreground hover:text-foreground;
-}
-
-.floating-input:not(.auth-background .floating-input) .password-toggle:focus-visible {
-  @apply text-foreground ring-2 ring-primary ring-offset-2;
-}
-
-/* Beam animation effect - ONLY for auth pages */
-.auth-background .floating-input::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(99, 102, 241, 0.8),
-    rgba(139, 92, 246, 1),
-    rgba(236, 72, 153, 0.8),
-    transparent
-  );
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-  opacity: 0;
-}
-
-.auth-background .floating-input input:focus ~ .floating-input::after,
-.auth-background .floating-input:focus-within::after {
-  animation: beam-slide 2s ease-in-out infinite;
-  opacity: 1;
-}
-
-@keyframes beam-slide {
-  0% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
 }
 
 /* Custom checkbox - Fixed alignment and positioning */
