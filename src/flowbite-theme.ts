@@ -19,7 +19,8 @@ export const customTheme: CustomFlowbiteTheme = {
         sizes: {
           sm: "p-2 sm:text-xs",
           md: "p-2.5 text-sm",
-          lg: "p-4 sm:text-base"
+          lg: "p-4 sm:text-base",
+          full: "p4 w-full text-base"
         },
         colors: {
           gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500",
@@ -29,7 +30,7 @@ export const customTheme: CustomFlowbiteTheme = {
           success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500",
           // Custom input elements
           auth: "bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0",
-          search: "w-ful bg-primary/70 border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0"
+          search: "bg-primary/70 border-0 border-b-2 border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-0"
         },
         withRightIcon: {
           on: "pr-10",
