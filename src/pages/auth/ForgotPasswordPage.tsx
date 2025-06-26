@@ -181,18 +181,13 @@ export const ForgotPasswordPage: FC = () => {
               </div>
             </Link>
 
-            <div class="text-5xl font-extrabold ...">
-  <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-    Hello world
-  </span>
-</div>
-            
+
             <div className="space-y-4">
               <h2 className="text-5xl font-bold leading-tight">
                 Reset Your
                 <span class="block bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-    Password
-  </span>
+                  Password
+                </span>
               </h2>
               <p className="text-xl text-white/80 leading-relaxed">
                 No worries! Enter your email address and we'll send you a secure link 
