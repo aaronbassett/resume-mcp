@@ -184,7 +184,7 @@ export const ForgotPasswordPage: FC = () => {
             <div className="space-y-4">
               <h2 className="text-5xl font-bold leading-tight">
                 Reset Your
-                <span className="block gradient-primary bg-clip-text text-transparent">
+                <span className="block gradient-primary bg-clip-text">
                   Password
                 </span>
               </h2>
