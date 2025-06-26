@@ -1,56 +1,39 @@
 import type { FC } from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BoxReveal } from './BoxReveal';
-import { AuroraText } from './AuroraText';
-import { getCSSLinearGradient, getCSSRadialGradient } from '../../utils/gradientGenerator';
-import type { LinearGradientOptions, RadialGradientOptions } from '../../utils/gradientGenerator';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getCSSRadialGradient } from '../../utils/gradientGenerator';
+import type { RadialGradientOptions } from '../../utils/gradientGenerator';
 
 interface SwitchRevealHeadingProps {
   headingText: string;
   auroraTexts: string[];
   pauseDuration?: number;
-  coverDuration?: number;
-  coverDelay?: number;
-  boxHueSkew?: number | number[];
+  fadeDuration?: number;
   auroraHueSkew?: number | number[];
-  boxStops?: number;
   auroraStops?: number;
-  boxMode?: 'light' | 'dark';
   auroraMode?: 'light' | 'dark';
   className?: string;
-  boxRevealClassName?: string;
   auroraTextClassName?: string;
-  boxGradientOptions?: Omit<LinearGradientOptions, 'hueSkew' | 'stops' | 'mode'>;
   auroraGradientOptions?: Omit<RadialGradientOptions, 'hueSkew' | 'stops' | 'mode'>;
 }
-
-type AnimationPhase = 'initial-reveal' | 'pausing' | 'covering' | 'switching' | 'revealing';
 
 export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   headingText,
   auroraTexts,
   pauseDuration = 6000,
-  coverDuration = 0.5,
-  coverDelay = 0,
-  boxHueSkew = [240, 270, 300, 30, 60],
+  fadeDuration = 0.6,
   auroraHueSkew = [240, 270, 300, 30, 60],
-  boxStops = 3,
   auroraStops = 5,
-  boxMode = 'dark',
   auroraMode = 'dark',
   className = '',
-  boxRevealClassName = '',
   auroraTextClassName = '',
-  boxGradientOptions = {},
   auroraGradientOptions = {},
 }) => {
   const [currentAuroraText, setCurrentAuroraText] = useState('');
   const [usedTexts, setUsedTexts] = useState<string[]>([]);
-  const [animationPhase, setAnimationPhase] = useState<AnimationPhase>('initial-reveal');
-  const [boxGradient, setBoxGradient] = useState('');
   const [auroraBackgroundStyle, setAuroraBackgroundStyle] = useState<React.CSSProperties>({});
+  const [isVisible, setIsVisible] = useState(false);
   
-  // Use a single timeout ref and a flag to prevent multiple handlers
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isProcessingRef = useRef(false);
 
@@ -69,15 +52,8 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
     return availableTexts[randomIndex];
   }, [auroraTexts, usedTexts]);
 
-  // Function to generate gradients based on the aurora text
-  const generateGradients = useCallback((text: string) => {
-    const boxGrad = getCSSLinearGradient(text, {
-      hueSkew: boxHueSkew,
-      stops: boxStops,
-      mode: boxMode,
-      ...boxGradientOptions,
-    });
-
+  // Function to generate gradient based on the aurora text
+  const generateGradient = useCallback((text: string) => {
     const auroraGrad = getCSSRadialGradient(text, {
       hueSkew: auroraHueSkew,
       stops: auroraStops,
@@ -86,16 +62,11 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
       ...auroraGradientOptions,
     });
 
-    setBoxGradient(boxGrad);
     setAuroraBackgroundStyle({ backgroundImage: auroraGrad });
   }, [
-    boxHueSkew,
     auroraHueSkew,
-    boxStops,
     auroraStops,
-    boxMode,
     auroraMode,
-    boxGradientOptions,
     auroraGradientOptions,
   ]);
 
@@ -105,9 +76,59 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
       const firstText = selectRandomAuroraText();
       setCurrentAuroraText(firstText);
       setUsedTexts([firstText]);
-      generateGradients(firstText);
+      generateGradient(firstText);
+      
+      // Fade in the initial text
+      setTimeout(() => setIsVisible(true), 100);
     }
-  }, [auroraTexts, currentAuroraText, selectRandomAuroraText, generateGradients]);
+  }, [auroraTexts, currentAuroraText, selectRandomAuroraText, generateGradient]);
+
+  // Start the cycling after initial mount
+  useEffect(() => {
+    if (!currentAuroraText || auroraTexts.length <= 1) return;
+
+    const startCycling = () => {
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
+
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      // Wait for pause duration, then fade out
+      timeoutRef.current = setTimeout(() => {
+        setIsVisible(false);
+        
+        // After fade out completes, switch text and fade in
+        setTimeout(() => {
+          const newText = selectRandomAuroraText();
+          setCurrentAuroraText(newText);
+          setUsedTexts(prev => [...prev, newText]);
+          generateGradient(newText);
+          
+          // Fade in new text
+          setTimeout(() => {
+            setIsVisible(true);
+            isProcessingRef.current = false;
+            
+            // Continue cycling
+            startCycling();
+          }, 100);
+        }, fadeDuration * 1000);
+      }, pauseDuration);
+    };
+
+    // Start the first cycle after initial fade in
+    const initialTimeout = setTimeout(startCycling, pauseDuration);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [currentAuroraText, auroraTexts.length, pauseDuration, fadeDuration, selectRandomAuroraText, generateGradient]);
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -118,94 +139,38 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
     };
   }, []);
 
-  // Handle animation completion with proper state management
-  const handleAnimationComplete = useCallback(() => {
-    // Prevent multiple calls
-    if (isProcessingRef.current) {
-      return;
-    }
-    
-    isProcessingRef.current = true;
-
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-
-    console.log('Animation completed, current phase:', animationPhase);
-
-    switch (animationPhase) {
-      case 'initial-reveal':
-        // After initial reveal, start pausing
-        setAnimationPhase('pausing');
-        timeoutRef.current = setTimeout(() => {
-          setAnimationPhase('covering');
-          isProcessingRef.current = false;
-        }, pauseDuration);
-        break;
-
-      case 'covering':
-        // After covering, switch text immediately
-        setAnimationPhase('switching');
-        timeoutRef.current = setTimeout(() => {
-          const newText = selectRandomAuroraText();
-          setCurrentAuroraText(newText);
-          setUsedTexts(prev => [...prev, newText]);
-          generateGradients(newText);
-          setAnimationPhase('revealing');
-          isProcessingRef.current = false;
-        }, 300);
-        break;
-
-      case 'revealing':
-        // After revealing, start pausing again
-        setAnimationPhase('pausing');
-        timeoutRef.current = setTimeout(() => {
-          setAnimationPhase('covering');
-          isProcessingRef.current = false;
-        }, pauseDuration);
-        break;
-
-      default:
-        isProcessingRef.current = false;
-        break;
-    }
-  }, [animationPhase, pauseDuration, selectRandomAuroraText, generateGradients]);
-
-  // Convert animation phase to BoxReveal animation state
-  const getBoxRevealAnimationState = () => {
-    switch (animationPhase) {
-      case 'initial-reveal':
-      case 'revealing':
-        return 'reveal';
-      case 'covering':
-        return 'cover';
-      default:
-        return 'reveal';
-    }
+  const auroraGradientStyle = {
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+    backgroundSize: '200% auto',
+    backgroundImage: auroraBackgroundStyle.backgroundImage,
   };
 
   return (
-    <div className={className}>
-      <BoxReveal
-        boxGradient={boxGradient}
-        duration={coverDuration}
-        delay={coverDelay}
-        animationState={getBoxRevealAnimationState()}
-        onAnimationComplete={handleAnimationComplete}
-        className={boxRevealClassName}
+    <div className={`${className}`} style={{ minHeight: '200px' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
       >
         <span>
           {headingText}{' '}
-          <AuroraText 
-            style={auroraBackgroundStyle}
-            className={auroraTextClassName}
-          >
-            {currentAuroraText}
-          </AuroraText>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={currentAuroraText}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isVisible ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: fadeDuration }}
+              className={`relative inline-block animate-aurora bg-clip-text text-transparent ${auroraTextClassName}`}
+              style={auroraGradientStyle}
+            >
+              {currentAuroraText}
+            </motion.span>
+          </AnimatePresence>
         </span>
-      </BoxReveal>
+      </motion.div>
     </div>
   );
 };
