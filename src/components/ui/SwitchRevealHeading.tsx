@@ -24,6 +24,8 @@ interface SwitchRevealHeadingProps {
   auroraGradientOptions?: Omit<RadialGradientOptions, 'hueSkew' | 'stops' | 'mode'>;
 }
 
+type AnimationPhase = 'initial-reveal' | 'pausing' | 'covering' | 'switching' | 'revealing';
+
 export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   headingText,
   auroraTexts,
@@ -44,13 +46,13 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
 }) => {
   const [currentAuroraText, setCurrentAuroraText] = useState('');
   const [usedTexts, setUsedTexts] = useState<string[]>([]);
-  const [animationState, setAnimationState] = useState<'initial-reveal' | 'reveal' | 'cover'>('initial-reveal');
+  const [animationPhase, setAnimationPhase] = useState<AnimationPhase>('initial-reveal');
   const [boxGradient, setBoxGradient] = useState('');
   const [auroraBackgroundStyle, setAuroraBackgroundStyle] = useState<React.CSSProperties>({});
   
-  // Use refs to track timeouts and prevent multiple timers
-  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const switchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Use a single timeout ref and a flag to prevent multiple handlers
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isProcessingRef = useRef(false);
 
   // Function to select a random aurora text that hasn't been used
   const selectRandomAuroraText = useCallback(() => {
@@ -99,59 +101,90 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
 
   // Initialize with the first aurora text
   useEffect(() => {
-    if (auroraTexts.length > 0) {
+    if (auroraTexts.length > 0 && !currentAuroraText) {
       const firstText = selectRandomAuroraText();
       setCurrentAuroraText(firstText);
       setUsedTexts([firstText]);
       generateGradients(firstText);
     }
-  }, [auroraTexts, selectRandomAuroraText, generateGradients]);
+  }, [auroraTexts, currentAuroraText, selectRandomAuroraText, generateGradients]);
 
-  // Clear timeouts on unmount
+  // Clear timeout on unmount
   useEffect(() => {
     return () => {
-      if (pauseTimeoutRef.current) {
-        clearTimeout(pauseTimeoutRef.current);
-      }
-      if (switchTimeoutRef.current) {
-        clearTimeout(switchTimeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
   }, []);
 
-  // Handle animation completion
+  // Handle animation completion with proper state management
   const handleAnimationComplete = useCallback(() => {
-    // Clear any existing timeouts to prevent multiple timers
-    if (pauseTimeoutRef.current) {
-      clearTimeout(pauseTimeoutRef.current);
-      pauseTimeoutRef.current = null;
+    // Prevent multiple calls
+    if (isProcessingRef.current) {
+      return;
     }
-    if (switchTimeoutRef.current) {
-      clearTimeout(switchTimeoutRef.current);
-      switchTimeoutRef.current = null;
+    
+    isProcessingRef.current = true;
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
 
-    if (animationState === 'initial-reveal') {
-      // After initial reveal, start the cycle with a pause
-      pauseTimeoutRef.current = setTimeout(() => {
-        setAnimationState('cover');
-      }, pauseDuration);
-    } else if (animationState === 'cover') {
-      // After covering, switch text and reveal after a brief pause
-      switchTimeoutRef.current = setTimeout(() => {
-        const newText = selectRandomAuroraText();
-        setCurrentAuroraText(newText);
-        setUsedTexts(prev => [...prev, newText]);
-        generateGradients(newText);
-        setAnimationState('reveal');
-      }, 300); // Brief pause before switching text
-    } else if (animationState === 'reveal') {
-      // After revealing, wait for the pause duration then cover again
-      pauseTimeoutRef.current = setTimeout(() => {
-        setAnimationState('cover');
-      }, pauseDuration);
+    console.log('Animation completed, current phase:', animationPhase);
+
+    switch (animationPhase) {
+      case 'initial-reveal':
+        // After initial reveal, start pausing
+        setAnimationPhase('pausing');
+        timeoutRef.current = setTimeout(() => {
+          setAnimationPhase('covering');
+          isProcessingRef.current = false;
+        }, pauseDuration);
+        break;
+
+      case 'covering':
+        // After covering, switch text immediately
+        setAnimationPhase('switching');
+        timeoutRef.current = setTimeout(() => {
+          const newText = selectRandomAuroraText();
+          setCurrentAuroraText(newText);
+          setUsedTexts(prev => [...prev, newText]);
+          generateGradients(newText);
+          setAnimationPhase('revealing');
+          isProcessingRef.current = false;
+        }, 300);
+        break;
+
+      case 'revealing':
+        // After revealing, start pausing again
+        setAnimationPhase('pausing');
+        timeoutRef.current = setTimeout(() => {
+          setAnimationPhase('covering');
+          isProcessingRef.current = false;
+        }, pauseDuration);
+        break;
+
+      default:
+        isProcessingRef.current = false;
+        break;
     }
-  }, [animationState, pauseDuration, selectRandomAuroraText, generateGradients]);
+  }, [animationPhase, pauseDuration, selectRandomAuroraText, generateGradients]);
+
+  // Convert animation phase to BoxReveal animation state
+  const getBoxRevealAnimationState = () => {
+    switch (animationPhase) {
+      case 'initial-reveal':
+      case 'revealing':
+        return 'reveal';
+      case 'covering':
+        return 'cover';
+      default:
+        return 'reveal';
+    }
+  };
 
   return (
     <div className={className}>
@@ -159,7 +192,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
         boxGradient={boxGradient}
         duration={coverDuration}
         delay={coverDelay}
-        animationState={animationState}
+        animationState={getBoxRevealAnimationState()}
         onAnimationComplete={handleAnimationComplete}
         className={boxRevealClassName}
       >
