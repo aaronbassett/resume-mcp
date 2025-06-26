@@ -20,8 +20,8 @@ interface SwitchRevealHeadingProps {
 export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   headingText,
   auroraTexts,
-  pauseDuration = 6000,
-  fadeDuration = 0.6,
+  pauseDuration = 24000, // 4x longer pause (was 6000)
+  fadeDuration = 0.3, // 2x faster fade (was 0.6)
   auroraHueSkew = [240, 270, 300, 30, 60],
   auroraStops = 4,
   auroraMode = 'dark',
@@ -106,11 +106,12 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   const currentText = auroraTexts[currentIndex] || '';
 
   return (
-    <div className={className} style={{ minHeight: '200px' }}>
+    <div className={className} style={{ minHeight: '320px', paddingBottom: '2rem' }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
+        style={{ lineHeight: '1.1' }}
       >
         <span>
           {headingText}{' '}
@@ -122,7 +123,11 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
               exit={{ opacity: 0 }}
               transition={{ duration: fadeDuration }}
               className={`relative inline-block animate-aurora ${auroraTextClassName}`}
-              style={gradientStyle}
+              style={{
+                ...gradientStyle,
+                display: 'inline-block',
+                verticalAlign: 'baseline',
+              }}
             >
               {currentText}
             </motion.span>
