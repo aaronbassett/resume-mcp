@@ -125,7 +125,7 @@ export const ResetPasswordPage: FC = () => {
               <div className="space-y-4">
                 <h2 className="text-5xl font-bold leading-tight">
                   Password
-                  <span className="block gradient-primary bg-clip-text text-transparent">
+                  <span className="block bg-clip-text text-transparent bg-gradient-to-r from-primary to-pink-600">
                     Updated!
                   </span>
                 </h2>
@@ -203,7 +203,7 @@ export const ResetPasswordPage: FC = () => {
             <div className="space-y-4">
               <h2 className="text-5xl font-bold leading-tight">
                 Create New
-                <span className="block gradient-primary bg-clip-text text-transparent">
+                <span className="block bg-clip-text text-transparent bg-gradient-to-r from-primary to-pink-600">
                   Password
                 </span>
               </h2>
