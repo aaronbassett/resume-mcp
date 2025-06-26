@@ -110,7 +110,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   const currentText = shuffledTexts[currentIndex] || '';
 
   return (
-    <div className={className} style={{ minHeight: '320px', paddingBottom: '2rem' }}>
+    <div className={className} style={{ paddingBottom: '2rem' }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
