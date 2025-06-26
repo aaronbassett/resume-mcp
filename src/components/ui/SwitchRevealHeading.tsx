@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BoxReveal } from './BoxReveal';
 import { AuroraText } from './AuroraText';
 import { getCSSLinearGradient, getCSSRadialGradient } from '../../utils/gradientGenerator';
@@ -47,6 +47,10 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   const [animationState, setAnimationState] = useState<'initial-reveal' | 'reveal' | 'cover'>('initial-reveal');
   const [boxGradient, setBoxGradient] = useState('');
   const [auroraBackgroundStyle, setAuroraBackgroundStyle] = useState<React.CSSProperties>({});
+  
+  // Use refs to track timeouts and prevent multiple timers
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const switchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Function to select a random aurora text that hasn't been used
   const selectRandomAuroraText = useCallback(() => {
@@ -103,16 +107,38 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
     }
   }, [auroraTexts, selectRandomAuroraText, generateGradients]);
 
+  // Clear timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+      if (switchTimeoutRef.current) {
+        clearTimeout(switchTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Handle animation completion
   const handleAnimationComplete = useCallback(() => {
+    // Clear any existing timeouts to prevent multiple timers
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+      pauseTimeoutRef.current = null;
+    }
+    if (switchTimeoutRef.current) {
+      clearTimeout(switchTimeoutRef.current);
+      switchTimeoutRef.current = null;
+    }
+
     if (animationState === 'initial-reveal') {
-      // After initial reveal, start the cycle
-      setTimeout(() => {
+      // After initial reveal, start the cycle with a pause
+      pauseTimeoutRef.current = setTimeout(() => {
         setAnimationState('cover');
       }, pauseDuration);
     } else if (animationState === 'cover') {
-      // After covering, switch text and reveal
-      setTimeout(() => {
+      // After covering, switch text and reveal after a brief pause
+      switchTimeoutRef.current = setTimeout(() => {
         const newText = selectRandomAuroraText();
         setCurrentAuroraText(newText);
         setUsedTexts(prev => [...prev, newText]);
@@ -120,8 +146,8 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
         setAnimationState('reveal');
       }, 300); // Brief pause before switching text
     } else if (animationState === 'reveal') {
-      // After revealing, wait and then cover again
-      setTimeout(() => {
+      // After revealing, wait for the pause duration then cover again
+      pauseTimeoutRef.current = setTimeout(() => {
         setAnimationState('cover');
       }, pauseDuration);
     }
