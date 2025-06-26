@@ -116,6 +116,7 @@ export const LoginPage: FC = () => {
                 </motion.div>
               )}
 
+              <div className="space-y-6">
                 {/* Email Input */}
                 <div className="relative">
                   <BorderBottomBeam 
@@ -195,6 +196,7 @@ export const LoginPage: FC = () => {
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     </div>
+
                   </BorderBottomBeam>
                 </div>
               </div>
