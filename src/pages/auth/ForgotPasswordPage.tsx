@@ -244,7 +244,7 @@ export const ForgotPasswordPage: FC = () => {
               <div className="relative">
                 <BorderBottomBeam 
                   play={emailFocused}
-                  className="rounded-lg"
+                  className="rounded-sm"
                   colorFrom="#6366f1"
                   colorTo="#ec4899"
                   duration={2}
