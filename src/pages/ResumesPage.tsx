@@ -73,7 +73,7 @@ export const ResumesPage: FC = () => {
 
       {/* Search and Filters */}
       <div className="flex items-end space-x-4">
-       <div className="relative">
+       <div className="relative w-full">
                   <BorderBottomBeam 
                     play={searchFocused}
                     className="rounded-md"
