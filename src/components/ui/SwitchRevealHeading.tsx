@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCSSLinearGradient } from '../../utils/gradientGenerator';
 import type { LinearGradientOptions } from '../../utils/gradientGenerator';
@@ -31,40 +31,43 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [gradientStyle, setGradientStyle] = useState<React.CSSProperties>({});
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Generate gradient for current text
-  const generateGradient = useCallback((text: string) => {
-    const gradient = getCSSLinearGradient(text, {
-      hueSkew: auroraHueSkew,
-      stops: auroraStops,
-      mode: auroraMode,
-      angle: '45deg',
-      ...auroraGradientOptions,
-    });
+  // Memoize gradient options to prevent recreation
+  const gradientOptions = useMemo(() => ({
+    hueSkew: auroraHueSkew,
+    stops: auroraStops,
+    mode: auroraMode,
+    angle: '45deg',
+    ...auroraGradientOptions,
+  }), [auroraHueSkew, auroraStops, auroraMode, auroraGradientOptions]);
 
-    setGradientStyle({
+  // Generate gradient style for current text
+  const gradientStyle = useMemo(() => {
+    if (auroraTexts.length === 0) return {};
+    
+    const currentText = auroraTexts[currentIndex] || '';
+    const gradient = getCSSLinearGradient(currentText, gradientOptions);
+
+    return {
       background: gradient,
       backgroundSize: '400% 400%',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
-    });
-  }, [auroraHueSkew, auroraStops, auroraMode, auroraGradientOptions]);
+    };
+  }, [auroraTexts, currentIndex, gradientOptions]);
 
-  // Initialize with first text
+  // Initialize visibility
   useEffect(() => {
     if (auroraTexts.length > 0) {
-      generateGradient(auroraTexts[0]);
-      // Fade in after a short delay
       const timer = setTimeout(() => setIsVisible(true), 100);
       return () => clearTimeout(timer);
     }
-  }, [auroraTexts, generateGradient]);
+  }, [auroraTexts.length]);
 
-  // Set up cycling interval - removed currentIndex from dependencies
+  // Set up cycling interval
   useEffect(() => {
     if (auroraTexts.length <= 1) return;
 
@@ -74,12 +77,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
       
       // After fade out, switch text and fade in
       setTimeout(() => {
-        setCurrentIndex(prev => {
-          const nextIndex = (prev + 1) % auroraTexts.length;
-          // Generate new gradient for new text
-          generateGradient(auroraTexts[nextIndex]);
-          return nextIndex;
-        });
+        setCurrentIndex(prev => (prev + 1) % auroraTexts.length);
         
         // Fade in new text
         setTimeout(() => setIsVisible(true), 50);
@@ -94,7 +92,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [auroraTexts, pauseDuration, fadeDuration, generateGradient]); // Removed currentIndex
+  }, [auroraTexts.length, pauseDuration, fadeDuration]);
 
   // Clean up on unmount
   useEffect(() => {
