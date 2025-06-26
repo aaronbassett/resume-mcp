@@ -135,7 +135,7 @@ export const LoginPage: FC = () => {
                         onBlur={() => setEmailFocused(false)}
                         disabled={isLoading}
                         autoComplete="email"
-                        placeholder=" "
+                        placeholder="Email address"
                         icon={AtSign}
                         theme={{
                           field: {
@@ -174,7 +174,7 @@ export const LoginPage: FC = () => {
                         onBlur={() => setPasswordFocused(false)}
                         disabled={isLoading}
                         autoComplete="current-password"
-                        placeholder=" "
+                        placeholder="hunter2"
                         theme={{
                           field: {
                             input: {
