@@ -46,7 +46,7 @@ export const Avatar: FC<AvatarProps> = ({
   
   // Generate radial gradient background based on the text we're using for initials
   const gradientInput = fallback || alt || 'default';
-  const gradientBackground = getCSSGradient(gradientInput, theme, 'radial');
+  const gradientBackground = getCSSRadialGradient(gradientInput, theme);
 
   return (
     <div className={`relative inline-flex items-center justify-center rounded-full overflow-hidden ${sizes[size]} ${className}`}>
