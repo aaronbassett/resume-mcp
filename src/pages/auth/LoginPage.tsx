@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, AlertCircle, Eye, EyeOff, AtSign } from 'lucide-react';
+import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TextInput, FloatingLabel } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
@@ -172,6 +172,7 @@ export const LoginPage: FC = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         onFocus={() => setPasswordFocused(true)}
                         onBlur={() => setPasswordFocused(false)}
+                        icon={SquareAsterisk}
                         disabled={isLoading}
                         autoComplete="current-password"
                         placeholder="Password"
