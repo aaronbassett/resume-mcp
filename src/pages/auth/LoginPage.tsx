@@ -121,6 +121,7 @@ export const LoginPage: FC = () => {
                 <div className="relative">
                   <BorderBottomBeam 
                     play={emailFocused}
+                    className="rounded-md"
                     colorFrom="#6366f1"
                     colorTo="#ec4899"
                     duration={2}
@@ -159,6 +160,7 @@ export const LoginPage: FC = () => {
                 <div className="relative">
                   <BorderBottomBeam 
                     play={passwordFocused}
+                    className="rounded-md"
                     colorFrom="#6366f1"
                     colorTo="#ec4899"
                     duration={2}
