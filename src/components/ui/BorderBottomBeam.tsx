@@ -112,7 +112,7 @@ export const BorderBottomBeam = ({
         <div className="pointer-events-none absolute inset-0 rounded-[inherit] overflow-hidden">
           <motion.div
             key={loopType === 'pacman' ? animationKey : undefined}
-            className="absolute bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-from)] to-[var(--color-to)]"
+            className="rounded-lg absolute bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-from)] to-[var(--color-to)]"
             style={
               {
                 width: `${size}%`,
