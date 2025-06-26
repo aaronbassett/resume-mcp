@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { TextInput } from 'flowbite-react';
+import { BorderBottomBeam } from '../components/ui/BorderBottomBeam';
 
 const resumes = [
   {
@@ -49,6 +51,8 @@ const resumes = [
 ];
 
 export const ResumesPage: FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   return (
     <div className="space-y-8">
       <PageHeader
@@ -69,19 +73,29 @@ export const ResumesPage: FC = () => {
 
       {/* Search and Filters */}
       <div className="flex items-end space-x-4">
-        <div className="floating-input flex-1">
-          <input
-            type="search"
-            id="search"
-            className="pl-6"
-            placeholder=" "
-            autoComplete="off"
-          />
-          <label htmlFor="search" className="flex items-center space-x-2">
-            <Search className="h-4 w-4" />
-            <span>Search resumes...</span>
-          </label>
-        </div>
+       <div className="relative">
+                  <BorderBottomBeam 
+                    play={emailFocused}
+                    className="rounded-md"
+                    colorFrom="#6366f1"
+                    colorTo="#ec4899"
+                    duration={2}
+                    size={60}
+                  >
+                      <TextInput
+                        id="search"
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onFocus={() => setSearchFocused(true)}
+                        onBlur={() => setSearchFocused(false)}
+                        placeholder="Search Resumes"
+                        icon={Search}
+                        color="search"
+                        sizing="full"
+                      />
+                  </BorderBottomBeam>
+                </div>
         <Button variant="outline" className="h-12 px-4">
           <Filter className="mr-2 h-4 w-4" />
           Filter
