@@ -75,7 +75,7 @@ export const ResumesPage: FC = () => {
       <div className="flex items-end space-x-4">
        <div className="relative">
                   <BorderBottomBeam 
-                    play={emailFocused}
+                    play={searchFocused}
                     className="rounded-md"
                     colorFrom="#6366f1"
                     colorTo="#ec4899"
