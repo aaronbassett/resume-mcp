@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getCSSRadialGradient } from '../../utils/gradientGenerator';
-import type { RadialGradientOptions } from '../../utils/gradientGenerator';
+import { getCSSLinearGradient } from '../../utils/gradientGenerator';
+import type { LinearGradientOptions } from '../../utils/gradientGenerator';
 
 interface SwitchRevealHeadingProps {
   headingText: string;
@@ -14,7 +14,7 @@ interface SwitchRevealHeadingProps {
   auroraMode?: 'light' | 'dark';
   className?: string;
   auroraTextClassName?: string;
-  auroraGradientOptions?: Omit<RadialGradientOptions, 'hueSkew' | 'stops' | 'mode'>;
+  auroraGradientOptions?: Omit<LinearGradientOptions, 'hueSkew' | 'stops' | 'mode'>;
 }
 
 export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
@@ -23,132 +23,91 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   pauseDuration = 6000,
   fadeDuration = 0.6,
   auroraHueSkew = [240, 270, 300, 30, 60],
-  auroraStops = 5,
+  auroraStops = 4,
   auroraMode = 'dark',
   className = '',
   auroraTextClassName = '',
   auroraGradientOptions = {},
 }) => {
-  const [currentAuroraText, setCurrentAuroraText] = useState('');
-  const [usedTexts, setUsedTexts] = useState<string[]>([]);
-  const [auroraBackgroundStyle, setAuroraBackgroundStyle] = useState<React.CSSProperties>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [gradientStyle, setGradientStyle] = useState<React.CSSProperties>({});
   
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isProcessingRef = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to select a random aurora text that hasn't been used
-  const selectRandomAuroraText = useCallback(() => {
-    const availableTexts = auroraTexts.filter(text => !usedTexts.includes(text));
-    
-    // If all texts have been used, reset the used texts array
-    if (availableTexts.length === 0) {
-      setUsedTexts([]);
-      const randomIndex = Math.floor(Math.random() * auroraTexts.length);
-      return auroraTexts[randomIndex];
-    }
-    
-    const randomIndex = Math.floor(Math.random() * availableTexts.length);
-    return availableTexts[randomIndex];
-  }, [auroraTexts, usedTexts]);
-
-  // Function to generate gradient based on the aurora text
+  // Generate gradient for current text
   const generateGradient = useCallback((text: string) => {
-    const auroraGrad = getCSSRadialGradient(text, {
+    const gradient = getCSSLinearGradient(text, {
       hueSkew: auroraHueSkew,
       stops: auroraStops,
       mode: auroraMode,
-      size: 'closest-side',
+      angle: '45deg',
       ...auroraGradientOptions,
     });
 
-    setAuroraBackgroundStyle({ backgroundImage: auroraGrad });
-  }, [
-    auroraHueSkew,
-    auroraStops,
-    auroraMode,
-    auroraGradientOptions,
-  ]);
+    setGradientStyle({
+      background: gradient,
+      backgroundSize: '400% 400%',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+    });
+  }, [auroraHueSkew, auroraStops, auroraMode, auroraGradientOptions]);
 
-  // Initialize with the first aurora text
+  // Initialize with first text
   useEffect(() => {
-    if (auroraTexts.length > 0 && !currentAuroraText) {
-      const firstText = selectRandomAuroraText();
-      setCurrentAuroraText(firstText);
-      setUsedTexts([firstText]);
-      generateGradient(firstText);
-      
-      // Fade in the initial text
-      setTimeout(() => setIsVisible(true), 100);
+    if (auroraTexts.length > 0) {
+      generateGradient(auroraTexts[0]);
+      // Fade in after a short delay
+      const timer = setTimeout(() => setIsVisible(true), 100);
+      return () => clearTimeout(timer);
     }
-  }, [auroraTexts, currentAuroraText, selectRandomAuroraText, generateGradient]);
+  }, [auroraTexts, generateGradient]);
 
-  // Start the cycling after initial mount
+  // Set up cycling interval
   useEffect(() => {
-    if (!currentAuroraText || auroraTexts.length <= 1) return;
+    if (auroraTexts.length <= 1) return;
 
-    const startCycling = () => {
-      if (isProcessingRef.current) return;
-      isProcessingRef.current = true;
-
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      // Wait for pause duration, then fade out
-      timeoutRef.current = setTimeout(() => {
-        setIsVisible(false);
+    const cycle = () => {
+      // Fade out
+      setIsVisible(false);
+      
+      // After fade out, switch text and fade in
+      setTimeout(() => {
+        setCurrentIndex(prev => (prev + 1) % auroraTexts.length);
         
-        // After fade out completes, switch text and fade in
-        setTimeout(() => {
-          const newText = selectRandomAuroraText();
-          setCurrentAuroraText(newText);
-          setUsedTexts(prev => [...prev, newText]);
-          generateGradient(newText);
-          
-          // Fade in new text
-          setTimeout(() => {
-            setIsVisible(true);
-            isProcessingRef.current = false;
-            
-            // Continue cycling
-            startCycling();
-          }, 100);
-        }, fadeDuration * 1000);
-      }, pauseDuration);
+        // Generate new gradient for new text
+        const newText = auroraTexts[(currentIndex + 1) % auroraTexts.length];
+        generateGradient(newText);
+        
+        // Fade in new text
+        setTimeout(() => setIsVisible(true), 50);
+      }, fadeDuration * 1000);
     };
 
-    // Start the first cycle after initial fade in
-    const initialTimeout = setTimeout(startCycling, pauseDuration);
+    // Start cycling after initial pause
+    intervalRef.current = setInterval(cycle, pauseDuration);
 
     return () => {
-      clearTimeout(initialTimeout);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
-  }, [currentAuroraText, auroraTexts.length, pauseDuration, fadeDuration, selectRandomAuroraText, generateGradient]);
+  }, [auroraTexts, currentIndex, pauseDuration, fadeDuration, generateGradient]);
 
-  // Clear timeout on unmount
+  // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
   }, []);
 
-  const auroraGradientStyle = {
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-    backgroundSize: '200% auto',
-    backgroundImage: auroraBackgroundStyle.backgroundImage,
-  };
+  const currentText = auroraTexts[currentIndex] || '';
 
   return (
-    <div className={`${className}`} style={{ minHeight: '200px' }}>
+    <div className={className} style={{ minHeight: '200px' }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -158,15 +117,15 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
           {headingText}{' '}
           <AnimatePresence mode="wait">
             <motion.span
-              key={currentAuroraText}
+              key={currentIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: isVisible ? 1 : 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: fadeDuration }}
-              className={`relative inline-block animate-aurora bg-clip-text text-transparent ${auroraTextClassName}`}
-              style={auroraGradientStyle}
+              className={`relative inline-block animate-aurora ${auroraTextClassName}`}
+              style={gradientStyle}
             >
-              {currentAuroraText}
+              {currentText}
             </motion.span>
           </AnimatePresence>
         </span>
