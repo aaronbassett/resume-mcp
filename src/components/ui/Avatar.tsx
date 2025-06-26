@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { getCSSGradient } from '../../utils/gradientGenerator';
+import { getCSSRadialGradient } from '../../utils/gradientGenerator';
 import { useThemeStore } from '../../store/theme';
 
 interface AvatarProps {
