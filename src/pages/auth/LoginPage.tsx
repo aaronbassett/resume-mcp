@@ -126,38 +126,40 @@ export const LoginPage: FC = () => {
                     duration={2}
                     size={60}
                   >
-                    <TextInput
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      onFocus={() => setEmailFocused(true)}
-                      onBlur={() => setEmailFocused(false)}
-                      disabled={isLoading}
-                      autoComplete="email"
-                      placeholder=" "
-                      icon={AtSign}
-                      theme={{
-                        field: {
-                          input: {
-                            base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pl-10",
-                            sizes: {
-                              md: "py-2.5 text-base"
+                    <div>
+                      <TextInput
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onFocus={() => setEmailFocused(true)}
+                        onBlur={() => setEmailFocused(false)}
+                        disabled={isLoading}
+                        autoComplete="email"
+                        placeholder=" "
+                        icon={AtSign}
+                        theme={{
+                          field: {
+                            input: {
+                              base: "block w-full bg-transparent border-0 border-b-2 border-white/20 text-white placeholder-transparent focus:outline-none focus:ring-0 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 pl-10",
+                              sizes: {
+                                md: "py-2.5 text-base"
+                              }
+                            },
+                            icon: {
+                              base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
+                              svg: "h-5 w-5 text-white/60"
                             }
-                          },
-                          icon: {
-                            base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-                            svg: "h-5 w-5 text-white/60"
                           }
-                        }
-                      }}
-                    />
-                    <FloatingLabel
-                      htmlFor="email"
-                      value="Email Address"
-                      variant="standard"
-                      sizing="md"
-                    />
+                        }}
+                      />
+                      <FloatingLabel
+                        htmlFor="email"
+                        value="Email Address"
+                        variant="standard"
+                        sizing="md"
+                      />
+                    </div>
                   </BorderBottomBeam>
                 </div>
 
