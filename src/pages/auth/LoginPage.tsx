@@ -9,14 +9,14 @@ import { SwitchRevealHeading } from '../../components/ui/SwitchRevealHeading';
 import { useAuthStore } from '../../store/auth';
 
 const resumeTexts = [
-  'Future of Resumes',
-  'Next Generation',
-  'AI Revolution',
-  'Smart Era',
-  'Digital Age',
-  'Intelligent World',
-  'Automated Future',
-  'Tech Evolution',
+  'Revolution',
+  'Evolution',
+  'Transformation',
+  'Movement',
+  'Reinvention',
+  'Upgrade',
+  'Reimagining',
+  'Breakthrough',
 ];
 
 export const LoginPage: FC = () => {
