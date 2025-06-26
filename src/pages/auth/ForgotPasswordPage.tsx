@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, AlertCircle, CheckCircle, ArrowLeft, Mail, AtSign } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TextInput, FloatingLabel } from 'flowbite-react';
+import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
 import { supabase } from '../../lib/supabase';
 
@@ -258,7 +258,7 @@ export const ForgotPasswordPage: FC = () => {
                     onBlur={() => setEmailFocused(false)}
                     disabled={isLoading}
                     autoComplete="email"
-                    placeholder=" "
+                    placeholder="Email Address"
                     icon={AtSign}
                     theme={{
                       field: {
@@ -274,13 +274,6 @@ export const ForgotPasswordPage: FC = () => {
                         }
                       }
                     }}
-                  />
-                  <FloatingLabel
-                    htmlFor="email"
-                    value="Email Address"
-                    variant="standard"
-                    sizing="md"
-                    className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                   />
                 </BorderBottomBeam>
               </div>

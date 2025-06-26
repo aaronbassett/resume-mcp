@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, AlertCircle, Eye, EyeOff, AtSign } from 'lucide-react';
+import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TextInput, FloatingLabel } from 'flowbite-react';
+import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
 import { useAuthStore } from '../../store/auth';
 
@@ -146,7 +146,7 @@ export const SignupPage: FC = () => {
                       onBlur={() => setEmailFocused(false)}
                       disabled={isLoading}
                       autoComplete="email"
-                      placeholder=" "
+                      placeholder="Email Address"
                       icon={AtSign}
                       theme={{
                         field: {
@@ -162,13 +162,6 @@ export const SignupPage: FC = () => {
                           }
                         }
                       }}
-                    />
-                    <FloatingLabel
-                      htmlFor="email"
-                      value="Email Address"
-                      variant="standard"
-                      sizing="md"
-                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                     />
                   </BorderBottomBeam>
                 </div>
@@ -190,9 +183,10 @@ export const SignupPage: FC = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         onFocus={() => setPasswordFocused(true)}
                         onBlur={() => setPasswordFocused(false)}
+                        icon={SquareAsterisk}
                         disabled={isLoading}
                         autoComplete="new-password"
-                        placeholder=" "
+                        placeholder="Password (min. 6 characters)"
                         theme={{
                           field: {
                             input: {
@@ -214,13 +208,6 @@ export const SignupPage: FC = () => {
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     </div>
-                    <FloatingLabel
-                      htmlFor="password"
-                      value="Password (min. 6 characters)"
-                      variant="standard"
-                      sizing="md"
-                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                    />
                   </BorderBottomBeam>
                 </div>
               </div>
