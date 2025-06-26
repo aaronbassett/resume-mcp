@@ -44,7 +44,7 @@ export const Sidebar: FC = () => {
   const location = useLocation();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r">
+    <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-64 lg:bg-sidebar lg:border-r">
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center border-b px-6">
@@ -130,3 +130,6 @@ export const Sidebar: FC = () => {
     </aside>
   );
 };
+
+// Export navigation sections for use in mobile drawer
+export { navSections };

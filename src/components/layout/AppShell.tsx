@@ -19,9 +19,9 @@ export const AppShell: FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className="pl-64">
+      <div className="lg:pl-64">
         <Header />
-        <main className="min-h-[calc(100vh-4rem)] p-8">
+        <main className="min-h-[calc(100vh-4rem)] p-4 lg:p-8">
           <div className="animate-fade-in">
             <Outlet />
           </div>

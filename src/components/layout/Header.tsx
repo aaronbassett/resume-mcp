@@ -1,11 +1,12 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { Bell, Search, Moon, Sun, LogOut, Settings, User } from 'lucide-react';
+import { Bell, Search, Moon, Sun, LogOut, Settings, User, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
 import { Dropdown, DropdownItem, DropdownSeparator } from '../ui/Dropdown';
 import { CommandPalette } from '../ui/CommandPalette';
+import { MobileDrawer } from './MobileDrawer';
 import { useThemeStore } from '../../store/theme';
 import { useAuthStore } from '../../store/auth';
 
@@ -14,6 +15,7 @@ export const Header: FC = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [commandOpen, setCommandOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -27,8 +29,9 @@ export const Header: FC = () => {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b h-16">
-        <div className="flex h-16 items-center justify-between px-8">
-          <div className="flex items-center space-x-4">
+        <div className="flex h-16 items-center justify-between px-4 lg:px-8">
+          {/* Desktop Search */}
+          <div className="hidden lg:flex items-center space-x-4 flex-1">
             <Button
               variant="outline"
               onClick={() => setCommandOpen(true)}
@@ -44,7 +47,18 @@ export const Header: FC = () => {
             </Button>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center">
+            <Link to="/dashboard" className="flex items-center space-x-2">
+              <div className="gradient-primary rounded-lg p-1.5">
+                <span className="text-primary-foreground font-bold text-sm">RM</span>
+              </div>
+              <span className="font-bold text-lg">Resume MCP</span>
+            </Link>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex items-center space-x-4">
             <Button
               variant="ghost"
               size="sm"
@@ -72,7 +86,7 @@ export const Header: FC = () => {
                     alt={user?.fullName}
                     size="md"
                   />
-                  <div className="hidden md:block text-left">
+                  <div className="hidden xl:block text-left">
                     <p className="text-sm font-medium">{user?.fullName}</p>
                     <p className="text-xs text-muted-foreground">@{user?.username}</p>
                   </div>
@@ -110,10 +124,23 @@ export const Header: FC = () => {
               </DropdownItem>
             </Dropdown>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileDrawerOpen(true)}
+              className="h-9 w-9 p-0"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+      <MobileDrawer open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen} />
     </>
   );
 };
