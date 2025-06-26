@@ -14,6 +14,7 @@ export const AuroraText: FC<AuroraTextProps> = memo(
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
       backgroundSize: '200% auto',
+      backgroundImage: style?.background || style?.backgroundImage,
       ...style,
     };
 

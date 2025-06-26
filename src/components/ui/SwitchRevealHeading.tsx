@@ -81,7 +81,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
     });
 
     setBoxGradient(boxGrad);
-    setAuroraBackgroundStyle({ background: auroraGrad });
+    setAuroraBackgroundStyle({ backgroundImage: auroraGrad });
   }, [
     boxHueSkew,
     auroraHueSkew,
