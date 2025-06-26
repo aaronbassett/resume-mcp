@@ -131,7 +131,7 @@ export const LoginPage: FC = () => {
                     duration={2}
                     size={60}
                   >
-                    <div>
+                    <div className="relative">
                       <TextInput
                         id="email"
                         type="email"
