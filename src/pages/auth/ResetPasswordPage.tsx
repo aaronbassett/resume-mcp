@@ -264,6 +264,7 @@ export const ResetPasswordPage: FC = () => {
                 <div className="relative">
                   <BorderBottomBeam 
                     play={passwordFocused}
+                    className="rounded-md"
                     colorFrom="#6366f1"
                     colorTo="#ec4899"
                     duration={2}
@@ -279,7 +280,7 @@ export const ResetPasswordPage: FC = () => {
                         onBlur={() => setPasswordFocused(false)}
                         disabled={isLoading}
                         autoComplete="new-password"
-                        placeholder=" "
+                        placeholder="New Password"
                         theme={{
                           field: {
                             input: {
@@ -301,13 +302,6 @@ export const ResetPasswordPage: FC = () => {
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     </div>
-                    <FloatingLabel
-                      htmlFor="password"
-                      value="New Password (min. 6 characters)"
-                      variant="standard"
-                      sizing="md"
-                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                    />
                   </BorderBottomBeam>
                 </div>
 
@@ -315,6 +309,7 @@ export const ResetPasswordPage: FC = () => {
                 <div className="relative">
                   <BorderBottomBeam 
                     play={confirmPasswordFocused}
+                    className="rounded-md"
                     colorFrom="#6366f1"
                     colorTo="#ec4899"
                     duration={2}
@@ -330,7 +325,7 @@ export const ResetPasswordPage: FC = () => {
                         onBlur={() => setConfirmPasswordFocused(false)}
                         disabled={isLoading}
                         autoComplete="new-password"
-                        placeholder=" "
+                        placeholder="Confirm New Password"
                         theme={{
                           field: {
                             input: {
@@ -352,13 +347,6 @@ export const ResetPasswordPage: FC = () => {
                         {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     </div>
-                    <FloatingLabel
-                      htmlFor="confirmPassword"
-                      value="Confirm New Password"
-                      variant="standard"
-                      sizing="md"
-                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                    />
                   </BorderBottomBeam>
                 </div>
               </div>
