@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { shuffle } from 'radash';
 import { getCSSLinearGradient } from '../../utils/gradientGenerator';
 import type { LinearGradientOptions } from '../../utils/gradientGenerator';
 
@@ -29,6 +30,9 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
   auroraTextClassName = '',
   auroraGradientOptions = {},
 }) => {
+  // Shuffle the texts once when component mounts
+  const shuffledTexts = useMemo(() => shuffle(auroraTexts), []);
+  
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
@@ -45,9 +49,9 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
 
   // Generate gradient style for current text
   const gradientStyle = useMemo(() => {
-    if (auroraTexts.length === 0) return {};
+    if (shuffledTexts.length === 0) return {};
     
-    const currentText = auroraTexts[currentIndex] || '';
+    const currentText = shuffledTexts[currentIndex] || '';
     const gradient = getCSSLinearGradient(currentText, gradientOptions);
 
     return {
@@ -57,19 +61,19 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     };
-  }, [auroraTexts, currentIndex, gradientOptions]);
+  }, [shuffledTexts, currentIndex, gradientOptions]);
 
   // Initialize visibility
   useEffect(() => {
-    if (auroraTexts.length > 0) {
+    if (shuffledTexts.length > 0) {
       const timer = setTimeout(() => setIsVisible(true), 100);
       return () => clearTimeout(timer);
     }
-  }, [auroraTexts.length]);
+  }, [shuffledTexts.length]);
 
   // Set up cycling interval
   useEffect(() => {
-    if (auroraTexts.length <= 1) return;
+    if (shuffledTexts.length <= 1) return;
 
     const cycle = () => {
       // Fade out
@@ -77,7 +81,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
       
       // After fade out, switch text and fade in
       setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % auroraTexts.length);
+        setCurrentIndex(prev => (prev + 1) % shuffledTexts.length);
         
         // Fade in new text
         setTimeout(() => setIsVisible(true), 50);
@@ -92,7 +96,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [auroraTexts.length, pauseDuration, fadeDuration]);
+  }, [shuffledTexts.length, pauseDuration, fadeDuration]);
 
   // Clean up on unmount
   useEffect(() => {
@@ -103,7 +107,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
     };
   }, []);
 
-  const currentText = auroraTexts[currentIndex] || '';
+  const currentText = shuffledTexts[currentIndex] || '';
 
   return (
     <div className={className} style={{ minHeight: '320px', paddingBottom: '2rem' }}>
