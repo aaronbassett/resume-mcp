@@ -180,6 +180,12 @@ export const ForgotPasswordPage: FC = () => {
                 <p className="text-white/70">AI-Powered Professional Profiles</p>
               </div>
             </Link>
+
+            <div class="text-5xl font-extrabold ...">
+  <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+    Hello world
+  </span>
+</div>
             
             <div className="space-y-4">
               <h2 className="text-5xl font-bold leading-tight">
