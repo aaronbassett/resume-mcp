@@ -64,7 +64,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
     }
   }, [auroraTexts, generateGradient]);
 
-  // Set up cycling interval
+  // Set up cycling interval - removed currentIndex from dependencies
   useEffect(() => {
     if (auroraTexts.length <= 1) return;
 
@@ -74,11 +74,12 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
       
       // After fade out, switch text and fade in
       setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % auroraTexts.length);
-        
-        // Generate new gradient for new text
-        const newText = auroraTexts[(currentIndex + 1) % auroraTexts.length];
-        generateGradient(newText);
+        setCurrentIndex(prev => {
+          const nextIndex = (prev + 1) % auroraTexts.length;
+          // Generate new gradient for new text
+          generateGradient(auroraTexts[nextIndex]);
+          return nextIndex;
+        });
         
         // Fade in new text
         setTimeout(() => setIsVisible(true), 50);
@@ -93,7 +94,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [auroraTexts, currentIndex, pauseDuration, fadeDuration, generateGradient]);
+  }, [auroraTexts, pauseDuration, fadeDuration, generateGradient]); // Removed currentIndex
 
   // Clean up on unmount
   useEffect(() => {
