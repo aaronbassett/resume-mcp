@@ -4,6 +4,7 @@ import { ArrowRight, Zap, Brain, Shield, BarChart3, Globe, Users } from 'lucide-
 import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
+import { SwitchRevealHeading } from '../components/ui/SwitchRevealHeading';
 import { useAuthStore } from '../store/auth';
 
 const features = [
@@ -37,6 +38,16 @@ const features = [
     title: 'Dynamic Targeting',
     description: 'Create different resume views for different opportunities from the same blocks.',
   },
+];
+
+const auroraTexts = [
+  'an AI Career Coach',
+  'Your Virtual Talent Agent',
+  'a Smart Career Ally',
+  'a Smart Negotiator',
+  'Your Personal Career Agent',
+  'Your Digital Representative',
+  'Your AI Advocate',
 ];
 
 export const LandingPage: FC = () => {
@@ -87,12 +98,13 @@ export const LandingPage: FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-                Your Resume Becomes an{' '}
-                <span className="gradient-primary bg-clip-text text-transparent">
-                  Intelligent Agent
-                </span>
-              </h1>
+              <SwitchRevealHeading
+                headingText="Turn Your Resume into"
+                auroraTexts={auroraTexts}
+                className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl"
+                pauseDuration={4000}
+                coverDuration={0.6}
+              />
               <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto">
                 Create dynamic, AI-powered professional profiles that LLMs can actually understand and interact with. 
                 Instead of static PDFs, build modular resumes that negotiate on your behalf.
