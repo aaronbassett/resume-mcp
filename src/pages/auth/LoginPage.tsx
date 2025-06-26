@@ -116,12 +116,6 @@ export const LoginPage: FC = () => {
                 </motion.div>
               )}
 
-              <div className="space-y-6">
-                <div className="grid grid-flow-col justify-stretch space-x-4">
-      <FloatingLabel variant="filled" label="Label" />
-      <FloatingLabel variant="outlined" label="Label" />
-      <FloatingLabel variant="standard" label="Label" />
-    </div>
                 {/* Email Input */}
                 <div className="relative">
                   <BorderBottomBeam 
@@ -131,7 +125,6 @@ export const LoginPage: FC = () => {
                     duration={2}
                     size={60}
                   >
-                    <div className="relative">
                       <TextInput
                         id="email"
                         type="email"
@@ -158,14 +151,6 @@ export const LoginPage: FC = () => {
                           }
                         }}
                       />
-                      
-                      <FloatingLabel
-                        htmlFor="email"
-                        value="Email Address"
-                        variant="standard"
-                        sizing="md"
-                      />
-                    </div>
                   </BorderBottomBeam>
                 </div>
 
@@ -210,13 +195,6 @@ export const LoginPage: FC = () => {
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     </div>
-                    <FloatingLabel
-                      htmlFor="password"
-                      value="Password"
-                      variant="standard"
-                      sizing="md"
-                      className="absolute text-base text-white/60 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                    />
                   </BorderBottomBeam>
                 </div>
               </div>
