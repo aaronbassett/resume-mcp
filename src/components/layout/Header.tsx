@@ -66,7 +66,7 @@ export const Header: FC = () => {
                 duration={750}
                 toggled={theme === 'dark'}
                 onToggle={toggleTheme}
-                className="text-foreground hover:text-primary transition-colors text-lg"
+                className="text-foreground hover:text-primary transition-colors text-4xl"
               />
             </div>
 
