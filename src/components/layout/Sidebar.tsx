@@ -70,10 +70,9 @@ export const Sidebar: FC = () => {
               whileTap={{ scale: 0.98 }}
               onMouseEnter={() => setIsNewResumeHovered(true)}
               onMouseLeave={() => setIsNewResumeHovered(false)}
-              className="w-full rounded-lg p-3 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all animate-fluid-accent relative overflow-hidden"
+              className="w-full rounded-lg p-3 text-white font-medium shadow-lg hover:shadow-xl transition-all animate-fluid-accent"
             >
-              <div className="absolute inset-0 opacity-100 animate-fluid-bg" />
-              <div className="relative z-10 flex items-center justify-center space-x-2">
+              <div className="flex items-center justify-center space-x-2">
                 <Plus className="h-4 w-4" />
                 <SparklesText enabled={isNewResumeHovered} sparkleColor="#ffffff">
                   <span>New Resume</span>

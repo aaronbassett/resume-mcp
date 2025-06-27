@@ -355,7 +355,3 @@ body {
 .animate-fluid-accent {
   animation: fluid-accent 8s ease-in-out infinite;
 }
-
-.animate-fluid-bg {
-  background: inherit;
-}
