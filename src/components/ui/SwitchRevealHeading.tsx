@@ -117,7 +117,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
         transition={{ duration: 0.8 }}
         style={{ lineHeight: '1.1' }}
       >
-        <div className="pb-4 outline-offset-0 outline-2 outline-solid outline-red-500 bg-cyan-400">
+        <span>
           {headingText}{' '}
           <AnimatePresence mode="wait">
             <motion.span
@@ -136,7 +136,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
               {currentText}
             </motion.span>
           </AnimatePresence>
-        </div>
+        </span>
       </motion.div>
     </div>
   );
