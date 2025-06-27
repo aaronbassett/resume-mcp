@@ -1,0 +1,297 @@
+import type { FC } from 'react';
+import { useParams } from 'react-router-dom';
+import { ResumeHeader } from '../components/resume/ResumeHeader';
+import { ResumeContent } from '../components/resume/ResumeContent';
+import { ResumeFooter } from '../components/resume/ResumeFooter';
+import type { ResumeData } from '../types/resume';
+
+// Mock resume data
+const mockResumeData: ResumeData = {
+  "basics": {
+    "name": "John Doe",
+    "label": "Senior Full Stack Developer",
+    "image": "",
+    "email": "john@gmail.com",
+    "phone": "(912) 555-4321",
+    "url": "https://johndoe.com",
+    "summary": "Passionate full-stack developer with 8+ years of experience building scalable web applications and leading development teams. Expertise in modern JavaScript frameworks, cloud architecture, and agile methodologies. Proven track record of delivering high-quality software solutions that drive business growth and enhance user experience.",
+    "location": {
+      "address": "2712 Broadway St",
+      "postalCode": "CA 94115",
+      "city": "San Francisco",
+      "countryCode": "US",
+      "region": "California"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "johndoe",
+        "url": "https://linkedin.com/in/johndoe"
+      },
+      {
+        "network": "GitHub",
+        "username": "johndoe",
+        "url": "https://github.com/johndoe"
+      },
+      {
+        "network": "Twitter",
+        "username": "john",
+        "url": "https://twitter.com/john"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "TechCorp Inc.",
+      "position": "Senior Full Stack Developer",
+      "url": "https://techcorp.com",
+      "startDate": "2020-03-01",
+      "endDate": "",
+      "summary": "Lead development of enterprise-scale web applications serving 100k+ users. Architect and implement microservices infrastructure using Node.js, React, and AWS cloud services.",
+      "highlights": [
+        "Led a team of 5 developers in building a customer portal that increased user engagement by 40%",
+        "Implemented CI/CD pipelines reducing deployment time from 2 hours to 15 minutes",
+        "Optimized database queries resulting in 60% improvement in application performance",
+        "Mentored junior developers and established coding standards across the engineering team"
+      ]
+    },
+    {
+      "name": "StartupXYZ",
+      "position": "Full Stack Developer",
+      "url": "https://startupxyz.com",
+      "startDate": "2018-01-01",
+      "endDate": "2020-02-28",
+      "summary": "Developed and maintained multiple web applications in a fast-paced startup environment. Worked directly with product managers and designers to deliver user-centric solutions.",
+      "highlights": [
+        "Built the company's main product from MVP to production serving 10k+ daily active users",
+        "Implemented real-time features using WebSocket technology improving user experience",
+        "Reduced application load time by 50% through code optimization and caching strategies",
+        "Collaborated with cross-functional teams to deliver features on tight deadlines"
+      ]
+    },
+    {
+      "name": "Digital Agency Pro",
+      "position": "Frontend Developer",
+      "url": "https://digitalagencypro.com",
+      "startDate": "2016-06-01",
+      "endDate": "2017-12-31",
+      "summary": "Specialized in creating responsive, interactive websites for diverse clients ranging from small businesses to Fortune 500 companies.",
+      "highlights": [
+        "Delivered 25+ client projects with 100% on-time completion rate",
+        "Implemented modern frontend frameworks resulting in improved user engagement",
+        "Collaborated with design team to ensure pixel-perfect implementation of mockups",
+        "Established frontend development best practices and component libraries"
+      ]
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Code for Good",
+      "position": "Volunteer Developer",
+      "url": "https://codeforgood.org/",
+      "startDate": "2019-01-01",
+      "endDate": "2021-12-31",
+      "summary": "Contributed to open-source projects that benefit non-profit organizations and social causes.",
+      "highlights": [
+        "Developed a volunteer management system used by 15+ local non-profits",
+        "Awarded 'Volunteer of the Year' for outstanding contribution to community projects"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of California, Berkeley",
+      "url": "https://berkeley.edu/",
+      "area": "Computer Science",
+      "studyType": "Bachelor of Science",
+      "startDate": "2012-09-01",
+      "endDate": "2016-05-31",
+      "score": "3.8",
+      "courses": [
+        "Data Structures and Algorithms",
+        "Database Systems",
+        "Software Engineering",
+        "Computer Networks",
+        "Machine Learning Fundamentals"
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": "Employee of the Year",
+      "date": "2022-12-01",
+      "awarder": "TechCorp Inc.",
+      "summary": "Recognized for exceptional performance and leadership in delivering critical projects ahead of schedule."
+    },
+    {
+      "title": "Best Innovation Award",
+      "date": "2019-11-01",
+      "awarder": "StartupXYZ",
+      "summary": "Awarded for developing an innovative feature that increased user retention by 35%."
+    }
+  ],
+  "certificates": [
+    {
+      "name": "AWS Certified Solutions Architect",
+      "date": "2021-11-07",
+      "issuer": "Amazon Web Services",
+      "url": "https://aws.amazon.com/certification/"
+    },
+    {
+      "name": "Google Cloud Professional Developer",
+      "date": "2020-08-15",
+      "issuer": "Google Cloud",
+      "url": "https://cloud.google.com/certification"
+    }
+  ],
+  "publications": [
+    {
+      "name": "Modern Web Development Best Practices",
+      "publisher": "Tech Weekly",
+      "releaseDate": "2021-10-01",
+      "url": "https://techweekly.com/modern-web-dev",
+      "summary": "Comprehensive guide covering modern frontend and backend development practices for scalable applications."
+    }
+  ],
+  "skills": [
+    {
+      "name": "Frontend Development",
+      "level": "Expert",
+      "keywords": [
+        "React",
+        "Vue.js",
+        "TypeScript",
+        "JavaScript",
+        "HTML5",
+        "CSS3",
+        "Sass",
+        "Tailwind CSS"
+      ]
+    },
+    {
+      "name": "Backend Development",
+      "level": "Expert",
+      "keywords": [
+        "Node.js",
+        "Express.js",
+        "Python",
+        "Django",
+        "PostgreSQL",
+        "MongoDB",
+        "Redis",
+        "GraphQL"
+      ]
+    },
+    {
+      "name": "Cloud & DevOps",
+      "level": "Advanced",
+      "keywords": [
+        "AWS",
+        "Google Cloud",
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "Terraform",
+        "Jenkins",
+        "Git"
+      ]
+    },
+    {
+      "name": "Mobile Development",
+      "level": "Intermediate",
+      "keywords": [
+        "React Native",
+        "Flutter",
+        "iOS",
+        "Android"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "fluency": "Native speaker"
+    },
+    {
+      "language": "Spanish",
+      "fluency": "Professional working proficiency"
+    },
+    {
+      "language": "French",
+      "fluency": "Elementary proficiency"
+    }
+  ],
+  "interests": [
+    {
+      "name": "Technology",
+      "keywords": [
+        "Open Source",
+        "AI/ML",
+        "Blockchain",
+        "IoT"
+      ]
+    },
+    {
+      "name": "Outdoor Activities",
+      "keywords": [
+        "Hiking",
+        "Rock Climbing",
+        "Photography",
+        "Travel"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "name": "Jane Smith",
+      "reference": "John is an exceptional developer with strong technical skills and excellent leadership qualities. He consistently delivers high-quality work and is a valuable team player."
+    }
+  ],
+  "projects": [
+    {
+      "name": "E-commerce Platform",
+      "startDate": "2021-01-01",
+      "endDate": "2021-06-30",
+      "description": "Built a full-featured e-commerce platform with React frontend, Node.js backend, and PostgreSQL database. Implemented features including user authentication, payment processing, inventory management, and order tracking.",
+      "highlights": [
+        "Processed over $1M in transactions within first 6 months",
+        "Achieved 99.9% uptime with robust error handling and monitoring",
+        "Won 'Best Technical Innovation' award at company hackathon"
+      ],
+      "url": "https://github.com/johndoe/ecommerce-platform"
+    },
+    {
+      "name": "Real-time Chat Application",
+      "startDate": "2020-03-01",
+      "endDate": "2020-05-31",
+      "description": "Developed a real-time chat application using React, Socket.io, and MongoDB. Features include private messaging, group chats, file sharing, and emoji reactions.",
+      "highlights": [
+        "Supports 1000+ concurrent users with optimized WebSocket connections",
+        "Implemented end-to-end encryption for secure messaging",
+        "Featured in 'Top 10 Open Source Projects' by Developer Weekly"
+      ],
+      "url": "https://github.com/johndoe/realtime-chat"
+    }
+  ]
+};
+
+export const ResumePreviewPage: FC = () => {
+  const { userId, resumeSlug } = useParams<{ userId: string; resumeSlug: string }>();
+
+  // In a real implementation, you would fetch the resume data based on userId and resumeSlug
+  // For now, we'll use the mock data
+  const username = userId || 'johndoe';
+  const slug = resumeSlug || 'senior-full-stack-developer';
+
+  return (
+    <div className="min-h-screen bg-background">
+      <ResumeHeader username={username} resumeSlug={slug} />
+      
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ResumeContent data={mockResumeData} />
+      </main>
+      
+      <ResumeFooter />
+    </div>
+  );
+};

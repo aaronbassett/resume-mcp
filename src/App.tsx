@@ -12,6 +12,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ResumesPage } from './pages/ResumesPage';
 import { BlocksPage } from './pages/BlocksPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
+import { ResumePreviewPage } from './pages/ResumePreviewPage';
 import { useAuthStore } from './store/auth';
 import { customTheme } from './flowbite-theme';
 
@@ -74,7 +75,9 @@ function App() {
             <Route path="/auth/signup" element={<AuthRoute><SignupPage /></AuthRoute>} />
             <Route path="/auth/forgot-password" element={<AuthRoute><ForgotPasswordPage /></AuthRoute>} />
             <Route path="/auth/reset-password" element={<AuthRoute><ResetPasswordPage /></AuthRoute>} />
-            <Route path="/u/:username/:resumeId" element={<PlaceholderPage title="Public Resume View" />} />
+            
+            {/* Public Resume Preview */}
+            <Route path="/r/:userId/:resumeSlug" element={<ResumePreviewPage />} />
 
             {/* Protected Routes */}
             <Route path="/" element={<AppShell />}>
