@@ -2,8 +2,8 @@ import type { FC } from 'react';
 import { useState } from 'react';
 import { Bell, Search, LogOut, Settings, User, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Horizon } from '@theme-toggles/react';
-import '@theme-toggles/react/css/Horizon.css';
+import { Classic } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Classic.css';
 import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
 import { Dropdown, DropdownItem, DropdownSeparator } from '../ui/Dropdown';
@@ -62,7 +62,7 @@ export const Header: FC = () => {
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center justify-center h-9 w-9">
-              <Horizon
+              <Classic
                 duration={750}
                 toggled={theme === 'dark'}
                 onToggle={toggleTheme}
