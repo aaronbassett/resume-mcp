@@ -7,14 +7,14 @@ import {
   Plus, 
   Star, 
   Search, 
-  Moon, 
-  Sun, 
   Bell, 
   Settings, 
   User, 
   LogOut 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Horizon } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Horizon.css';
 import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
 import { navSections } from './Sidebar';
@@ -50,6 +50,10 @@ export const MobileDrawer: FC<MobileDrawerProps> = ({ open, onOpenChange }) => {
   const handleCommandPalette = () => {
     setCommandOpen(true);
     onOpenChange(false);
+  };
+
+  const handleThemeToggle = () => {
+    toggleTheme();
   };
 
   // Prevent body scroll when drawer is open
@@ -139,20 +143,17 @@ export const MobileDrawer: FC<MobileDrawerProps> = ({ open, onOpenChange }) => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={toggleTheme}
+                      onClick={handleThemeToggle}
                       className="flex flex-col items-center p-3 h-auto"
                     >
-                      {theme === 'light' ? (
-                        <>
-                          <Moon className="h-4 w-4 mb-1" />
-                          <span className="text-xs">Dark</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sun className="h-4 w-4 mb-1" />
-                          <span className="text-xs">Light</span>
-                        </>
-                      )}
+                      <div className="mb-1">
+                        <Horizon
+                          duration={750}
+                          toggled={theme === 'dark'}
+                          className="text-foreground"
+                        />
+                      </div>
+                      <span className="text-xs">Theme</span>
                     </Button>
                     <Button
                       variant="ghost"

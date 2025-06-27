@@ -8,8 +8,6 @@ import {
   BarChart3, 
   Settings, 
   Plus, 
-  Moon, 
-  Sun, 
   User, 
   LogOut,
   Home,
@@ -25,6 +23,8 @@ import {
   Laptop
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Horizon } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Horizon.css';
 import { useThemeStore } from '../../store/theme';
 import { useAuthStore } from '../../store/auth';
 
@@ -259,7 +259,9 @@ export const CommandPalette: FC<CommandPaletteProps> = ({ open, onOpenChange }) 
                   })}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-accent aria-selected:text-accent-foreground cursor-pointer mb-1"
                 >
-                  <Sun className="h-4 w-4" />
+                  <div className="h-4 w-4 flex items-center justify-center">
+                    <Horizon duration={750} toggled={false} className="text-foreground" />
+                  </div>
                   <span>Light Theme</span>
                   {theme === 'light' && <span className="ml-auto text-xs text-muted-foreground">Current</span>}
                 </Command.Item>
@@ -270,7 +272,9 @@ export const CommandPalette: FC<CommandPaletteProps> = ({ open, onOpenChange }) 
                   })}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-accent aria-selected:text-accent-foreground cursor-pointer mb-1"
                 >
-                  <Moon className="h-4 w-4" />
+                  <div className="h-4 w-4 flex items-center justify-center">
+                    <Horizon duration={750} toggled={true} className="text-foreground" />
+                  </div>
                   <span>Dark Theme</span>
                   {theme === 'dark' && <span className="ml-auto text-xs text-muted-foreground">Current</span>}
                 </Command.Item>

@@ -1,7 +1,9 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { Bell, Search, Moon, Sun, LogOut, Settings, User, Menu } from 'lucide-react';
+import { Bell, Search, LogOut, Settings, User, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Horizon } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Horizon.css';
 import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
 import { Dropdown, DropdownItem, DropdownSeparator } from '../ui/Dropdown';
@@ -59,18 +61,14 @@ export const Header: FC = () => {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              className="h-9 w-9 p-0"
-            >
-              {theme === 'light' ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
+            <div className="flex items-center justify-center h-9 w-9">
+              <Horizon
+                duration={750}
+                toggled={theme === 'dark'}
+                onToggle={toggleTheme}
+                className="text-foreground hover:text-primary transition-colors"
+              />
+            </div>
 
             <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
               <Bell className="h-4 w-4" />
