@@ -12,6 +12,8 @@ const resumes = [
   {
     id: '1',
     title: 'Full Stack Developer',
+    slug: 'full-stack-developer',
+    username: 'johndoe',
     description: 'Comprehensive resume showcasing full-stack development skills',
     views: 234,
     apiCalls: 45,
@@ -22,6 +24,8 @@ const resumes = [
   {
     id: '2',
     title: 'Frontend Specialist',
+    slug: 'frontend-specialist',
+    username: 'johndoe',
     description: 'Frontend-focused resume highlighting React and TypeScript expertise',
     views: 156,
     apiCalls: 23,
@@ -32,6 +36,8 @@ const resumes = [
   {
     id: '3',
     title: 'Senior React Engineer',
+    slug: 'senior-react-engineer',
+    username: 'johndoe',
     description: 'Senior-level resume emphasizing React ecosystem leadership',
     views: 89,
     apiCalls: 12,
@@ -42,6 +48,8 @@ const resumes = [
   {
     id: '4',
     title: 'DevOps Engineer',
+    slug: 'devops-engineer',
+    username: 'johndoe',
     description: 'Infrastructure and DevOps focused professional profile',
     views: 67,
     apiCalls: 8,
@@ -133,7 +141,7 @@ export const ResumesPage: FC = () => {
                     </span>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Duplicate Resume">
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>
@@ -158,19 +166,25 @@ export const ResumesPage: FC = () => {
 
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center space-x-2">
+                    <Link to={`/r/${resume.username}/${resume.slug}`}>
+                      <Button variant="ghost" size="sm" title="View Resume">
+                        <Eye className="mr-2 h-4 w-4" />
+                        View
+                      </Button>
+                    </Link>
                     <Link to={`/resumes/${resume.id}`}>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" title="Edit Resume">
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Button>
                     </Link>
                     <Link to={`/resumes/${resume.id}/analytics`}>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" title="View Analytics">
                         <BarChart3 className="h-4 w-4" />
                       </Button>
                     </Link>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" title="Delete Resume">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

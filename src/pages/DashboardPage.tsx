@@ -18,6 +18,8 @@ const recentResumes = [
   {
     id: '1',
     title: 'Full Stack Developer',
+    slug: 'full-stack-developer',
+    username: 'johndoe',
     views: 234,
     lastModified: '2 hours ago',
     status: 'active',
@@ -25,6 +27,8 @@ const recentResumes = [
   {
     id: '2',
     title: 'Frontend Specialist',
+    slug: 'frontend-specialist',
+    username: 'johndoe',
     views: 156,
     lastModified: '1 day ago',
     status: 'active',
@@ -32,6 +36,8 @@ const recentResumes = [
   {
     id: '3',
     title: 'Senior React Engineer',
+    slug: 'senior-react-engineer',
+    username: 'johndoe',
     views: 89,
     lastModified: '3 days ago',
     status: 'draft',
@@ -127,13 +133,18 @@ export const DashboardPage: FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
+                    <Link to={`/r/${resume.username}/${resume.slug}`}>
+                      <Button variant="ghost" size="sm" title="View Resume">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                     <Link to={`/resumes/${resume.id}`}>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" title="Edit Resume">
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>
                     <Link to={`/resumes/${resume.id}/analytics`}>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" title="View Analytics">
                         <BarChart3 className="h-4 w-4" />
                       </Button>
                     </Link>
