@@ -70,7 +70,7 @@ export const Header: FC = () => {
               <Classic
                 duration={750}
                 toggled={theme === 'dark'}
-                className="text-yellow-400 dark:text-purple-800"
+                className="text-xl text-yellow-400 dark:text-purple-800"
               />
             </Button>
 
