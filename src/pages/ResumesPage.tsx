@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Button } from '../components/ui/Button';
 import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../components/ui/BorderBottomBeam';
+import { SparklesText } from '../components/ui/SparklesText';
 
 const resumes = [
   {
@@ -53,6 +54,9 @@ const resumes = [
 export const ResumesPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [isNewResumeHovered, setIsNewResumeHovered] = useState(false);
+  const [isCreateFirstResumeHovered, setIsCreateFirstResumeHovered] = useState(false);
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -63,9 +67,15 @@ export const ResumesPage: FC = () => {
         ]}
         actions={
           <Link to="/resumes/new">
-            <Button>
+            <Button
+              variant="fluid-accent"
+              onMouseEnter={() => setIsNewResumeHovered(true)}
+              onMouseLeave={() => setIsNewResumeHovered(false)}
+            >
               <Plus className="mr-2 h-4 w-4" />
-              New Resume
+              <SparklesText enabled={isNewResumeHovered} sparkleColor="#ffffff">
+                New Resume
+              </SparklesText>
             </Button>
           </Link>
         }
@@ -182,9 +192,15 @@ export const ResumesPage: FC = () => {
               Get started by creating your first AI-powered resume. You can use blocks to build modular, reusable content.
             </p>
             <Link to="/resumes/new">
-              <Button>
+              <Button
+                variant="fluid-accent"
+                onMouseEnter={() => setIsCreateFirstResumeHovered(true)}
+                onMouseLeave={() => setIsCreateFirstResumeHovered(false)}
+              >
                 <Plus className="mr-2 h-4 w-4" />
-                Create Your First Resume
+                <SparklesText enabled={isCreateFirstResumeHovered} sparkleColor="#ffffff">
+                  Create Your First Resume
+                </SparklesText>
               </Button>
             </Link>
           </CardContent>

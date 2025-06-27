@@ -1,10 +1,12 @@
 import type { FC } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Brain, Shield, BarChart3, Globe, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { SwitchRevealHeading } from '../components/ui/SwitchRevealHeading';
+import { SparklesText } from '../components/ui/SparklesText';
 import { useAuthStore } from '../store/auth';
 
 const features = [
@@ -52,6 +54,8 @@ const auroraTexts = [
 
 export const LandingPage: FC = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [isDashboardHovered, setIsDashboardHovered] = useState(false);
+  const [isGetStartedHovered, setIsGetStartedHovered] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,7 +76,15 @@ export const LandingPage: FC = () => {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button>Dashboard</Button>
+                  <Button 
+                    variant="fluid-secondary"
+                    onMouseEnter={() => setIsDashboardHovered(true)}
+                    onMouseLeave={() => setIsDashboardHovered(false)}
+                  >
+                    <SparklesText enabled={isDashboardHovered} sparkleColor="#ffffff">
+                      Dashboard
+                    </SparklesText>
+                  </Button>
                 </Link>
               ) : (
                 <>
@@ -112,14 +124,31 @@ export const LandingPage: FC = () => {
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 {isAuthenticated ? (
                   <Link to="/dashboard">
-                    <Button size="lg" className="text-lg px-8">
-                      Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+                    <Button 
+                      size="lg" 
+                      variant="fluid-secondary"
+                      className="text-lg px-8"
+                      onMouseEnter={() => setIsDashboardHovered(true)}
+                      onMouseLeave={() => setIsDashboardHovered(false)}
+                    >
+                      <SparklesText enabled={isDashboardHovered} sparkleColor="#ffffff">
+                        Go to Dashboard
+                      </SparklesText>
+                      <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                 ) : (
                   <Link to="/auth/signup">
-                    <Button size="lg" className="text-lg px-8">
-                      Start Building <ArrowRight className="ml-2 h-5 w-5" />
+                    <Button 
+                      size="lg" 
+                      className="text-lg px-8"
+                      onMouseEnter={() => setIsGetStartedHovered(true)}
+                      onMouseLeave={() => setIsGetStartedHovered(false)}
+                    >
+                      <SparklesText enabled={isGetStartedHovered} sparkleColor="#ffffff">
+                        Start Building
+                      </SparklesText>
+                      <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                 )}
@@ -184,14 +213,32 @@ export const LandingPage: FC = () => {
             <div className="mt-10">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button size="lg" variant="secondary" className="text-lg px-8">
-                    Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+                  <Button 
+                    size="lg" 
+                    variant="secondary" 
+                    className="text-lg px-8"
+                    onMouseEnter={() => setIsDashboardHovered(true)}
+                    onMouseLeave={() => setIsDashboardHovered(false)}
+                  >
+                    <SparklesText enabled={isDashboardHovered} sparkleColor="#6366f1">
+                      Go to Dashboard
+                    </SparklesText>
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
               ) : (
                 <Link to="/auth/signup">
-                  <Button size="lg" variant="secondary" className="text-lg px-8">
-                    Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+                  <Button 
+                    size="lg" 
+                    variant="secondary" 
+                    className="text-lg px-8"
+                    onMouseEnter={() => setIsGetStartedHovered(true)}
+                    onMouseLeave={() => setIsGetStartedHovered(false)}
+                  >
+                    <SparklesText enabled={isGetStartedHovered} sparkleColor="#6366f1">
+                      Get Started Free
+                    </SparklesText>
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
               )}

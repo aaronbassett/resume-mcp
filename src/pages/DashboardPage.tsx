@@ -1,9 +1,11 @@
 import type { FC } from 'react';
+import { useState } from 'react';
 import { Plus, Eye, Edit, BarChart3, Users, Zap, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { SparklesText } from '../components/ui/SparklesText';
 
 const stats = [
   { name: 'Total Views', value: '2,847', change: '+12%', trend: 'up' },
@@ -44,6 +46,8 @@ const recentActivity = [
 ];
 
 export const DashboardPage: FC = () => {
+  const [isNewResumeHovered, setIsNewResumeHovered] = useState(false);
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -51,9 +55,15 @@ export const DashboardPage: FC = () => {
         description="Welcome back! Here's an overview of your Resume MCP activity."
         actions={
           <Link to="/resumes/new">
-            <Button>
+            <Button
+              variant="fluid-accent"
+              onMouseEnter={() => setIsNewResumeHovered(true)}
+              onMouseLeave={() => setIsNewResumeHovered(false)}
+            >
               <Plus className="mr-2 h-4 w-4" />
-              New Resume
+              <SparklesText enabled={isNewResumeHovered} sparkleColor="#ffffff">
+                New Resume
+              </SparklesText>
             </Button>
           </Link>
         }

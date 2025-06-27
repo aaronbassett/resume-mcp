@@ -259,6 +259,49 @@ body {
   }
 }
 
+/* Fluid gradient animations */
+@keyframes fluid-primary {
+  0% {
+    background: linear-gradient(45deg, #6366f1, #8b5cf6, #06b6d4, #6366f1);
+    background-size: 400% 400%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fluid-secondary {
+  0% {
+    background: linear-gradient(45deg, #ec4899, #ef4444, #f59e0b, #ec4899);
+    background-size: 400% 400%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fluid-accent {
+  0% {
+    background: linear-gradient(45deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+    background-size: 400% 400%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Animation keyframes */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -299,4 +342,20 @@ body {
 
 .animate-slide-in {
   animation: slide-in 0.2s ease-out;
+}
+
+.animate-fluid-primary {
+  animation: fluid-primary 8s ease-in-out infinite;
+}
+
+.animate-fluid-secondary {
+  animation: fluid-secondary 8s ease-in-out infinite;
+}
+
+.animate-fluid-accent {
+  animation: fluid-accent 8s ease-in-out infinite;
+}
+
+.animate-fluid-bg {
+  background: inherit;
 }

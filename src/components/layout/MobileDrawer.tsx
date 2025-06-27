@@ -17,6 +17,7 @@ import { Horizon } from '@theme-toggles/react';
 import '@theme-toggles/react/css/Horizon.css';
 import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
+import { SparklesText } from '../ui/SparklesText';
 import { navSections } from './Sidebar';
 import { useThemeStore } from '../../store/theme';
 import { useAuthStore } from '../../store/auth';
@@ -31,6 +32,7 @@ export const MobileDrawer: FC<MobileDrawerProps> = ({ open, onOpenChange }) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [commandOpen, setCommandOpen] = useState(false);
+  const [isNewResumeHovered, setIsNewResumeHovered] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -182,11 +184,16 @@ export const MobileDrawer: FC<MobileDrawerProps> = ({ open, onOpenChange }) => {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="gradient-primary w-full rounded-lg p-4 text-primary-foreground font-medium shadow-lg"
+                      onMouseEnter={() => setIsNewResumeHovered(true)}
+                      onMouseLeave={() => setIsNewResumeHovered(false)}
+                      className="w-full rounded-lg p-4 text-primary-foreground font-medium shadow-lg animate-fluid-accent relative overflow-hidden"
                     >
-                      <div className="flex items-center justify-center space-x-2">
+                      <div className="absolute inset-0 opacity-100 animate-fluid-bg" />
+                      <div className="relative z-10 flex items-center justify-center space-x-2">
                         <Plus className="h-5 w-5" />
-                        <span>New Resume</span>
+                        <SparklesText enabled={isNewResumeHovered} sparkleColor="#ffffff">
+                          <span>New Resume</span>
+                        </SparklesText>
                       </div>
                     </motion.button>
                   </NavLink>

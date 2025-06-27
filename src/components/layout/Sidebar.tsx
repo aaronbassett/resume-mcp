@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -10,6 +11,7 @@ import {
   Star
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { SparklesText } from '../ui/SparklesText';
 
 interface NavItem {
   label: string;
@@ -42,6 +44,7 @@ const navSections: NavSection[] = [
 
 export const Sidebar: FC = () => {
   const location = useLocation();
+  const [isNewResumeHovered, setIsNewResumeHovered] = useState(false);
 
   return (
     <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-64 lg:bg-sidebar lg:border-r">
@@ -65,11 +68,16 @@ export const Sidebar: FC = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="gradient-primary w-full rounded-lg p-3 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all"
+              onMouseEnter={() => setIsNewResumeHovered(true)}
+              onMouseLeave={() => setIsNewResumeHovered(false)}
+              className="w-full rounded-lg p-3 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all animate-fluid-accent relative overflow-hidden"
             >
-              <div className="flex items-center justify-center space-x-2">
+              <div className="absolute inset-0 opacity-100 animate-fluid-bg" />
+              <div className="relative z-10 flex items-center justify-center space-x-2">
                 <Plus className="h-4 w-4" />
-                <span>New Resume</span>
+                <SparklesText enabled={isNewResumeHovered} sparkleColor="#ffffff">
+                  <span>New Resume</span>
+                </SparklesText>
               </div>
             </motion.button>
           </NavLink>
