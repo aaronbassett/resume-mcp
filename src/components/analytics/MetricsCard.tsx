@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { DivideIcon as LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 interface MetricsCardProps {
