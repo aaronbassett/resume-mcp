@@ -126,7 +126,7 @@ export const SwitchRevealHeading: FC<SwitchRevealHeadingProps> = ({
               animate={{ opacity: isVisible ? 1 : 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: fadeDuration }}
-              className={`relative inline-block animate-aurora ${auroraTextClassName}`}
+              className={`pb-2 relative inline-block animate-aurora ${auroraTextClassName}`}
               style={{
                 ...gradientStyle,
                 display: 'inline-block',
