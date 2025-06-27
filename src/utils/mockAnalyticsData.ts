@@ -1,4 +1,4 @@
-import type { MCPToolCall, AnalyticsMetrics, Resume } from '../types/analytics';
+import type { MCPToolCall, AnalyticsMetrics, Resume, SelfReportedJourney, JourneyEvent, OutcomeMetrics } from '../types/analytics';
 
 // Mock resumes data
 export const mockResumes: Resume[] = [
@@ -48,6 +48,19 @@ const mockLocations = [
   { country: 'Australia', city: 'Sydney' },
   { country: 'Netherlands', city: 'Amsterdam' },
   { country: 'Singapore', city: 'Singapore' },
+];
+
+// Mock companies for self-reported data
+const mockCompanies = [
+  'TechCorp', 'StartupXYZ', 'MegaTech Inc', 'InnovateLabs', 'DataDriven Co',
+  'CloudFirst', 'AI Solutions', 'DevTools Inc', 'ScaleUp', 'NextGen Tech',
+  'FinTech Pro', 'HealthTech', 'EduTech', 'GreenTech', 'CyberSec Corp'
+];
+
+const mockPositions = [
+  'Senior Software Engineer', 'Full Stack Developer', 'Frontend Engineer',
+  'Backend Developer', 'DevOps Engineer', 'Data Scientist', 'Product Manager',
+  'Engineering Manager', 'Principal Engineer', 'Staff Engineer', 'Tech Lead'
 ];
 
 // Generate mock tool calls
@@ -139,8 +152,151 @@ const generateBlockIds = (): string[] => {
   return blocks;
 };
 
+// Generate mock self-reported journeys
+const generateMockSelfReportedJourneys = (): SelfReportedJourney[] => {
+  const journeys: SelfReportedJourney[] = [];
+  
+  mockResumes.forEach(resume => {
+    const events: JourneyEvent[] = [];
+    const numApplications = Math.floor(Math.random() * 8) + 3; // 3-10 applications per resume
+    
+    for (let i = 0; i < numApplications; i++) {
+      const company = mockCompanies[Math.floor(Math.random() * mockCompanies.length)];
+      const position = mockPositions[Math.floor(Math.random() * mockPositions.length)];
+      const applicationDate = new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000); // Last 6 months
+      
+      // Initial outreach
+      events.push({
+        type: 'initial_outreach',
+        id: `outreach_${i}_${resume.id}`,
+        resumeId: resume.id,
+        date: applicationDate,
+        companyName: company,
+        positionTitle: position,
+        notes: Math.random() > 0.7 ? 'Applied through company website' : undefined
+      });
+      
+      // Determine if this application progresses
+      const progressProbability = Math.random();
+      
+      if (progressProbability > 0.4) { // 60% get some response
+        // Follow-up call
+        const callDate = new Date(applicationDate.getTime() + Math.random() * 14 * 24 * 60 * 60 * 1000);
+        const callOutcome = Math.random() > 0.3 ? 'moved_forward' : (Math.random() > 0.5 ? 'rejected' : 'ghosted');
+        
+        events.push({
+          type: 'follow_up_call',
+          id: `call_${i}_${resume.id}`,
+          resumeId: resume.id,
+          date: callDate,
+          duration: Math.floor(Math.random() * 45) + 15, // 15-60 minutes
+          callType: Math.random() > 0.5 ? 'recruiter_screen' : 'technical_screen',
+          outcome: callOutcome as any,
+          notes: Math.random() > 0.8 ? 'Great conversation about the role' : undefined
+        });
+        
+        if (callOutcome === 'moved_forward' && Math.random() > 0.3) { // 70% of those who move forward get interviews
+          // Interview rounds
+          const numRounds = Math.floor(Math.random() * 4) + 1; // 1-4 rounds
+          let lastInterviewDate = callDate;
+          let stillProgressing = true;
+          
+          for (let round = 0; round < numRounds && stillProgressing; round++) {
+            const interviewDate = new Date(lastInterviewDate.getTime() + Math.random() * 10 * 24 * 60 * 60 * 1000);
+            const interviewOutcome = round === numRounds - 1 ? 
+              (Math.random() > 0.4 ? 'moved_forward' : 'rejected') : 
+              (Math.random() > 0.2 ? 'moved_forward' : 'rejected');
+            
+            events.push({
+              type: 'interview_round',
+              id: `interview_${i}_${round}_${resume.id}`,
+              resumeId: resume.id,
+              date: interviewDate,
+              location: ['phone', 'video', 'onsite', 'hybrid'][Math.floor(Math.random() * 4)] as any,
+              interviewerCount: Math.floor(Math.random() * 4) + 1,
+              interviewType: ['technical', 'behavioral', 'system_design', 'coding', 'cultural_fit'][Math.floor(Math.random() * 5)] as any,
+              difficultyRating: Math.floor(Math.random() * 10) + 1,
+              outcome: interviewOutcome as any,
+              feedbackReceived: Math.random() > 0.6 ? 'Positive feedback on technical skills' : undefined,
+              notes: Math.random() > 0.7 ? 'Challenging but fair questions' : undefined
+            });
+            
+            lastInterviewDate = interviewDate;
+            stillProgressing = interviewOutcome === 'moved_forward';
+          }
+          
+          // Final outcome
+          if (stillProgressing && Math.random() > 0.5) { // 50% of final rounds get offers
+            const offerDate = new Date(lastInterviewDate.getTime() + Math.random() * 7 * 24 * 60 * 60 * 1000);
+            const baseSalary = Math.floor(Math.random() * 100000) + 80000; // $80k-$180k
+            const hasSigningBonus = Math.random() > 0.6;
+            const hasEquity = Math.random() > 0.4;
+            
+            events.push({
+              type: 'offer',
+              id: `offer_${i}_${resume.id}`,
+              resumeId: resume.id,
+              date: offerDate,
+              baseSalary,
+              signingBonus: hasSigningBonus ? Math.floor(Math.random() * 30000) + 5000 : undefined,
+              equity: hasEquity ? {
+                type: Math.random() > 0.5 ? 'rsu' : 'options',
+                amount: Math.floor(Math.random() * 50000) + 10000,
+                vestingSchedule: '4 years, 25% per year'
+              } : undefined,
+              otherPerksValue: Math.floor(Math.random() * 10000) + 2000,
+              totalCompCalculation: baseSalary + (hasSigningBonus ? Math.floor(Math.random() * 30000) + 5000 : 0) + Math.floor(Math.random() * 10000) + 2000,
+              negotiationNotes: Math.random() > 0.7 ? 'Negotiated salary up by $10k' : undefined,
+              initialOffer: baseSalary - (Math.random() > 0.5 ? Math.floor(Math.random() * 15000) : 0),
+              finalOffer: baseSalary,
+              status: Math.random() > 0.3 ? 'accepted' : (Math.random() > 0.5 ? 'declined' : 'pending'),
+              declineReason: Math.random() > 0.8 ? 'Better offer elsewhere' : undefined
+            });
+          } else {
+            // Rejection
+            const rejectionDate = new Date(lastInterviewDate.getTime() + Math.random() * 5 * 24 * 60 * 60 * 1000);
+            const stages = ['initial_screening', 'phone_screen', 'technical_interview', 'onsite', 'final_round'];
+            
+            events.push({
+              type: 'rejection',
+              id: `rejection_${i}_${resume.id}`,
+              resumeId: resume.id,
+              date: rejectionDate,
+              stage: stages[Math.min(Math.floor(Math.random() * stages.length), stages.length - 1)] as any,
+              reasonGiven: Math.random() > 0.5 ? 'Decided to go with another candidate' : undefined,
+              realReason: Math.random() > 0.7 ? 'Probably overqualified' : undefined,
+              notes: Math.random() > 0.8 ? 'They seemed interested but went silent' : undefined
+            });
+          }
+        } else if (callOutcome === 'rejected') {
+          // Early rejection
+          const rejectionDate = new Date(callDate.getTime() + Math.random() * 3 * 24 * 60 * 60 * 1000);
+          
+          events.push({
+            type: 'rejection',
+            id: `rejection_${i}_${resume.id}`,
+            resumeId: resume.id,
+            date: rejectionDate,
+            stage: 'phone_screen',
+            reasonGiven: Math.random() > 0.5 ? 'Not a good fit for the role' : undefined,
+            realReason: Math.random() > 0.7 ? 'Salary expectations too high' : undefined
+          });
+        }
+      }
+    }
+    
+    journeys.push({
+      resumeId: resume.id,
+      events: events.sort((a, b) => a.date.getTime() - b.date.getTime())
+    });
+  });
+  
+  return journeys;
+};
+
 // Generate mock data
 export const mockToolCalls = generateMockToolCalls(5000, 90);
+export const mockSelfReportedJourneys = generateMockSelfReportedJourneys();
 
 // Calculate analytics metrics from mock data
 export const calculateAnalyticsMetrics = (
@@ -296,4 +452,72 @@ export const calculateAnalyticsMetrics = (
   };
 };
 
+// Calculate outcome metrics from self-reported data
+export const calculateOutcomeMetrics = (journeys: SelfReportedJourney[]): OutcomeMetrics => {
+  const allEvents = journeys.flatMap(journey => journey.events);
+  
+  const applications = allEvents.filter(event => event.type === 'initial_outreach');
+  const interviews = allEvents.filter(event => event.type === 'interview_round');
+  const offers = allEvents.filter(event => event.type === 'offer');
+  const rejections = allEvents.filter(event => event.type === 'rejection');
+  
+  // Calculate average times
+  const calculateAverageTime = (startEvents: JourneyEvent[], endEvents: JourneyEvent[], resumeId?: string) => {
+    const times: number[] = [];
+    
+    startEvents.forEach(startEvent => {
+      const matchingEndEvents = endEvents.filter(endEvent => 
+        endEvent.resumeId === startEvent.resumeId && 
+        endEvent.date.getTime() > startEvent.date.getTime()
+      );
+      
+      if (matchingEndEvents.length > 0) {
+        const earliestEnd = matchingEndEvents.reduce((earliest, current) => 
+          current.date.getTime() < earliest.date.getTime() ? current : earliest
+        );
+        
+        const timeDiff = (earliestEnd.date.getTime() - startEvent.date.getTime()) / (1000 * 60 * 60 * 24);
+        times.push(timeDiff);
+      }
+    });
+    
+    return times.length > 0 ? times.reduce((sum, time) => sum + time, 0) / times.length : 0;
+  };
+  
+  const averageTimeToInterview = calculateAverageTime(applications, interviews);
+  const averageTimeToOffer = calculateAverageTime(applications, offers);
+  
+  // Calculate conversion rates
+  const applicationToInterview = applications.length > 0 ? (interviews.length / applications.length) * 100 : 0;
+  const interviewToOffer = interviews.length > 0 ? (offers.length / interviews.length) * 100 : 0;
+  const applicationToOffer = applications.length > 0 ? (offers.length / applications.length) * 100 : 0;
+  
+  // Calculate average offer amount
+  const offerAmounts = offers.map(offer => (offer as any).totalCompCalculation).filter(amount => amount > 0);
+  const averageOfferAmount = offerAmounts.length > 0 ? 
+    offerAmounts.reduce((sum, amount) => sum + amount, 0) / offerAmounts.length : 0;
+  
+  // Calculate average difficulty rating
+  const difficultyRatings = interviews.map(interview => (interview as any).difficultyRating).filter(rating => rating > 0);
+  const averageDifficultyRating = difficultyRatings.length > 0 ?
+    difficultyRatings.reduce((sum, rating) => sum + rating, 0) / difficultyRatings.length : 0;
+  
+  return {
+    totalApplications: applications.length,
+    totalInterviews: interviews.length,
+    totalOffers: offers.length,
+    totalRejections: rejections.length,
+    averageTimeToOffer: Math.round(averageTimeToOffer),
+    averageTimeToInterview: Math.round(averageTimeToInterview),
+    conversionRates: {
+      applicationToInterview: Math.round(applicationToInterview),
+      interviewToOffer: Math.round(interviewToOffer),
+      applicationToOffer: Math.round(applicationToOffer)
+    },
+    averageOfferAmount: Math.round(averageOfferAmount),
+    averageDifficultyRating: Math.round(averageDifficultyRating * 10) / 10
+  };
+};
+
 export const mockAnalyticsMetrics = calculateAnalyticsMetrics(mockToolCalls);
+export const mockOutcomeMetrics = calculateOutcomeMetrics(mockSelfReportedJourneys);
