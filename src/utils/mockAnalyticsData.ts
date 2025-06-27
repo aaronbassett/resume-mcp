@@ -8,19 +8,41 @@ export const mockResumes: Resume[] = [
   { id: '4', title: 'DevOps Engineer', mcpServerKey: 'mcp_key_devops_004' },
 ];
 
-// Mock tools that can be called
-const mockTools = [
-  'get_resume_summary',
-  'get_experience_blocks',
-  'get_skills_blocks',
-  'get_education_blocks',
-  'get_project_blocks',
-  'get_contact_info',
-  'search_blocks',
-  'get_full_resume',
-  'get_block_by_id',
-  'get_resume_metadata'
-];
+// Mock tools that can be called - organized by categories
+const mockToolCategories = {
+  'Profile': [
+    'get_resume_summary',
+    'get_contact_info',
+    'get_resume_metadata'
+  ],
+  'Experience': [
+    'get_experience_blocks',
+    'get_work_history',
+    'get_achievements'
+  ],
+  'Skills': [
+    'get_skills_blocks',
+    'get_technical_skills',
+    'get_certifications'
+  ],
+  'Education': [
+    'get_education_blocks',
+    'get_degrees',
+    'get_courses'
+  ],
+  'Projects': [
+    'get_project_blocks',
+    'get_portfolio',
+    'get_github_repos'
+  ],
+  'Search': [
+    'search_blocks',
+    'get_block_by_id',
+    'get_full_resume'
+  ]
+};
+
+const mockTools = Object.values(mockToolCategories).flat();
 
 // Mock LLMs
 const mockLLMs = [
@@ -36,18 +58,18 @@ const mockLLMs = [
 
 // Mock countries and cities
 const mockLocations = [
-  { country: 'United States', city: 'San Francisco' },
-  { country: 'United States', city: 'New York' },
-  { country: 'United States', city: 'Seattle' },
-  { country: 'Canada', city: 'Toronto' },
-  { country: 'Canada', city: 'Vancouver' },
-  { country: 'United Kingdom', city: 'London' },
-  { country: 'Germany', city: 'Berlin' },
-  { country: 'France', city: 'Paris' },
-  { country: 'Japan', city: 'Tokyo' },
-  { country: 'Australia', city: 'Sydney' },
-  { country: 'Netherlands', city: 'Amsterdam' },
-  { country: 'Singapore', city: 'Singapore' },
+  { country: 'United States', city: 'San Francisco', code: 'USA' },
+  { country: 'United States', city: 'New York', code: 'USA' },
+  { country: 'United States', city: 'Seattle', code: 'USA' },
+  { country: 'Canada', city: 'Toronto', code: 'CAN' },
+  { country: 'Canada', city: 'Vancouver', code: 'CAN' },
+  { country: 'United Kingdom', city: 'London', code: 'GBR' },
+  { country: 'Germany', city: 'Berlin', code: 'DEU' },
+  { country: 'France', city: 'Paris', code: 'FRA' },
+  { country: 'Japan', city: 'Tokyo', code: 'JPN' },
+  { country: 'Australia', city: 'Sydney', code: 'AUS' },
+  { country: 'Netherlands', city: 'Amsterdam', code: 'NLD' },
+  { country: 'Singapore', city: 'Singapore', code: 'SGP' },
 ];
 
 // Mock companies for self-reported data
@@ -517,6 +539,132 @@ export const calculateOutcomeMetrics = (journeys: SelfReportedJourney[]): Outcom
     averageOfferAmount: Math.round(averageOfferAmount),
     averageDifficultyRating: Math.round(averageDifficultyRating * 10) / 10
   };
+};
+
+// Helper functions for chart data transformation
+export const getToolCallsByResumeData = (toolCalls: MCPToolCall[]) => {
+  return mockResumes.map(resume => ({
+    resumeId: resume.id,
+    count: toolCalls.filter(call => call.resumeId === resume.id).length
+  }));
+};
+
+export const getRequestVolumeData = (toolCalls: MCPToolCall[]) => {
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toISOString().split('T')[0];
+  }).reverse();
+
+  return last7Days.map(date => {
+    const daysCalls = toolCalls.filter(call => 
+      call.timestamp.toISOString().split('T')[0] === date
+    );
+
+    const toolBreakdown = mockTools.reduce((acc, tool) => {
+      acc[tool] = daysCalls.filter(call => call.toolCalled === tool).length;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      ...toolBreakdown
+    };
+  });
+};
+
+export const getToolCategoriesData = (toolCalls: MCPToolCall[]) => {
+  const categoryCounts = Object.entries(mockToolCategories).map(([category, tools]) => {
+    const count = toolCalls.filter(call => tools.includes(call.toolCalled)).length;
+    
+    const children = tools.map(tool => ({
+      name: tool,
+      value: toolCalls.filter(call => call.toolCalled === tool).length
+    })).filter(child => child.value > 0);
+
+    return {
+      name: category,
+      value: count,
+      children: children.length > 0 ? children : undefined
+    };
+  }).filter(category => category.value > 0);
+
+  return {
+    name: 'MCP Tools',
+    children: categoryCounts
+  };
+};
+
+export const getBlockPerformanceData = (toolCalls: MCPToolCall[]) => {
+  const blockTypes = ['Experience', 'Skills', 'Education', 'Projects', 'Profile'];
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toISOString().split('T')[0];
+  }).reverse();
+
+  return last7Days.map(date => {
+    const daysCalls = toolCalls.filter(call => 
+      call.timestamp.toISOString().split('T')[0] === date
+    );
+
+    const blockBreakdown = blockTypes.reduce((acc, blockType) => {
+      // Mock block type assignment based on tool called
+      const relevantCalls = daysCalls.filter(call => {
+        if (blockType === 'Experience') return call.toolCalled.includes('experience') || call.toolCalled.includes('work');
+        if (blockType === 'Skills') return call.toolCalled.includes('skill') || call.toolCalled.includes('technical');
+        if (blockType === 'Education') return call.toolCalled.includes('education') || call.toolCalled.includes('degree');
+        if (blockType === 'Projects') return call.toolCalled.includes('project') || call.toolCalled.includes('portfolio');
+        if (blockType === 'Profile') return call.toolCalled.includes('summary') || call.toolCalled.includes('contact');
+        return false;
+      });
+      acc[blockType] = relevantCalls.length;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      ...blockBreakdown
+    };
+  });
+};
+
+export const getSecurityInsightsData = (toolCalls: MCPToolCall[]) => {
+  const flagTypes = ['Rate Limit', 'Suspicious Agent', 'Coordinated Attack', 'Malformed Request'];
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toISOString().split('T')[0];
+  }).reverse();
+
+  return last7Days.map(date => {
+    const daysCalls = toolCalls.filter(call => 
+      call.timestamp.toISOString().split('T')[0] === date && call.isSpam
+    );
+
+    const flagBreakdown = flagTypes.reduce((acc, flagType) => {
+      // Mock flag assignment
+      acc[flagType] = Math.floor(daysCalls.length * Math.random() * 0.3);
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      ...flagBreakdown
+    };
+  });
+};
+
+export const getGeographicBarData = (toolCalls: MCPToolCall[]) => {
+  const countryCounts = toolCalls.reduce((acc, call) => {
+    acc[call.clientCountry] = (acc[call.clientCountry] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return Object.entries(countryCounts)
+    .map(([country, count]) => ({ country, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 };
 
 export const mockAnalyticsMetrics = calculateAnalyticsMetrics(mockToolCalls);

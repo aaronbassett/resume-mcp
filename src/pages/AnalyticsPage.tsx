@@ -13,7 +13,9 @@ import {
   Download,
   RefreshCw,
   Target,
-  TrendingUp
+  TrendingUp,
+  Calendar,
+  Globe
 } from 'lucide-react';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Button } from '../components/ui/Button';
@@ -21,19 +23,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { MetricsCard } from '../components/analytics/MetricsCard';
 import { TimeRangeSelector } from '../components/analytics/TimeRangeSelector';
 import { ResumeSelector } from '../components/analytics/ResumeSelector';
-import { RequestsChart } from '../components/analytics/RequestsChart';
-import { TopItemsList } from '../components/analytics/TopItemsList';
-import { LLMBreakdownChart } from '../components/analytics/LLMBreakdownChart';
 import { SecurityInsights } from '../components/analytics/SecurityInsights';
-import { GeographicMap } from '../components/analytics/GeographicMap';
 import { SelfReportedJourneyTracker } from '../components/analytics/SelfReportedJourneyTracker';
+import { ApplicationFunnelSankey } from '../components/analytics/ApplicationFunnelSankey';
+import { ParallelCoordinatesChart } from '../components/analytics/ParallelCoordinatesChart';
+import { CalendarChart } from '../components/analytics/CalendarChart';
+import { StackedBarChart } from '../components/analytics/StackedBarChart';
+import { PieChart } from '../components/analytics/PieChart';
+import { SunburstChart } from '../components/analytics/SunburstChart';
+import { ChoroplethMap } from '../components/analytics/ChoroplethMap';
 import { 
   mockAnalyticsMetrics, 
   mockResumes, 
   calculateAnalyticsMetrics, 
   mockToolCalls,
   mockSelfReportedJourneys,
-  mockOutcomeMetrics
+  mockOutcomeMetrics,
+  getToolCallsByResumeData,
+  getRequestVolumeData,
+  getToolCategoriesData,
+  getBlockPerformanceData,
+  getSecurityInsightsData,
+  getGeographicBarData
 } from '../utils/mockAnalyticsData';
 import type { AnalyticsFilters } from '../types/analytics';
 
@@ -98,6 +109,27 @@ export const AnalyticsPage: FC = () => {
     // In a real app, this would export the data
     console.log('Exporting analytics data...');
   };
+
+  // Prepare chart data
+  const toolCallsByResume = getToolCallsByResumeData(mockToolCalls);
+  const requestVolumeData = getRequestVolumeData(mockToolCalls);
+  const toolCategoriesData = getToolCategoriesData(mockToolCalls);
+  const blockPerformanceData = getBlockPerformanceData(mockToolCalls);
+  const securityInsightsData = getSecurityInsightsData(mockToolCalls);
+  const geographicBarData = getGeographicBarData(mockToolCalls);
+
+  // Transform LLM data for pie chart
+  const llmPieData = filteredMetrics.llmBreakdown.map(item => ({
+    id: item.llm,
+    label: item.llm,
+    value: item.count
+  }));
+
+  // Transform geographic data for choropleth
+  const choroplethData = filteredMetrics.geographicData.map(item => ({
+    id: item.country.substring(0, 3).toUpperCase(),
+    value: item.count
+  }));
 
   return (
     <div className="space-y-8">
@@ -193,7 +225,7 @@ export const AnalyticsPage: FC = () => {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <MetricsCard
               title="Total Requests"
-              value={filteredMetrics.totalRequests.toLocaleString()}
+              value={filteredMetrics.totalRequests}
               change="+12% from last period"
               changeType="positive"
               trend="up"
@@ -202,7 +234,7 @@ export const AnalyticsPage: FC = () => {
             />
             <MetricsCard
               title="Unique Consumers"
-              value={filteredMetrics.uniqueConsumers.toLocaleString()}
+              value={filteredMetrics.uniqueConsumers}
               change="+8% from last period"
               changeType="positive"
               trend="up"
@@ -229,49 +261,82 @@ export const AnalyticsPage: FC = () => {
             />
           </div>
 
-          {/* Charts Row */}
+          {/* Calendar Chart */}
+          <CalendarChart
+            data={filteredMetrics.requestsByDay}
+            title="Tool Calls Calendar"
+            description="Daily tool call activity over the past year"
+          />
+
+          {/* Request Volume and LLM Breakdown */}
           <div className="grid gap-6 lg:grid-cols-2">
-            <RequestsChart
-              data={filteredMetrics.requestsByDay}
+            <StackedBarChart
+              data={requestVolumeData}
+              keys={['get_resume_summary', 'get_experience_blocks', 'get_skills_blocks', 'search_blocks', 'get_full_resume']}
+              indexBy="date"
               title="Request Volume"
-              description="Daily API calls and unique consumers over time"
+              description="Daily tool calls stacked by tool type"
+              axisBottomLegend="Date"
+              axisLeftLegend="Number of Calls"
             />
-            <LLMBreakdownChart data={filteredMetrics.llmBreakdown} />
+            <PieChart
+              data={llmPieData}
+              title="LLM Breakdown"
+              description="Requests by detected language model"
+            />
           </div>
 
-          {/* Top Lists Row */}
+          {/* Tool Categories and Block Performance */}
           <div className="grid gap-6 lg:grid-cols-2">
-            <TopItemsList
+            <SunburstChart
+              data={toolCategoriesData}
               title="Most Called Tools"
-              description="Popular MCP endpoints"
-              icon={<Code className="h-5 w-5" />}
-              items={filteredMetrics.topTools.map(tool => ({
-                name: tool.tool,
-                count: tool.count,
-                percentage: tool.percentage,
-                subtitle: `API endpoint: ${tool.tool}`
-              }))}
+              description="Tool usage grouped by categories"
             />
-            <TopItemsList
+            <StackedBarChart
+              data={blockPerformanceData}
+              keys={['Experience', 'Skills', 'Education', 'Projects', 'Profile']}
+              indexBy="date"
               title="Top Performing Blocks"
-              description="Most accessed resume content"
-              icon={<Blocks className="h-5 w-5" />}
-              items={filteredMetrics.topBlocks.map(block => ({
-                name: block.blockName,
-                count: block.count,
-                percentage: block.percentage,
-                subtitle: `Block ID: ${block.blockId}`
-              }))}
+              description="Block views stacked by block type"
+              axisBottomLegend="Date"
+              axisLeftLegend="Block Views"
             />
           </div>
 
-          {/* Security and Geographic Row */}
+          {/* Geographic Distribution */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ChoroplethMap
+              data={choroplethData}
+              title="Geographic Distribution"
+              description="Request distribution by country"
+            />
+            <StackedBarChart
+              data={geographicBarData.map(item => ({ country: item.country, count: item.count }))}
+              keys={['count']}
+              indexBy="country"
+              title="Requests by Country"
+              description="Tool calls per country"
+              axisBottomLegend="Country"
+              axisLeftLegend="Number of Calls"
+            />
+          </div>
+
+          {/* Security Insights */}
           <div className="grid gap-6 lg:grid-cols-2">
             <SecurityInsights
               spamRequestsBlocked={filteredMetrics.spamRequestsBlocked}
               suspiciousPatterns={filteredMetrics.suspiciousPatterns}
             />
-            <GeographicMap data={filteredMetrics.geographicData} />
+            <StackedBarChart
+              data={securityInsightsData}
+              keys={['Rate Limit', 'Suspicious Agent', 'Coordinated Attack', 'Malformed Request']}
+              indexBy="date"
+              title="Security Insights"
+              description="Flagged requests stacked by flag type"
+              axisBottomLegend="Date"
+              axisLeftLegend="Flagged Requests"
+            />
           </div>
 
           {/* Real-time Activity */}
@@ -378,6 +443,16 @@ export const AnalyticsPage: FC = () => {
               />
             </CardContent>
           </Card>
+
+          {/* Application Funnel and Parallel Coordinates */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ApplicationFunnelSankey outcomeMetrics={mockOutcomeMetrics} />
+            <ParallelCoordinatesChart
+              journeys={mockSelfReportedJourneys}
+              resumes={mockResumes}
+              toolCallsData={toolCallsByResume}
+            />
+          </div>
 
           {/* Combined Insights */}
           <Card>
