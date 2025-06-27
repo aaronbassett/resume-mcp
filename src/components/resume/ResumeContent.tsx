@@ -13,7 +13,15 @@ import {
   Heart,
   Users,
   FileText,
-  Star
+  Star,
+  Github,
+  Linkedin,
+  Twitter,
+  Instagram,
+  Facebook,
+  Youtube,
+  Figma,
+  Gitlab
 } from 'lucide-react';
 import { Timeline } from 'flowbite-react';
 import { Avatar } from '../ui/Avatar';
@@ -36,6 +44,37 @@ export const ResumeContent: FC<ResumeContentProps> = ({ data }) => {
     const start = formatDate(startDate);
     const end = endDate ? formatDate(endDate) : 'Present';
     return `${start} - ${end}`;
+  };
+
+  const getSocialIcon = (network: string) => {
+    const networkLower = network.toLowerCase();
+    
+    switch (networkLower) {
+      case 'github':
+        return Github;
+      case 'linkedin':
+        return Linkedin;
+      case 'twitter':
+        return Twitter;
+      case 'instagram':
+        return Instagram;
+      case 'facebook':
+        return Facebook;
+      case 'youtube':
+        return Youtube;
+      case 'figma':
+        return Figma;
+      case 'gitlab':
+        return Gitlab;
+      case 'codepen':
+        return Code; // Using Code icon as Lucide doesn't have CodePen
+      case 'slack':
+        return Users; // Using Users icon as Lucide doesn't have Slack
+      case 'twitch':
+        return Users; // Using Users icon as Lucide doesn't have Twitch
+      default:
+        return ExternalLink;
+    }
   };
 
   return (
@@ -82,18 +121,23 @@ export const ResumeContent: FC<ResumeContentProps> = ({ data }) => {
 
             {data.basics.profiles && data.basics.profiles.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-3">
-                {data.basics.profiles.map((profile, index) => (
-                  <a
-                    key={index}
-                    href={profile.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 bg-white/20 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-colors"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    <span>{profile.network}</span>
-                  </a>
-                ))}
+                {data.basics.profiles.map((profile, index) => {
+                  const IconComponent = getSocialIcon(profile.network);
+                  
+                  return (
+                    <a
+                      key={index}
+                      href={profile.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-full text-sm hover:bg-white/30 transition-colors"
+                      title={`${profile.network}: ${profile.username}`}
+                    >
+                      <IconComponent className="h-4 w-4" />
+                      <span>{profile.network}</span>
+                    </a>
+                  );
+                })}
               </div>
             )}
           </div>
