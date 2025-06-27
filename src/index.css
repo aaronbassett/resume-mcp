@@ -342,17 +342,17 @@ body {
 .animate-fluid-primary {
   background: linear-gradient(45deg, #6366f1, #8b5cf6, #06b6d4, #6366f1);
   background-size: 400% 400%;
-  animation: fluid-primary 8s ease-in-out infinite;
+  animation: fluid-primary 30s ease-in-out infinite;
 }
 
 .animate-fluid-secondary {
   background: linear-gradient(45deg, #ec4899, #ef4444, #f59e0b, #ec4899);
   background-size: 400% 400%;
-  animation: fluid-secondary 8s ease-in-out infinite;
+  animation: fluid-secondary 30s ease-in-out infinite;
 }
 
 .animate-fluid-accent {
   background: linear-gradient(45deg, #10b981, #06b6d4, #8b5cf6, #10b981);
   background-size: 400% 400%;
-  animation: fluid-accent 8s ease-in-out infinite;
+  animation: fluid-accent 30s ease-in-out infinite;
 }
