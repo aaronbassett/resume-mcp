@@ -75,7 +75,7 @@ export const Header: FC = () => {
             </Button>
 
             <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
-              <Bell className="h-4 w-4" />
+              <Bell className="h-8 w-8" />
               <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive text-xs"></span>
             </Button>
 
