@@ -2,8 +2,8 @@ import type { FC } from 'react';
 import { useState } from 'react';
 import { Bell, Search, LogOut, Settings, User, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Horizon } from '@theme-toggles/react';
-import '@theme-toggles/react/css/Horizon.css';
+import { Classic } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Classic.css';
 import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
 import { Dropdown, DropdownItem, DropdownSeparator } from '../ui/Dropdown';
@@ -67,10 +67,10 @@ export const Header: FC = () => {
               onClick={toggleTheme}
               className="h-9 w-9 p-0"
             >
-              <Horizon
+              <Classic
                 duration={750}
                 toggled={theme === 'dark'}
-                className="text-foreground"
+                className="text-yellow-400 dark:text-purple-800"
               />
             </Button>
 
