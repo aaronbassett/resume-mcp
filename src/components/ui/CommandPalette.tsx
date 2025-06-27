@@ -142,7 +142,7 @@ export const CommandPalette: FC<CommandPaletteProps> = ({ open, onOpenChange }) 
               value={search}
               onValueChange={setSearch}
               placeholder="Type a command or search..."
-              className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 border-none"
             />
             <div className="ml-auto flex items-center space-x-1">
               <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
