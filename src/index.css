@@ -259,11 +259,9 @@ body {
   }
 }
 
-/* Fluid gradient animations */
+/* Fluid gradient animations - Fixed to only animate background-position */
 @keyframes fluid-primary {
   0% {
-    background: linear-gradient(45deg, #6366f1, #8b5cf6, #06b6d4, #6366f1);
-    background-size: 400% 400%;
     background-position: 0% 50%;
   }
   50% {
@@ -276,8 +274,6 @@ body {
 
 @keyframes fluid-secondary {
   0% {
-    background: linear-gradient(45deg, #ec4899, #ef4444, #f59e0b, #ec4899);
-    background-size: 400% 400%;
     background-position: 0% 50%;
   }
   50% {
@@ -290,8 +286,6 @@ body {
 
 @keyframes fluid-accent {
   0% {
-    background: linear-gradient(45deg, #10b981, #06b6d4, #8b5cf6, #10b981);
-    background-size: 400% 400%;
     background-position: 0% 50%;
   }
   50% {
@@ -344,14 +338,21 @@ body {
   animation: slide-in 0.2s ease-out;
 }
 
+/* Fluid gradient classes with static background and animated position */
 .animate-fluid-primary {
+  background: linear-gradient(45deg, #6366f1, #8b5cf6, #06b6d4, #6366f1);
+  background-size: 400% 400%;
   animation: fluid-primary 8s ease-in-out infinite;
 }
 
 .animate-fluid-secondary {
+  background: linear-gradient(45deg, #ec4899, #ef4444, #f59e0b, #ec4899);
+  background-size: 400% 400%;
   animation: fluid-secondary 8s ease-in-out infinite;
 }
 
 .animate-fluid-accent {
+  background: linear-gradient(45deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+  background-size: 400% 400%;
   animation: fluid-accent 8s ease-in-out infinite;
 }
