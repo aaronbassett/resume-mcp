@@ -68,7 +68,6 @@ export const Header: FC = () => {
                 onToggle={toggleTheme}
                 className="text-foreground hover:text-primary transition-colors text-xl text-yellow-300 dark:text-purple-600"
               />
-              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive text-xs"></span>
             </div>
 
             <Button variant="ghost" size="sm" className="h-9 w-9 p-0 relative">
