@@ -11,6 +11,7 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ResumesPage } from './pages/ResumesPage';
 import { BlocksPage } from './pages/BlocksPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
 import { useAuthStore } from './store/auth';
 import { customTheme } from './flowbite-theme';
 
@@ -93,7 +94,7 @@ function App() {
               <Route path="/blocks/:blockType/:blockId" element={isAuthenticated ? <PlaceholderPage title="Edit Block" /> : <Navigate to="/auth/login" />} />
               
               {/* Analytics */}
-              <Route path="/analytics" element={isAuthenticated ? <PlaceholderPage title="Analytics Dashboard" /> : <Navigate to="/auth/login" />} />
+              <Route path="/analytics" element={isAuthenticated ? <AnalyticsPage /> : <Navigate to="/auth/login" />} />
             </Route>
 
             {/* Catch all */}
