@@ -65,22 +65,22 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
   const getRandomDoodle = () => doodleElements[Math.floor(Math.random() * doodleElements.length)];
 
   return (
-    <div className="max-w-4xl mx-auto bg-white text-black relative overflow-hidden" style={{ fontFamily: 'Courier New, monospace' }}>
+    <div className="max-w-4xl mx-auto bg-white text-black relative overflow-hidden" style={{ fontFamily: 'Courier New, monospace', zIndex: 1 }}>
       {/* Background texture */}
       <div className="absolute inset-0 opacity-5" style={{
         backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 2px, #000 2px, #000 4px)`
       }}></div>
       
       {/* Header */}
-      <div className="relative bg-black text-white p-6 transform -rotate-1 mb-8">
+      <div className="relative bg-black text-white p-6 transform -rotate-1 mb-8" style={{ zIndex: 1 }}>
         <div className="transform rotate-1">
           <h1 
-            className="text-4xl md:text-6xl font-black mb-2 transform -skew-x-12"
-            style={{ fontFamily: 'Impact, Arial Black, sans-serif' }}
+            className="text-4xl md:text-6xl font-black mb-2 transform -skew-x-12 relative"
+            style={{ fontFamily: 'Impact, Arial Black, sans-serif', zIndex: 1 }}
           >
             {data.basics.name.toUpperCase()}
           </h1>
-          <div className="bg-yellow-400 text-black p-2 inline-block transform rotate-2 border-2 border-black">
+          <div className="bg-yellow-400 text-black p-2 inline-block transform rotate-2 border-2 border-black relative" style={{ zIndex: 1 }}>
             <p 
               className="text-lg font-bold"
               style={{ fontFamily: 'Comic Sans MS, cursive' }}
@@ -91,7 +91,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
         </div>
         
         {/* Scattered contact info */}
-        <div className="mt-6 relative">
+        <div className="mt-6 relative" style={{ zIndex: 1 }}>
           <div className="absolute top-0 left-0 bg-red-500 p-2 transform -rotate-12 border-2 border-white">
             <Mail className="h-4 w-4 inline mr-1" />
             <span className="text-xs font-bold">{data.basics.email}</span>
@@ -115,7 +115,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
         <div className="h-20"></div> {/* Spacer for absolute positioned elements */}
 
         {data.basics.profiles && data.basics.profiles.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2 relative" style={{ zIndex: 1 }}>
             {data.basics.profiles.map((profile, index) => {
               const IconComponent = getSocialIcon(profile.network);
               const colors = ['bg-pink-400', 'bg-cyan-400', 'bg-yellow-400', 'bg-lime-400'];
@@ -138,7 +138,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
         )}
       </div>
 
-      <div className="relative px-6 pb-8 space-y-8">
+      <div className="relative px-6 pb-8 space-y-8" style={{ zIndex: 1 }}>
         {/* Summary */}
         <section className="relative">
           <div className="bg-yellow-200 p-4 border-4 border-black transform rotate-1 relative">

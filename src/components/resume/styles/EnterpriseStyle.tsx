@@ -18,11 +18,11 @@ import {
 } from 'lucide-react';
 import type { ResumeData } from '../../../types/resume';
 
-interface MinimalistStyleProps {
+interface EnterpriseStyleProps {
   data: ResumeData;
 }
 
-export const MinimalistStyle: FC<MinimalistStyleProps> = ({ data }) => {
+export const EnterpriseStyle: FC<EnterpriseStyleProps> = ({ data }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 

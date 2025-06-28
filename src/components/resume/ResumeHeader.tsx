@@ -19,7 +19,7 @@ const styleLabels: Record<ResumeStyle, string> = {
   'neo-brutalist': 'Neo Brutalist',
   namaste: 'Namaste',
   zine: 'Zine',
-  minimalist: 'Minimalist'
+  enterprise: 'Enterprise'
 };
 
 export const ResumeHeader: FC<ResumeHeaderProps> = ({ 
@@ -62,7 +62,7 @@ export const ResumeHeader: FC<ResumeHeaderProps> = ({
   };
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}

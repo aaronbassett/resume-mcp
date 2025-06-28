@@ -68,17 +68,17 @@ export const NeoBrutalistStyle: FC<NeoBrutalistStyleProps> = ({ data }) => {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto bg-white" style={{ fontFamily: 'Arial Black, sans-serif' }}>
+    <div className="max-w-5xl mx-auto bg-white relative" style={{ fontFamily: 'Arial Black, sans-serif', zIndex: 1 }}>
       {/* Header */}
-      <div className="bg-black text-white p-8 border-8 border-black">
-        <h1 className="text-6xl font-black uppercase tracking-wider mb-4 transform -skew-x-6">
+      <div className="bg-black text-white p-8 border-8 border-black relative" style={{ zIndex: 1 }}>
+        <h1 className="text-6xl font-black uppercase tracking-wider mb-4 transform -skew-x-6 relative" style={{ zIndex: 1 }}>
           {data.basics.name}
         </h1>
-        <div className="bg-yellow-400 text-black p-4 border-4 border-black transform skew-x-3 inline-block">
+        <div className="bg-yellow-400 text-black p-4 border-4 border-black transform skew-x-3 inline-block relative" style={{ zIndex: 1 }}>
           <p className="text-2xl font-black uppercase">{data.basics.label}</p>
         </div>
         
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 relative" style={{ zIndex: 1 }}>
           <div className="bg-pink-400 p-3 border-4 border-black transform -rotate-1">
             <Mail className="h-6 w-6 mb-2" />
             <p className="font-black text-sm break-all">{data.basics.email}</p>
@@ -100,7 +100,7 @@ export const NeoBrutalistStyle: FC<NeoBrutalistStyleProps> = ({ data }) => {
         </div>
 
         {data.basics.profiles && data.basics.profiles.length > 0 && (
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3 relative" style={{ zIndex: 1 }}>
             {data.basics.profiles.map((profile, index) => {
               const IconComponent = getSocialIcon(profile.network);
               const colorClass = colors[index % colors.length];
@@ -123,7 +123,7 @@ export const NeoBrutalistStyle: FC<NeoBrutalistStyleProps> = ({ data }) => {
         )}
       </div>
 
-      <div className="p-8 space-y-12">
+      <div className="p-8 space-y-12 relative" style={{ zIndex: 1 }}>
         {/* Summary */}
         <section>
           <div className="bg-red-400 p-4 border-4 border-black transform -skew-x-3 inline-block mb-6">

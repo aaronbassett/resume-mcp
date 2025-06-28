@@ -120,4 +120,4 @@ export interface ResumeData {
 
 export type DownloadFormat = 'PDF' | 'DOCX' | 'JSON';
 
-export type ResumeStyle = 'standard' | 'traditional' | 'neo-brutalist' | 'namaste' | 'zine' | 'minimalist';
+export type ResumeStyle = 'standard' | 'traditional' | 'neo-brutalist' | 'namaste' | 'zine' | 'enterprise';

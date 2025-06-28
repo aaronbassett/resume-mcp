@@ -283,7 +283,7 @@ export const ResumePreviewPage: FC = () => {
   // Load saved style preference
   useEffect(() => {
     const savedStyle = localStorage.getItem('resumeStyle') as ResumeStyle;
-    if (savedStyle && ['standard', 'traditional', 'neo-brutalist', 'namaste', 'zine', 'minimalist'].includes(savedStyle)) {
+    if (savedStyle && ['standard', 'traditional', 'neo-brutalist', 'namaste', 'zine', 'enterprise'].includes(savedStyle)) {
       setCurrentStyle(savedStyle);
     }
   }, []);

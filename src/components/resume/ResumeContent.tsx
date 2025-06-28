@@ -5,7 +5,7 @@ import { TraditionalStyle } from './styles/TraditionalStyle';
 import { NeoBrutalistStyle } from './styles/NeoBrutalistStyle';
 import { NamasteStyle } from './styles/NamasteStyle';
 import { ZineStyle } from './styles/ZineStyle';
-import { MinimalistStyle } from './styles/MinimalistStyle';
+import { EnterpriseStyle } from './styles/EnterpriseStyle';
 
 interface ResumeContentProps {
   data: ResumeData;
@@ -22,8 +22,8 @@ export const ResumeContent: FC<ResumeContentProps> = ({ data, style }) => {
       return <NamasteStyle data={data} />;
     case 'zine':
       return <ZineStyle data={data} />;
-    case 'minimalist':
-      return <MinimalistStyle data={data} />;
+    case 'enterprise':
+      return <EnterpriseStyle data={data} />;
     case 'standard':
     default:
       return <StandardStyle data={data} />;
