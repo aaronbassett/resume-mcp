@@ -1,9 +1,10 @@
 import type { FC } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ResumeHeader } from '../components/resume/ResumeHeader';
 import { ResumeContent } from '../components/resume/ResumeContent';
 import { ResumeFooter } from '../components/resume/ResumeFooter';
-import type { ResumeData } from '../types/resume';
+import type { ResumeData, ResumeStyle } from '../types/resume';
 
 // Mock resume data
 const mockResumeData: ResumeData = {
@@ -277,6 +278,20 @@ const mockResumeData: ResumeData = {
 
 export const ResumePreviewPage: FC = () => {
   const { userId, resumeSlug } = useParams<{ userId: string; resumeSlug: string }>();
+  const [currentStyle, setCurrentStyle] = useState<ResumeStyle>('standard');
+
+  // Load saved style preference
+  useEffect(() => {
+    const savedStyle = localStorage.getItem('resumeStyle') as ResumeStyle;
+    if (savedStyle && ['standard', 'traditional', 'neo-brutalist', 'namaste', 'zine', 'minimalist'].includes(savedStyle)) {
+      setCurrentStyle(savedStyle);
+    }
+  }, []);
+
+  const handleStyleChange = (style: ResumeStyle) => {
+    setCurrentStyle(style);
+    localStorage.setItem('resumeStyle', style);
+  };
 
   // In a real implementation, you would fetch the resume data based on userId and resumeSlug
   // For now, we'll use the mock data
@@ -285,10 +300,15 @@ export const ResumePreviewPage: FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <ResumeHeader username={username} resumeSlug={slug} />
+      <ResumeHeader 
+        username={username} 
+        resumeSlug={slug}
+        currentStyle={currentStyle}
+        onStyleChange={handleStyleChange}
+      />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ResumeContent data={mockResumeData} />
+        <ResumeContent data={mockResumeData} style={currentStyle} />
       </main>
       
       <ResumeFooter />

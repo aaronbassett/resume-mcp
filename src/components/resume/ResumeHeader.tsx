@@ -1,17 +1,33 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, Download, ChevronDown } from 'lucide-react';
+import { Zap, Download, ChevronDown, Palette } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Dropdown, DropdownItem } from '../ui/Dropdown';
-import type { DownloadFormat } from '../../types/resume';
+import type { DownloadFormat, ResumeStyle } from '../../types/resume';
 
 interface ResumeHeaderProps {
   username: string;
   resumeSlug: string;
+  currentStyle: ResumeStyle;
+  onStyleChange: (style: ResumeStyle) => void;
 }
 
-export const ResumeHeader: FC<ResumeHeaderProps> = ({ username, resumeSlug }) => {
+const styleLabels: Record<ResumeStyle, string> = {
+  standard: 'Standard',
+  traditional: 'Traditional',
+  'neo-brutalist': 'Neo Brutalist',
+  namaste: 'Namaste',
+  zine: 'Zine',
+  minimalist: 'Minimalist'
+};
+
+export const ResumeHeader: FC<ResumeHeaderProps> = ({ 
+  username, 
+  resumeSlug, 
+  currentStyle, 
+  onStyleChange 
+}) => {
   const [preferredFormat, setPreferredFormat] = useState<DownloadFormat>('PDF');
 
   useEffect(() => {
@@ -60,8 +76,36 @@ export const ResumeHeader: FC<ResumeHeaderProps> = ({ username, resumeSlug }) =>
             </div>
           </Link>
           
-          {/* Download Controls */}
-          <div className="flex items-center">
+          {/* Controls */}
+          <div className="flex items-center space-x-3">
+            {/* Style Selector */}
+            <Dropdown
+              trigger={
+                <Button variant="outline" className="justify-between min-w-[140px]">
+                  <div className="flex items-center space-x-2">
+                    <Palette className="h-4 w-4" />
+                    <span>{styleLabels[currentStyle]}</span>
+                  </div>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              }
+              align="right"
+            >
+              {Object.entries(styleLabels).map(([style, label]) => (
+                <DropdownItem
+                  key={style}
+                  onClick={() => onStyleChange(style as ResumeStyle)}
+                  className={currentStyle === style ? 'bg-accent' : ''}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span>{label}</span>
+                    {currentStyle === style && <span className="text-primary">✓</span>}
+                  </div>
+                </DropdownItem>
+              ))}
+            </Dropdown>
+
+            {/* Download Controls */}
             <div className="flex rounded-lg border border-input bg-background">
               <Button
                 variant="ghost"
