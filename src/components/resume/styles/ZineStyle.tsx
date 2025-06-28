@@ -146,7 +146,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
         {/* Header Monster SVG */}
         <div className="absolute top-4 right-8" style={{ width: '120px', height: '100px', zIndex: 5 }}>
-          <img src="/monster-bat.svg" alt="" className="w-full h-full" />
+          <img src="/vite.svg" alt="" className="w-full h-full" />
         </div>
       </div>
 
@@ -172,7 +172,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
           
           {/* Rabbit Monster SVG */}
           <div className="absolute -top-10 -right-10" style={{ width: '100px', height: '100px', zIndex: 2 }}>
-            <img src="/monster-rabbit.svg" alt="" className="w-full h-full" />
+            <img src="/vite.svg" alt="" className="w-full h-full" />
           </div>
         </section>
 
@@ -286,7 +286,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
             {/* Potato Monster SVG */}
             <div className="absolute -bottom-10 left-1/4" style={{ width: '150px', height: '150px', zIndex: 2 }}>
-              <img src="/monster-potatoe.svg" alt="" className="w-full h-full" />
+              <img src="/vite.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -338,7 +338,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             
             {/* Skull Monster SVG */}
             <div className="absolute top-10 right-0" style={{ width: '120px', height: '120px', zIndex: 2 }}>
-              <img src="/monster-skull.svg" alt="" className="w-full h-full" />
+              <img src="/vite.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -374,9 +374,9 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
                             href={project.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-black text-white p-1 inline-block font-bold text-xs mt-1 transform -rotate-3 hover:rotate-6 transition-transform"
+                            className="bg-black text-white p-1 inline-block font-bold text-xs mt-2 hover:scale-105 transition-transform"
                           >
-                            CHECK IT OUT!
+                            VIEW PROJECT
                           </a>
                         )}
                       </div>
@@ -402,7 +402,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             
             {/* Speaker Monster SVG */}
             <div className="absolute -bottom-20 right-10" style={{ width: '150px', height: '150px', zIndex: 2 }}>
-              <img src="/monster-speaker.svg" alt="" className="w-full h-full" />
+              <img src="/vite.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
