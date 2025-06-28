@@ -22,7 +22,7 @@ export const CreateResumePage: FC = () => {
         {/* Header Section */}
         <Card>
           <CardContent className="p-8 pt-12">
-            <div className="space-y-4">
+            <div className="space-y-2">
               {/* Resume Title */}
               <div>
                 <EditableText
