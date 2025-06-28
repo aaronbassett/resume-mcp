@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { Hourglass, CheckCircle as CircleCheckBig, CircleX } from 'lucide-react';
+import { Hourglass, CheckCircle as CircleCheckBig, Circle as CircleX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
