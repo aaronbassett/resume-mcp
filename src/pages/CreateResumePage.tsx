@@ -16,12 +16,14 @@ export const CreateResumePage: FC = () => {
   const {
     currentResume,
     isNewResume,
+    hasUnsavedChanges,
     updateTitle,
     updateRole,
     updateDisplayName,
     updateTags,
     setResume,
-    setIsNewResume
+    setIsNewResume,
+    clearUnsavedChanges
   } = useResumeStore();
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -54,6 +56,7 @@ export const CreateResumePage: FC = () => {
             tags: result.data.tags
           });
           setIsNewResume(false);
+          clearUnsavedChanges();
         }
 
         return { error: null };
@@ -76,20 +79,22 @@ export const CreateResumePage: FC = () => {
           return { error: result.error };
         }
 
+        clearUnsavedChanges();
         return { error: null };
       }
     } catch (error) {
       console.error('Save error:', error);
       return { error: 'Failed to save resume' };
     }
-  }, [isNewResume, setResume, setIsNewResume]);
+  }, [isNewResume, setResume, setIsNewResume, clearUnsavedChanges]);
 
-  // Set up auto-save
+  // Set up auto-save - only enabled after user makes first change
   const { manualSave } = useAutoSave({
     data: currentResume,
     onSave: handleSave,
     delay: 1500, // 1.5 second delay
-    onStatusChange: setSaveStatus
+    onStatusChange: setSaveStatus,
+    enabled: hasUnsavedChanges // Only enable auto-save after user makes changes
   });
 
   return (
@@ -150,6 +155,15 @@ export const CreateResumePage: FC = () => {
                 />
               </div>
             </div>
+
+            {/* Status indicator for new resumes */}
+            {isNewResume && !hasUnsavedChanges && (
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  💡 <strong>Draft Mode:</strong> This resume will be saved automatically once you start editing any field.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

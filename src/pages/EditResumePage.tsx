@@ -21,13 +21,15 @@ export const EditResumePage: FC = () => {
   
   const {
     currentResume,
+    hasUnsavedChanges,
     updateTitle,
     updateRole,
     updateDisplayName,
     updateTags,
     setResume,
     setIsNewResume,
-    resetResume
+    resetResume,
+    clearUnsavedChanges
   } = useResumeStore();
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -109,19 +111,21 @@ export const EditResumePage: FC = () => {
         return { error: result.error };
       }
 
+      clearUnsavedChanges();
       return { error: null };
     } catch (error) {
       console.error('Save error:', error);
       return { error: 'Failed to save resume' };
     }
-  }, []);
+  }, [clearUnsavedChanges]);
 
-  // Set up auto-save
+  // Set up auto-save - always enabled for existing resumes
   const { manualSave } = useAutoSave({
     data: currentResume,
     onSave: handleSave,
     delay: 1500, // 1.5 second delay
-    onStatusChange: setSaveStatus
+    onStatusChange: setSaveStatus,
+    enabled: true // Always enabled for existing resumes
   });
 
   // Loading state
