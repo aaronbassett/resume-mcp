@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../components/ui/BorderBottomBeam';
 import { SparklesText } from '../components/ui/SparklesText';
+import { DeleteConfirmationModal } from '../components/ui/DeleteConfirmationModal';
 import { getUserResumes, deleteResume } from '../lib/resumeService';
 import type { Resume } from '../lib/resumeService';
 
@@ -18,7 +19,17 @@ export const ResumesPage: FC = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  
+  // Delete modal state
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    resume: Resume | null;
+    isDeleting: boolean;
+  }>({
+    isOpen: false,
+    resume: null,
+    isDeleting: false
+  });
 
   // Load user's resumes
   useEffect(() => {
@@ -45,27 +56,53 @@ export const ResumesPage: FC = () => {
     }
   };
 
-  // Handle resume deletion
-  const handleDeleteResume = async (resumeId: string, resumeTitle: string) => {
-    if (!confirm(`Are you sure you want to delete "${resumeTitle}"? This action cannot be undone.`)) {
-      return;
+  // Handle opening delete modal
+  const handleDeleteClick = (resume: Resume) => {
+    setDeleteModal({
+      isOpen: true,
+      resume,
+      isDeleting: false
+    });
+  };
+
+  // Handle closing delete modal
+  const handleDeleteCancel = () => {
+    if (!deleteModal.isDeleting) {
+      setDeleteModal({
+        isOpen: false,
+        resume: null,
+        isDeleting: false
+      });
     }
+  };
+
+  // Handle confirmed deletion
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.resume) return;
 
     try {
-      setDeletingId(resumeId);
-      const result = await deleteResume(resumeId);
+      setDeleteModal(prev => ({ ...prev, isDeleting: true }));
+      
+      const result = await deleteResume(deleteModal.resume.id);
 
       if (result.error) {
         alert(`Failed to delete resume: ${result.error}`);
       } else {
         // Remove the deleted resume from the list
-        setResumes(prev => prev.filter(resume => resume.id !== resumeId));
+        setResumes(prev => prev.filter(resume => resume.id !== deleteModal.resume!.id));
+        
+        // Close modal
+        setDeleteModal({
+          isOpen: false,
+          resume: null,
+          isDeleting: false
+        });
       }
     } catch (error) {
       console.error('Error deleting resume:', error);
       alert('Failed to delete resume');
     } finally {
-      setDeletingId(null);
+      setDeleteModal(prev => ({ ...prev, isDeleting: false }));
     }
   };
 
@@ -308,16 +345,11 @@ export const ResumesPage: FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-destructive hover:text-destructive" 
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10" 
                       title="Delete Resume"
-                      onClick={() => handleDeleteResume(resume.id, resume.title)}
-                      disabled={deletingId === resume.id}
+                      onClick={() => handleDeleteClick(resume)}
                     >
-                      {deletingId === resume.id ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -326,6 +358,17 @@ export const ResumesPage: FC = () => {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title={deleteModal.resume?.title || ''}
+        itemName={deleteModal.resume?.title || ''}
+        itemType="resume"
+        isLoading={deleteModal.isDeleting}
+      />
     </div>
   );
 };
