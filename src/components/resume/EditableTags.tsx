@@ -124,7 +124,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
 
   return (
     <div
-      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors focus:ring-primary focus:ring-1 focus:ring-ring focus:ring-offset-0 focus:border-border focus:shadow-none min-h-[2.5rem] flex items-center flex-wrap gap-2`}
+      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors focus:ring-0 focus:ring-ring focus:ring-offset-0 focus:border-border focus:shadow-none min-h-[2.5rem] flex items-center flex-wrap gap-2`}
       onClick={handleEdit}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
