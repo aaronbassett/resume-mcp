@@ -70,7 +70,7 @@ export const EditableText: FC<EditableTextProps> = ({
         onChange={(e) => setEditValue(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
-        className={`${className} bg-muted/30 border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-0`}
+        className={`${className} bg-muted/30 border border-border rounded-md px-3 py-2 outline-none focus:outline-none focus:ring-0`}
         placeholder={placeholder}
       />
     );
@@ -78,7 +78,7 @@ export const EditableText: FC<EditableTextProps> = ({
 
   return (
     <Component
-      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors focus:outline-none focus:ring-2 focus:ring-ring`}
+      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors outline-none focus:outline-none`}
       onClick={handleEdit}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

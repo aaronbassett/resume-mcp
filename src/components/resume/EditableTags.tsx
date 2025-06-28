@@ -110,7 +110,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
           classNames={{
             tags: 'react-tags',
             tagInput: 'react-tags__input',
-            tagInputField: 'react-tags__input-field bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground focus:ring-0',
+            tagInputField: 'react-tags__input-field bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-0',
             selected: 'react-tags__selected',
             tag: 'react-tags__tag inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary text-primary-foreground mr-2 mb-2',
             remove: 'react-tags__remove ml-2 cursor-pointer hover:text-primary-foreground/80',
@@ -124,7 +124,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
 
   return (
     <div
-      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors focus:outline-none focus:ring-2 focus:ring-ring min-h-[2.5rem] flex items-center flex-wrap gap-2`}
+      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors outline-none focus:outline-none min-h-[2.5rem] flex items-center flex-wrap gap-2`}
       onClick={handleEdit}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
