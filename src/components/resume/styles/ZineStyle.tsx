@@ -169,11 +169,6 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
           <div className="absolute -left-20 top-8 opacity-70 mix-blend-overlay" style={{ width: '156px', height: '182px', zIndex: 2 }}>
             <img src="/monster-rabbit.svg" alt="" className="w-full h-full" />
           </div>
-
-          {/* Awesome Word SVG - Right side of summary */}
-          <div className="absolute -right-16 top-12 opacity-50 mix-blend-multiply" style={{ width: '130px', height: '100px', zIndex: 2 }}>
-            <img src="/awesome.svg" alt="" className="w-full h-full" />
-          </div>
         </section>
 
         {/* Work Experience and Skills - Two Column Layout */}
@@ -289,11 +284,6 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
               <img src="/monster-potatoe.svg" alt="" className="w-full h-full" />
             </div>
 
-            {/* Boom Word SVG - Top right of work section */}
-            <div className="absolute -top-8 -right-12 opacity-60 mix-blend-overlay" style={{ width: '120px', height: '90px', zIndex: 2 }}>
-              <img src="/boom.svg" alt="" className="w-full h-full" />
-            </div>
-
             {/* Bat Monster SVG - Moved to left side of work section */}
             <div className="absolute top-32 -left-24 opacity-60 mix-blend-multiply" style={{ width: '156px', height: '124px', zIndex: 2 }}>
               <img src="/monster-bat.svg" alt="" className="w-full h-full" />
@@ -349,11 +339,6 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             {/* Skull Monster SVG - Right side of education */}
             <div className="absolute top-16 -right-12 opacity-50 mix-blend-multiply" style={{ width: '182px', height: '182px', zIndex: 2 }}>
               <img src="/monster-skull.svg" alt="" className="w-full h-full" />
-            </div>
-
-            {/* Overthinking Word SVG - Left side of education */}
-            <div className="absolute top-8 -left-20 opacity-45 mix-blend-overlay" style={{ width: '140px', height: '110px', zIndex: 2 }}>
-              <img src="/overthinking.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
