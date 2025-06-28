@@ -68,64 +68,54 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
     }
   };
 
+  const colors = [
+    'bg-yellow-400',
+    'bg-pink-400', 
+    'bg-blue-400',
+    'bg-green-400',
+    'bg-purple-400',
+    'bg-red-400',
+    'bg-orange-400',
+    'bg-cyan-400'
+  ];
+
   return (
-    <div className="max-w-5xl mx-auto bg-white text-black relative overflow-hidden" style={{ fontFamily: 'Courier New, monospace', zIndex: 1 }}>
-      {/* Background texture */}
-      <div className="absolute inset-0 opacity-5" style={{
-        backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 2px, #000 2px, #000 4px)`
-      }}></div>
-      
+    <div className="max-w-5xl mx-auto bg-white relative" style={{ fontFamily: 'Arial Black, sans-serif', zIndex: 1 }}>
       {/* Header */}
-      <div className="relative bg-black text-white p-6 transform -rotate-1 mb-8" style={{ zIndex: 10 }}>
-        <div className="transform rotate-1">
-          <RoughNotation type="highlight" show={showAnnotations} color="#ff6b6b" animationDelay={200}>
-            <h1 
-              className="text-4xl md:text-6xl font-black mb-2 transform -skew-x-12 relative"
-              style={{ fontFamily: 'Impact, Arial Black, sans-serif', zIndex: 10 }}
-            >
-              {data.basics.name.toUpperCase()}
-            </h1>
-          </RoughNotation>
-          <div className="bg-yellow-400 text-black p-2 inline-block transform rotate-2 border-2 border-black relative" style={{ zIndex: 10 }}>
-            <p 
-              className="text-lg font-bold"
-              style={{ fontFamily: 'Comic Sans MS, cursive' }}
-            >
-              {data.basics.label}
-            </p>
-          </div>
+      <div className="bg-black text-white p-8 border-8 border-black relative" style={{ zIndex: 1 }}>
+        <h1 className="text-6xl font-black uppercase tracking-wider mb-4 transform -skew-x-6 relative" style={{ zIndex: 1 }}>
+          {data.basics.name}
+        </h1>
+        <div className="bg-yellow-400 text-black p-4 border-4 border-black transform skew-x-3 inline-block relative" style={{ zIndex: 1 }}>
+          <p className="text-2xl font-black uppercase">{data.basics.label}</p>
         </div>
         
-        {/* Scattered contact info */}
-        <div className="mt-6 relative" style={{ zIndex: 10 }}>
-          <div className="absolute top-0 left-0 bg-red-500 p-2 transform -rotate-12 border-2 border-white" style={{ zIndex: 10 }}>
-            <Mail className="h-4 w-4 inline mr-1" />
-            <span className="text-xs font-bold">{data.basics.email}</span>
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 relative" style={{ zIndex: 1 }}>
+          <div className="bg-pink-400 p-3 border-4 border-black transform -rotate-1">
+            <Mail className="h-6 w-6 mb-2" />
+            <p className="font-black text-sm break-all">{data.basics.email}</p>
           </div>
-          <div className="absolute top-8 right-0 bg-blue-500 p-2 transform rotate-6 border-2 border-white" style={{ zIndex: 10 }}>
-            <Phone className="h-4 w-4 inline mr-1" />
-            <span className="text-xs font-bold">{data.basics.phone}</span>
-          </div>
-          <div className="absolute bottom-0 left-1/3 bg-green-500 p-2 transform -rotate-6 border-2 border-white" style={{ zIndex: 10 }}>
-            <MapPin className="h-4 w-4 inline mr-1" />
-            <span className="text-xs font-bold">{data.basics.location.city}</span>
+          <div className="bg-blue-400 p-3 border-4 border-black transform rotate-1">
+            <Phone className="h-6 w-6 mb-2" />
+            <p className="font-black text-sm">{data.basics.phone}</p>
           </div>
           {data.basics.url && (
-            <div className="absolute bottom-8 right-1/4 bg-purple-500 p-2 transform rotate-12 border-2 border-white" style={{ zIndex: 10 }}>
-              <Globe className="h-4 w-4 inline mr-1" />
-              <span className="text-xs font-bold">{data.basics.url.replace(/^https?:\/\//, '').substring(0, 15)}</span>
+            <div className="bg-green-400 p-3 border-4 border-black transform -rotate-2">
+              <Globe className="h-6 w-6 mb-2" />
+              <p className="font-black text-sm break-all">{data.basics.url.replace(/^https?:\/\//, '')}</p>
             </div>
           )}
+          <div className="bg-purple-400 p-3 border-4 border-black transform rotate-2">
+            <MapPin className="h-6 w-6 mb-2" />
+            <p className="font-black text-sm">{data.basics.location.city}, {data.basics.location.region}</p>
+          </div>
         </div>
-        
-        <div className="h-20"></div> {/* Spacer for absolute positioned elements */}
 
         {data.basics.profiles && data.basics.profiles.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2 relative" style={{ zIndex: 10 }}>
+          <div className="mt-6 flex flex-wrap gap-3 relative" style={{ zIndex: 1 }}>
             {data.basics.profiles.map((profile, index) => {
               const IconComponent = getSocialIcon(profile.network);
-              const colors = ['bg-pink-400', 'bg-cyan-400', 'bg-yellow-400', 'bg-lime-400'];
-              const rotations = ['rotate-3', '-rotate-2', 'rotate-6', '-rotate-3'];
+              const colorClass = colors[index % colors.length];
               
               return (
                 <a
@@ -133,11 +123,11 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
                   href={profile.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`${colors[index % colors.length]} text-black p-2 border-2 border-black transform ${rotations[index % rotations.length]} hover:scale-110 transition-transform`}
+                  className={`${colorClass} text-black p-3 border-4 border-black font-black text-sm uppercase hover:scale-110 transition-transform flex items-center space-x-2`}
                   title={`${profile.network}: ${profile.username}`}
-                  style={{ zIndex: 10 }}
                 >
-                  <IconComponent className="h-4 w-4" />
+                  <IconComponent className="h-5 w-5" />
+                  <span>{profile.network}</span>
                 </a>
               );
             })}
@@ -145,7 +135,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
         )}
       </div>
 
-      <div className="relative px-6 pb-8 space-y-8" style={{ zIndex: 1 }}>
+      <div className="p-8 space-y-12 relative" style={{ zIndex: 1 }}>
         {/* Summary */}
         <section className="relative" style={{ zIndex: 1 }}>
           <div className="bg-yellow-200 p-4 border-4 border-black transform rotate-1 relative" style={{ zIndex: 1 }}>
@@ -164,10 +154,10 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
               {data.basics.summary}
             </p>
           </div>
-          
-          {/* Rabbit Monster SVG - Left side of summary */}
-          <div className="absolute -left-20 top-8 opacity-70 mix-blend-overlay" style={{ width: '156px', height: '182px', zIndex: 2 }}>
-            <img src="/monster-rabbit.svg" alt="" className="w-full h-full" />
+
+          {/* Awesome Word SVG - Right side of summary */}
+          <div className="absolute -right-16 top-12 opacity-50 mix-blend-multiply" style={{ width: '130px', height: '100px', zIndex: 2 }}>
+            <img src="/awesome.svg" alt="" className="w-full h-full" />
           </div>
         </section>
 
@@ -279,14 +269,9 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
               )}
             </div>
 
-            {/* Potato Monster SVG - Center bottom of work section */}
-            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-70 mix-blend-darken" style={{ width: '234px', height: '234px', zIndex: 2 }}>
-              <img src="/monster-potatoe.svg" alt="" className="w-full h-full" />
-            </div>
-
-            {/* Bat Monster SVG - Moved to left side of work section */}
-            <div className="absolute top-32 -left-24 opacity-60 mix-blend-multiply" style={{ width: '156px', height: '124px', zIndex: 2 }}>
-              <img src="/monster-bat.svg" alt="" className="w-full h-full" />
+            {/* Boom Word SVG - Top right of work section */}
+            <div className="absolute -top-8 -right-12 opacity-60 mix-blend-overlay" style={{ width: '120px', height: '90px', zIndex: 2 }}>
+              <img src="/boom.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -335,10 +320,10 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
                 </div>
               ))}
             </div>
-            
-            {/* Skull Monster SVG - Right side of education */}
-            <div className="absolute top-16 -right-12 opacity-50 mix-blend-multiply" style={{ width: '182px', height: '182px', zIndex: 2 }}>
-              <img src="/monster-skull.svg" alt="" className="w-full h-full" />
+
+            {/* Overthinking Word SVG - Left side of education */}
+            <div className="absolute top-8 -left-20 opacity-45 mix-blend-overlay" style={{ width: '140px', height: '110px', zIndex: 2 }}>
+              <img src="/overthinking.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -398,11 +383,6 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
                   </div>
                 );
               })}
-            </div>
-            
-            {/* Speaker Monster SVG - Bottom left of projects */}
-            <div className="absolute -bottom-20 left-8 opacity-75 mix-blend-overlay" style={{ width: '208px', height: '208px', zIndex: 2 }}>
-              <img src="/monster-speaker.svg" alt="" className="w-full h-full" />
             </div>
 
             {/* You Are Enough Word SVG - Top right of projects */}
