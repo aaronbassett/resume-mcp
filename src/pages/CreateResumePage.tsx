@@ -19,19 +19,10 @@ export const CreateResumePage: FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-8">
-        <PageHeader
-          title="Create New Resume"
-          description="Build your AI-powered resume with modular blocks."
-          breadcrumbs={[
-            { label: 'Resumes', href: '/resumes' },
-            { label: 'New Resume' }
-          ]}
-        />
-
         {/* Header Section */}
         <Card>
-          <CardContent className="p-8">
-            <div className="space-y-6">
+          <CardContent className="p-8 pt-12">
+            <div className="space-y-4">
               {/* Resume Title */}
               <div>
                 <EditableText
@@ -39,7 +30,7 @@ export const CreateResumePage: FC = () => {
                   placeholder="Untitled Resume"
                   onSave={updateTitle}
                   as="h1"
-                  className="text-4xl font-bold"
+                  className="text-4xl font-bold leading-tight w-full"
                 />
               </div>
 
@@ -47,10 +38,10 @@ export const CreateResumePage: FC = () => {
               <div>
                 <EditableText
                   value={currentResume.role}
-                  placeholder="Click to edit role"
+                  placeholder="Click to Edit Role"
                   onSave={updateRole}
                   as="h2"
-                  className="text-2xl font-semibold text-muted-foreground"
+                  className="text-2xl font-semibold text-muted-foreground leading-tight"
                 />
               </div>
 
@@ -58,22 +49,19 @@ export const CreateResumePage: FC = () => {
               <div>
                 <EditableText
                   value={currentResume.displayName}
-                  placeholder="Click to edit display name"
+                  placeholder="Click to Edit Display Name"
                   onSave={updateDisplayName}
                   as="p"
-                  className="text-lg italic text-muted-foreground"
+                  className="text-lg italic text-muted-foreground leading-tight w-full"
                 />
               </div>
 
               {/* Tags */}
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Tags
-                </label>
+              <div className="pt-2">
                 <EditableTags
                   tags={currentResume.tags}
                   onTagsChange={updateTags}
-                  placeholder="Click to add tags"
+                  placeholder="Click to Add Tags"
                   className="w-full"
                 />
               </div>

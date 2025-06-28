@@ -1,7 +1,5 @@
 import type { FC, ReactNode, KeyboardEvent } from 'react';
 import { useState, useRef, useEffect } from 'react';
-import { Check, X } from 'lucide-react';
-import { Button } from '../ui/Button';
 
 interface EditableTextProps {
   value: string;
@@ -60,42 +58,21 @@ export const EditableText: FC<EditableTextProps> = ({
   };
 
   const handleBlur = () => {
-    handleCancel();
+    handleSave();
   };
 
   if (isEditing) {
     return (
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={handleBlur}
-          className={`${className} bg-background border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent`}
-          placeholder={placeholder}
-        />
-        <div className="absolute top-full right-0 mt-2 flex items-center space-x-2">
-          <Button
-            size="sm"
-            onClick={handleSave}
-            onMouseDown={(e) => e.preventDefault()} // Prevent blur
-            className="h-8 w-8 p-0"
-          >
-            <Check className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleCancel}
-            onMouseDown={(e) => e.preventDefault()} // Prevent blur
-            className="h-8 w-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <input
+        ref={inputRef}
+        type="text"
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        className={`${className} bg-muted/30 border-none rounded-md px-3 py-2 focus:outline-none focus:ring-0`}
+        placeholder={placeholder}
+      />
     );
   }
 

@@ -39,7 +39,7 @@ const suggestions = [
 export const EditableTags: FC<EditableTagsProps> = ({
   tags,
   onTagsChange,
-  placeholder = 'Click to add tags',
+  placeholder = 'Click to Add Tags',
   className = ''
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -99,7 +99,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
         <ReactTags
           tags={tags}
           suggestions={suggestions}
-          separators={[SEPARATORS.TAB]}
+          separators={[SEPARATORS.TAB, SEPARATORS.ENTER, SEPARATORS.COMMA]}
           handleAddition={handleAddition}
           handleDelete={handleDelete}
           handleDrag={handleDrag}
@@ -110,7 +110,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
           classNames={{
             tags: 'react-tags',
             tagInput: 'react-tags__input',
-            tagInputField: 'react-tags__input-field bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground',
+            tagInputField: 'react-tags__input-field bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground focus:ring-0',
             selected: 'react-tags__selected',
             tag: 'react-tags__tag inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary text-primary-foreground mr-2 mb-2',
             remove: 'react-tags__remove ml-2 cursor-pointer hover:text-primary-foreground/80',

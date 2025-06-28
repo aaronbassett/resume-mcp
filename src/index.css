@@ -368,12 +368,12 @@ body {
   padding: 0.5rem;
   border: 1px solid rgb(var(--border));
   border-radius: 0.375rem;
-  background-color: rgb(var(--background));
+  background-color: rgb(var(--muted) / 0.3);
 }
 
 .react-tags:focus-within {
-  outline: 2px solid rgb(var(--ring));
-  outline-offset: 2px;
+  outline: none;
+  ring: 0;
 }
 
 .react-tags__input {
@@ -388,6 +388,11 @@ body {
   background: transparent;
   font-size: 0.875rem;
   color: rgb(var(--foreground));
+}
+
+.react-tags__input-field:focus {
+  outline: none;
+  ring: 0;
 }
 
 .react-tags__input-field::placeholder {
