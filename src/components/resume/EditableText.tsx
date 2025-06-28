@@ -78,7 +78,7 @@ export const EditableText: FC<EditableTextProps> = ({
 
   return (
     <Component
-      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors focus:ring-1 focus:ring-ring focus:ring-offset-0 focus:border-border focus:shadow-none`}
+      className={`${className} ${isPlaceholder ? 'text-muted-foreground italic' : ''} cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors focus:ring-primary focus:ring-1 focus:ring-ring focus:ring-offset-0 focus:border-border focus:shadow-none`}
       onClick={handleEdit}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
