@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 export interface Tag {
   id: string;
@@ -34,43 +33,36 @@ const defaultResume: ResumeFormData = {
   tags: []
 };
 
-export const useResumeStore = create<ResumeState>()(
-  persist(
-    (set) => ({
-      currentResume: defaultResume,
-      isNewResume: true,
-      
-      updateTitle: (title: string) =>
-        set((state) => ({
-          currentResume: { ...state.currentResume, title }
-        })),
-      
-      updateRole: (role: string) =>
-        set((state) => ({
-          currentResume: { ...state.currentResume, role }
-        })),
-      
-      updateDisplayName: (displayName: string) =>
-        set((state) => ({
-          currentResume: { ...state.currentResume, displayName }
-        })),
-      
-      updateTags: (tags: Tag[]) =>
-        set((state) => ({
-          currentResume: { ...state.currentResume, tags }
-        })),
-      
-      setResume: (resume: ResumeFormData) =>
-        set({ currentResume: resume, isNewResume: false }),
-      
-      resetResume: () => 
-        set({ currentResume: defaultResume, isNewResume: true }),
-      
-      setIsNewResume: (isNew: boolean) =>
-        set({ isNewResume: isNew })
-    }),
-    {
-      name: 'resume-storage',
-    }
-  )
-);
+export const useResumeStore = create<ResumeState>()((set) => ({
+  currentResume: defaultResume,
+  isNewResume: true,
+  
+  updateTitle: (title: string) =>
+    set((state) => ({
+      currentResume: { ...state.currentResume, title }
+    })),
+  
+  updateRole: (role: string) =>
+    set((state) => ({
+      currentResume: { ...state.currentResume, role }
+    })),
+  
+  updateDisplayName: (displayName: string) =>
+    set((state) => ({
+      currentResume: { ...state.currentResume, displayName }
+    })),
+  
+  updateTags: (tags: Tag[]) =>
+    set((state) => ({
+      currentResume: { ...state.currentResume, tags }
+    })),
+  
+  setResume: (resume: ResumeFormData) =>
+    set({ currentResume: resume, isNewResume: false }),
+  
+  resetResume: () => 
+    set({ currentResume: defaultResume, isNewResume: true }),
+  
+  setIsNewResume: (isNew: boolean) =>
+    set({ isNewResume: isNew })
+}));
