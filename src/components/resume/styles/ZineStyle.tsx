@@ -406,7 +406,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             </div>
 
             {/* You Are Enough Word SVG - Top right of projects */}
-            <div className="absolute -top-12 right-40 opacity-40 mix-blend-darken" style={{ width: '160px', height: '130px', zIndex: 2 }}>
+            <div className="absolute -top-12 right-70 opacity-40 mix-blend-darken" style={{ width: '400px', zIndex: 2 }}>
               <img src="/you-are-enough.svg" alt="" className="w-full h-full" />
             </div>
           </section>
