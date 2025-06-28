@@ -272,15 +272,13 @@ export const ResumesPage: FC = () => {
                       </span>
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0" 
+                  <button 
+                    className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-center" 
                     title="Duplicate Resume"
                     onClick={() => handleDuplicateResume(resume)}
                   >
                     <Copy className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </div>
                 <CardDescription>
                   {resume.role || resume.display_name || 'No description'}
@@ -325,32 +323,30 @@ export const ResumesPage: FC = () => {
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center space-x-2">
                       <Link to={`/r/user/${resume.slug}`}>
-                        <Button variant="ghost" size="sm" title="View Resume">
+                        <button className="h-8 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center text-sm font-medium" title="View Resume">
                           <Eye className="mr-2 h-4 w-4" />
                           View
-                        </Button>
+                        </button>
                       </Link>
                       <Link to={`/resumes/${resume.id}/edit`}>
-                        <Button variant="ghost" size="sm" title="Edit Resume">
+                        <button className="h-8 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center text-sm font-medium" title="Edit Resume">
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
-                        </Button>
+                        </button>
                       </Link>
                       <Link to={`/resumes/${resume.id}/analytics`}>
-                        <Button variant="ghost" size="sm" title="View Analytics">
+                        <button className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-center" title="View Analytics">
                           <BarChart3 className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </Link>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10" 
+                    <button 
+                      className="h-8 w-8 p-0 rounded-md text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors duration-200 flex items-center justify-center" 
                       title="Delete Resume"
                       onClick={() => handleDeleteClick(resume)}
                     >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </CardContent>

@@ -178,19 +178,19 @@ export const DashboardPage: FC = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Link to={`/r/user/${resume.slug}`}>
-                        <Button variant="ghost" size="sm" title="View Resume">
+                        <button className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-center" title="View Resume">
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </Link>
                       <Link to={`/resumes/${resume.id}/edit`}>
-                        <Button variant="ghost" size="sm" title="Edit Resume">
+                        <button className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-center" title="Edit Resume">
                           <Edit className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </Link>
                       <Link to={`/resumes/${resume.id}/analytics`}>
-                        <Button variant="ghost" size="sm" title="View Analytics">
+                        <button className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-center" title="View Analytics">
                           <BarChart3 className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </Link>
                     </div>
                   </div>
