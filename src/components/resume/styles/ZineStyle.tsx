@@ -172,7 +172,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
           {/* Awesome Word SVG - Right side of summary */}
           <div className="absolute -right-16 top-12 opacity-50 mix-blend-multiply" style={{ width: '130px', height: '100px', zIndex: 2 }}>
-            <img src="/awesome.svg" alt="" className="w-full h-full" />
+            <img src="/awesome.svg/awesome.svg" alt="" className="w-full h-full" />
           </div>
         </section>
 
@@ -291,7 +291,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
             {/* Boom Word SVG - Top right of work section */}
             <div className="absolute -top-8 -right-12 opacity-60 mix-blend-overlay" style={{ width: '120px', height: '90px', zIndex: 2 }}>
-              <img src="/boom.svg" alt="" className="w-full h-full" />
+              <img src="/boom.svg/boom.svg" alt="" className="w-full h-full" />
             </div>
 
             {/* Bat Monster SVG - Moved to left side of work section */}
@@ -353,7 +353,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
             {/* Overthinking Word SVG - Left side of education */}
             <div className="absolute top-8 -left-20 opacity-45 mix-blend-overlay" style={{ width: '140px', height: '110px', zIndex: 2 }}>
-              <img src="/overthinking.svg" alt="" className="w-full h-full" />
+              <img src="/overthinking.svg/overthinking.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -422,7 +422,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
             {/* You Are Enough Word SVG - Top right of projects */}
             <div className="absolute -top-12 right-4 opacity-40 mix-blend-darken" style={{ width: '160px', height: '130px', zIndex: 2 }}>
-              <img src="/you-are-enough.svg" alt="" className="w-full h-full" />
+              <img src="/you-are-enough.svg/you-are-enough.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -465,6 +465,11 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Oops Word SVG - Right side of awards */}
+            <div className="absolute top-12 -right-16 opacity-55 mix-blend-multiply" style={{ width: '110px', height: '85px', zIndex: 2 }}>
+              <img src="/oops.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -520,6 +525,11 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Yay Word SVG - Bottom right of interests */}
+              <div className="absolute -bottom-8 -right-12 opacity-65 mix-blend-overlay" style={{ width: '100px', height: '80px', zIndex: 2 }}>
+                <img src="/yay.svg" alt="" className="w-full h-full" />
               </div>
             </section>
           )}
