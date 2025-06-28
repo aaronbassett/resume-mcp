@@ -10,32 +10,6 @@ interface EditableTagsProps {
   className?: string;
 }
 
-const suggestions = [
-  { id: 'frontend', text: 'Frontend', className: '' },
-  { id: 'backend', text: 'Backend', className: '' },
-  { id: 'fullstack', text: 'Full Stack', className: '' },
-  { id: 'react', text: 'React', className: '' },
-  { id: 'typescript', text: 'TypeScript', className: '' },
-  { id: 'javascript', text: 'JavaScript', className: '' },
-  { id: 'nodejs', text: 'Node.js', className: '' },
-  { id: 'python', text: 'Python', className: '' },
-  { id: 'java', text: 'Java', className: '' },
-  { id: 'senior', text: 'Senior', className: '' },
-  { id: 'lead', text: 'Lead', className: '' },
-  { id: 'manager', text: 'Manager', className: '' },
-  { id: 'devops', text: 'DevOps', className: '' },
-  { id: 'cloud', text: 'Cloud', className: '' },
-  { id: 'aws', text: 'AWS', className: '' },
-  { id: 'azure', text: 'Azure', className: '' },
-  { id: 'gcp', text: 'GCP', className: '' },
-  { id: 'mobile', text: 'Mobile', className: '' },
-  { id: 'ios', text: 'iOS', className: '' },
-  { id: 'android', text: 'Android', className: '' },
-  { id: 'remote', text: 'Remote', className: '' },
-  { id: 'startup', text: 'Startup', className: '' },
-  { id: 'enterprise', text: 'Enterprise', className: '' },
-];
-
 export const EditableTags: FC<EditableTagsProps> = ({
   tags,
   onTagsChange,
@@ -98,7 +72,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
       <div ref={containerRef} className={`${className} min-h-[2.5rem]`}>
         <ReactTags
           tags={tags}
-          suggestions={suggestions}
+          suggestions={[]} // Empty suggestions array to disable suggestions
           separators={[SEPARATORS.TAB, SEPARATORS.ENTER, SEPARATORS.COMMA]}
           handleAddition={handleAddition}
           handleDelete={handleDelete}
