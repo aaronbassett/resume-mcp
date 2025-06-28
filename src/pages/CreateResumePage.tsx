@@ -95,15 +95,17 @@ export const CreateResumePage: FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-8">
-        {/* Auto-save indicator */}
-        <AutoSaveIndicator 
-          status={saveStatus} 
-          onRetry={manualSave}
-        />
-
-        {/* Header Section */}
+        {/* Header Section with Auto-save indicator */}
         <Card>
-          <CardContent className="p-8 pt-12">
+          <CardContent className="p-8 pt-12 relative">
+            {/* Auto-save indicator positioned in top right of header */}
+            <div className="absolute top-4 right-4">
+              <AutoSaveIndicator 
+                status={saveStatus} 
+                onRetry={manualSave}
+              />
+            </div>
+
             <div className="space-y-2">
               {/* Resume Title */}
               <div>
