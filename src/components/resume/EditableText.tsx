@@ -61,7 +61,7 @@ export const EditableText: FC<EditableTextProps> = ({
     handleSave();
   };
 
-  if (isEditing) {
+  if (!isEditing) {
     return (
       <input
         ref={inputRef}
