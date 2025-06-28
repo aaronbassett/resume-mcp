@@ -43,11 +43,7 @@ export const useAutoSave = <T>({
       } else {
         lastSavedDataRef.current = currentDataString;
         onStatusChange?.('saved');
-        
-        // Auto-hide saved status after 2 seconds
-        setTimeout(() => {
-          onStatusChange?.('idle');
-        }, 2000);
+        // Don't auto-hide saved status - it will stay visible with reduced opacity
       }
     } catch (error) {
       console.error('Auto-save error:', error);

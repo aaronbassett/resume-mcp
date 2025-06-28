@@ -53,7 +53,10 @@ export const AutoSaveIndicator: FC<AutoSaveIndicatorProps> = ({
         <motion.button
           key={status}
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: status === 'idle' ? 0 : 1, scale: 1 }}
+          animate={{ 
+            opacity: status === 'idle' ? 0 : 1, 
+            scale: 1 
+          }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2 }}
           onClick={handleClick}
@@ -62,6 +65,7 @@ export const AutoSaveIndicator: FC<AutoSaveIndicatorProps> = ({
             flex items-center justify-center w-8 h-8 rounded-full bg-background border border-border shadow-sm
             ${status === 'error' ? 'cursor-pointer hover:bg-accent hover:border-accent-foreground/20' : 'cursor-default'}
             ${status === 'idle' ? 'pointer-events-none' : ''}
+            ${status === 'saved' ? 'opacity-50 hover:opacity-100' : 'opacity-100'}
             transition-all duration-200
           `}
           title={getTooltip()}
