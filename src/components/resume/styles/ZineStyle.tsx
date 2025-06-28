@@ -143,11 +143,6 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             })}
           </div>
         )}
-
-        {/* Bat Monster SVG - Top left of header */}
-        <div className="absolute -top-8 left-12 opacity-60 mix-blend-multiply" style={{ width: '100px', height: '80px', zIndex: 5 }}>
-          <img src="/monster-bat.svg" alt="" className="w-full h-full" />
-        </div>
       </div>
 
       <div className="relative px-6 pb-8 space-y-8" style={{ zIndex: 1 }}>
@@ -171,8 +166,13 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
           </div>
           
           {/* Rabbit Monster SVG - Left side of summary */}
-          <div className="absolute -left-16 top-8 opacity-80 mix-blend-overlay" style={{ width: '120px', height: '140px', zIndex: 2 }}>
+          <div className="absolute -left-20 top-8 opacity-70 mix-blend-overlay" style={{ width: '156px', height: '182px', zIndex: 2 }}>
             <img src="/monster-rabbit.svg" alt="" className="w-full h-full" />
+          </div>
+
+          {/* Awesome Word SVG - Right side of summary */}
+          <div className="absolute -right-16 top-12 opacity-50 mix-blend-multiply" style={{ width: '130px', height: '100px', zIndex: 2 }}>
+            <img src="/awesome.svg" alt="" className="w-full h-full" />
           </div>
         </section>
 
@@ -285,8 +285,18 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             </div>
 
             {/* Potato Monster SVG - Center bottom of work section */}
-            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-70 mix-blend-darken" style={{ width: '180px', height: '180px', zIndex: 2 }}>
+            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 opacity-70 mix-blend-darken" style={{ width: '234px', height: '234px', zIndex: 2 }}>
               <img src="/monster-potatoe.svg" alt="" className="w-full h-full" />
+            </div>
+
+            {/* Boom Word SVG - Top right of work section */}
+            <div className="absolute -top-8 -right-12 opacity-60 mix-blend-overlay" style={{ width: '120px', height: '90px', zIndex: 2 }}>
+              <img src="/boom.svg" alt="" className="w-full h-full" />
+            </div>
+
+            {/* Bat Monster SVG - Moved to left side of work section */}
+            <div className="absolute top-32 -left-24 opacity-60 mix-blend-multiply" style={{ width: '156px', height: '124px', zIndex: 2 }}>
+              <img src="/monster-bat.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -337,8 +347,13 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             </div>
             
             {/* Skull Monster SVG - Right side of education */}
-            <div className="absolute top-16 -right-8 opacity-50 mix-blend-multiply" style={{ width: '140px', height: '140px', zIndex: 2 }}>
+            <div className="absolute top-16 -right-12 opacity-50 mix-blend-multiply" style={{ width: '182px', height: '182px', zIndex: 2 }}>
               <img src="/monster-skull.svg" alt="" className="w-full h-full" />
+            </div>
+
+            {/* Overthinking Word SVG - Left side of education */}
+            <div className="absolute top-8 -left-20 opacity-45 mix-blend-overlay" style={{ width: '140px', height: '110px', zIndex: 2 }}>
+              <img src="/overthinking.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -401,8 +416,13 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             </div>
             
             {/* Speaker Monster SVG - Bottom left of projects */}
-            <div className="absolute -bottom-16 left-8 opacity-75 mix-blend-overlay" style={{ width: '160px', height: '160px', zIndex: 2 }}>
+            <div className="absolute -bottom-20 left-8 opacity-75 mix-blend-overlay" style={{ width: '208px', height: '208px', zIndex: 2 }}>
               <img src="/monster-speaker.svg" alt="" className="w-full h-full" />
+            </div>
+
+            {/* You Are Enough Word SVG - Top right of projects */}
+            <div className="absolute -top-12 right-4 opacity-40 mix-blend-darken" style={{ width: '160px', height: '130px', zIndex: 2 }}>
+              <img src="/you-are-enough.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
