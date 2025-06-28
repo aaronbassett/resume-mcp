@@ -146,7 +146,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
         {/* Header Monster SVG */}
         <div className="absolute top-4 right-8" style={{ width: '120px', height: '100px', zIndex: 5 }}>
-          <img src="/vite.svg" alt="" className="w-full h-full" />
+          <img src="/monster-bat.svg" alt="" className="w-full h-full" />
         </div>
       </div>
 
@@ -172,7 +172,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
           
           {/* Rabbit Monster SVG */}
           <div className="absolute -top-10 -right-10" style={{ width: '100px', height: '100px', zIndex: 2 }}>
-            <img src="/vite.svg" alt="" className="w-full h-full" />
+            <img src="/monster-rabbit.svg" alt="" className="w-full h-full" />
           </div>
         </section>
 
@@ -286,7 +286,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
 
             {/* Potato Monster SVG */}
             <div className="absolute -bottom-10 left-1/4" style={{ width: '150px', height: '150px', zIndex: 2 }}>
-              <img src="/vite.svg" alt="" className="w-full h-full" />
+              <img src="/monster-potatoe.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -338,7 +338,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             
             {/* Skull Monster SVG */}
             <div className="absolute top-10 right-0" style={{ width: '120px', height: '120px', zIndex: 2 }}>
-              <img src="/vite.svg" alt="" className="w-full h-full" />
+              <img src="/monster-skull.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
@@ -402,7 +402,7 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             
             {/* Speaker Monster SVG */}
             <div className="absolute -bottom-20 right-10" style={{ width: '150px', height: '150px', zIndex: 2 }}>
-              <img src="/vite.svg" alt="" className="w-full h-full" />
+              <img src="/monster-speaker.svg" alt="" className="w-full h-full" />
             </div>
           </section>
         )}
