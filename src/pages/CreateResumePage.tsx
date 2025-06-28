@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -13,6 +14,8 @@ import { createResume, updateResume } from '../lib/resumeService';
 import type { CreateResumeData, UpdateResumeData } from '../lib/resumeService';
 
 export const CreateResumePage: FC = () => {
+  const navigate = useNavigate();
+  
   const {
     currentResume,
     isNewResume,
@@ -57,6 +60,10 @@ export const CreateResumePage: FC = () => {
           });
           setIsNewResume(false);
           clearUnsavedChanges();
+
+          // Update URL to edit route without navigation/refresh
+          const newUrl = `/resumes/${result.data.id}/edit`;
+          window.history.replaceState(null, '', newUrl);
         }
 
         return { error: null };
