@@ -8,6 +8,7 @@ export interface Tag {
 }
 
 export interface ResumeFormData {
+  id?: string; // Add ID for existing resumes
   title: string;
   role: string;
   displayName: string;
@@ -16,11 +17,14 @@ export interface ResumeFormData {
 
 interface ResumeState {
   currentResume: ResumeFormData;
+  isNewResume: boolean;
   updateTitle: (title: string) => void;
   updateRole: (role: string) => void;
   updateDisplayName: (displayName: string) => void;
   updateTags: (tags: Tag[]) => void;
+  setResume: (resume: ResumeFormData) => void;
   resetResume: () => void;
+  setIsNewResume: (isNew: boolean) => void;
 }
 
 const defaultResume: ResumeFormData = {
@@ -34,6 +38,7 @@ export const useResumeStore = create<ResumeState>()(
   persist(
     (set) => ({
       currentResume: defaultResume,
+      isNewResume: true,
       
       updateTitle: (title: string) =>
         set((state) => ({
@@ -55,7 +60,14 @@ export const useResumeStore = create<ResumeState>()(
           currentResume: { ...state.currentResume, tags }
         })),
       
-      resetResume: () => set({ currentResume: defaultResume })
+      setResume: (resume: ResumeFormData) =>
+        set({ currentResume: resume, isNewResume: false }),
+      
+      resetResume: () => 
+        set({ currentResume: defaultResume, isNewResume: true }),
+      
+      setIsNewResume: (isNew: boolean) =>
+        set({ isNewResume: isNew })
     }),
     {
       name: 'resume-storage',

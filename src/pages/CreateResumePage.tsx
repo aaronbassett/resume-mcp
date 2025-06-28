@@ -1,24 +1,106 @@
 import type { FC } from 'react';
+import { useState, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent } from '../components/ui/Card';
 import { EditableText } from '../components/resume/EditableText';
 import { EditableTags } from '../components/resume/EditableTags';
+import { AutoSaveIndicator, type SaveStatus } from '../components/resume/AutoSaveIndicator';
 import { useResumeStore } from '../store/resume';
+import { useAutoSave } from '../hooks/useAutoSave';
+import { createResume, updateResume } from '../lib/resumeService';
+import type { CreateResumeData, UpdateResumeData } from '../lib/resumeService';
 
 export const CreateResumePage: FC = () => {
   const {
     currentResume,
+    isNewResume,
     updateTitle,
     updateRole,
     updateDisplayName,
-    updateTags
+    updateTags,
+    setResume,
+    setIsNewResume
   } = useResumeStore();
+
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+
+  // Auto-save function
+  const handleSave = useCallback(async (data: typeof currentResume) => {
+    try {
+      if (isNewResume) {
+        // Create new resume
+        const createData: CreateResumeData = {
+          title: data.title,
+          role: data.role,
+          display_name: data.displayName,
+          tags: data.tags
+        };
+
+        const result = await createResume(createData);
+        
+        if (result.error) {
+          return { error: result.error };
+        }
+
+        if (result.data) {
+          // Update store with the created resume data
+          setResume({
+            id: result.data.id,
+            title: result.data.title,
+            role: result.data.role,
+            displayName: result.data.display_name,
+            tags: result.data.tags
+          });
+          setIsNewResume(false);
+        }
+
+        return { error: null };
+      } else {
+        // Update existing resume
+        if (!data.id) {
+          return { error: 'Resume ID is missing' };
+        }
+
+        const updateData: UpdateResumeData = {
+          title: data.title,
+          role: data.role,
+          display_name: data.displayName,
+          tags: data.tags
+        };
+
+        const result = await updateResume(data.id, updateData);
+        
+        if (result.error) {
+          return { error: result.error };
+        }
+
+        return { error: null };
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      return { error: 'Failed to save resume' };
+    }
+  }, [isNewResume, setResume, setIsNewResume]);
+
+  // Set up auto-save
+  const { manualSave } = useAutoSave({
+    data: currentResume,
+    onSave: handleSave,
+    delay: 1500, // 1.5 second delay
+    onStatusChange: setSaveStatus
+  });
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-8">
+        {/* Auto-save indicator */}
+        <AutoSaveIndicator 
+          status={saveStatus} 
+          onRetry={manualSave}
+        />
+
         {/* Header Section */}
         <Card>
           <CardContent className="p-8 pt-12">
