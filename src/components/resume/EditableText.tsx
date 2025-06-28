@@ -70,7 +70,7 @@ export const EditableText: FC<EditableTextProps> = ({
         onChange={(e) => setEditValue(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
-        className={`${className} bg-muted/30 border-none rounded-md px-3 py-2 focus:outline-none focus:ring-0`}
+        className={`${className} bg-muted/30 border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-0`}
         placeholder={placeholder}
       />
     );

@@ -41,7 +41,7 @@ export const CreateResumePage: FC = () => {
                   placeholder="Click to Edit Role"
                   onSave={updateRole}
                   as="h2"
-                  className="text-2xl font-semibold text-muted-foreground leading-tight"
+                  className="text-2xl font-semibold text-muted-foreground leading-tight w-full"
                 />
               </div>
 
