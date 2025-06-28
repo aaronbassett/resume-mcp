@@ -144,8 +144,8 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
           </div>
         )}
 
-        {/* Header Monster SVG */}
-        <div className="absolute top-4 right-8" style={{ width: '120px', height: '100px', zIndex: 5 }}>
+        {/* Bat Monster SVG - Top left of header */}
+        <div className="absolute -top-8 left-12 opacity-60 mix-blend-multiply" style={{ width: '100px', height: '80px', zIndex: 5 }}>
           <img src="/monster-bat.svg" alt="" className="w-full h-full" />
         </div>
       </div>
@@ -170,8 +170,8 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
             </p>
           </div>
           
-          {/* Rabbit Monster SVG */}
-          <div className="absolute -top-10 -right-10" style={{ width: '100px', height: '100px', zIndex: 2 }}>
+          {/* Rabbit Monster SVG - Left side of summary */}
+          <div className="absolute -left-16 top-8 opacity-80 mix-blend-overlay" style={{ width: '120px', height: '140px', zIndex: 2 }}>
             <img src="/monster-rabbit.svg" alt="" className="w-full h-full" />
           </div>
         </section>
@@ -284,8 +284,8 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
               )}
             </div>
 
-            {/* Potato Monster SVG */}
-            <div className="absolute -bottom-10 left-1/4" style={{ width: '150px', height: '150px', zIndex: 2 }}>
+            {/* Potato Monster SVG - Center bottom of work section */}
+            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-70 mix-blend-darken" style={{ width: '180px', height: '180px', zIndex: 2 }}>
               <img src="/monster-potatoe.svg" alt="" className="w-full h-full" />
             </div>
           </section>
@@ -336,8 +336,8 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
               ))}
             </div>
             
-            {/* Skull Monster SVG */}
-            <div className="absolute top-10 right-0" style={{ width: '120px', height: '120px', zIndex: 2 }}>
+            {/* Skull Monster SVG - Right side of education */}
+            <div className="absolute top-16 -right-8 opacity-50 mix-blend-multiply" style={{ width: '140px', height: '140px', zIndex: 2 }}>
               <img src="/monster-skull.svg" alt="" className="w-full h-full" />
             </div>
           </section>
@@ -400,8 +400,8 @@ export const ZineStyle: FC<ZineStyleProps> = ({ data }) => {
               })}
             </div>
             
-            {/* Speaker Monster SVG */}
-            <div className="absolute -bottom-20 right-10" style={{ width: '150px', height: '150px', zIndex: 2 }}>
+            {/* Speaker Monster SVG - Bottom left of projects */}
+            <div className="absolute -bottom-16 left-8 opacity-75 mix-blend-overlay" style={{ width: '160px', height: '160px', zIndex: 2 }}>
               <img src="/monster-speaker.svg" alt="" className="w-full h-full" />
             </div>
           </section>
