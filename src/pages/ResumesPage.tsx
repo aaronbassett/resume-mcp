@@ -172,7 +172,7 @@ export const ResumesPage: FC = () => {
                         View
                       </Button>
                     </Link>
-                    <Link to={`/resumes/${resume.id}`}>
+                    <Link to={`/resumes/${resume.id}/edit`}>
                       <Button variant="ghost" size="sm" title="Edit Resume">
                         <Edit className="mr-2 h-4 w-4" />
                         Edit

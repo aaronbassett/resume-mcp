@@ -11,6 +11,7 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ResumesPage } from './pages/ResumesPage';
 import { CreateResumePage } from './pages/CreateResumePage';
+import { EditResumePage } from './pages/EditResumePage';
 import { BlocksPage } from './pages/BlocksPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { ResumePreviewPage } from './pages/ResumePreviewPage';
@@ -88,6 +89,7 @@ function App() {
               {/* Resume Routes */}
               <Route path="/resumes" element={isAuthenticated ? <ResumesPage /> : <Navigate to="/auth/login" />} />
               <Route path="/resumes/new" element={isAuthenticated ? <CreateResumePage /> : <Navigate to="/auth/login" />} />
+              <Route path="/resumes/:resumeId/edit" element={isAuthenticated ? <EditResumePage /> : <Navigate to="/auth/login" />} />
               <Route path="/resumes/:resumeId" element={isAuthenticated ? <PlaceholderPage title="Edit Resume" /> : <Navigate to="/auth/login" />} />
               <Route path="/resumes/:resumeId/settings" element={isAuthenticated ? <PlaceholderPage title="Resume Settings" /> : <Navigate to="/auth/login" />} />
               <Route path="/resumes/:resumeId/analytics" element={isAuthenticated ? <PlaceholderPage title="Resume Analytics" /> : <Navigate to="/auth/login" />} />
