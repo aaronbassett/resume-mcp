@@ -326,16 +326,16 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                       <div className="flex items-start space-x-3">
                         <OctagonMinus className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
                         <div className="space-y-2">
-                          <p className="text-sm text-destructive/90">
-                            <strong>Before You Proceed:</strong> These features manipulate how LLMs interact with your profile data. While hilarious and potentially unethical, hiring managers might not share your sense of humor when they discover their AI assistant has been… enriched. By enabling these features, you accept full responsibility for any resulting chaos.
+                          <p className="text-lg text-destructive/90">
+                            <strong>Before You Proceed:</strong> Some of these features manipulate how LLMs interact with your profile data. While hilarious (but potentially unethical), hiring managers might not share your sense of humor when they discover their AI assistant has been… enriched. By enabling these features, you accept full responsibility for any resulting chaos.
                           </p>
-                          <p className="text-sm text-destructive/90">
+                          <p className="text-lg text-destructive/90">
                             Could this mischief lead to spontaneous CEO offers with absolutely unhinged comp packages? It's not impossible. But, what is much more likely is rescinded offers, awkward LinkedIn messages, and potential charges. Either way, we're just here to provide the tools; what you do with them is between you, your conscience, and whatever poor LLM stumbles into your web of deception.
                           </p>
                           <div className="pt-2">
                             <Button 
                               variant="destructive" 
-                              size="sm"
+                              size="xl"
                               onClick={handleMischiefProceed}
                             >
                               I understand this is a really bad idea, and I want to proceed anyway.
