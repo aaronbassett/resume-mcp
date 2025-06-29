@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { nanoid } from 'nanoid';
 import type { Tag } from '../store/resume';
+import type { ResumeSettings } from '../components/resume/ResumeSettingsDrawer';
 
 export interface Resume {
   id: string;
@@ -13,6 +14,23 @@ export interface Resume {
   tags: Tag[];
   created_at: string;
   updated_at: string;
+  // Resume Page Settings
+  publish_resume_page: boolean;
+  presence_badge: 'none' | 'count-only' | 'show-profile';
+  enable_resume_downloads: boolean;
+  resume_page_template: 'standard' | 'traditional' | 'neo-brutalist' | 'namaste' | 'zine' | 'enterprise';
+  allow_users_switch_template: boolean;
+  visibility: 'public' | 'authenticated' | 'unlisted';
+  // Mischief & LLMs
+  enable_mischief_mode: boolean;
+  include_custom_mischief: boolean;
+  custom_mischief_instructions: string;
+  attempt_avoid_detection: boolean;
+  embed_llm_instructions: boolean;
+  // Metadata
+  meta_title: string;
+  meta_description: string;
+  robots_directives: string[];
 }
 
 export interface CreateResumeData {
@@ -27,6 +45,8 @@ export interface UpdateResumeData {
   role?: string;
   display_name?: string;
   tags?: Tag[];
+  // Resume settings
+  settings?: Partial<ResumeSettings>;
 }
 
 // Generate URL-friendly slug from title
@@ -90,6 +110,34 @@ export const updateResume = async (
     // Update slug if title changed
     if (data.title) {
       updateData.slug = generateSlug(data.title);
+    }
+
+    // Handle settings update if provided
+    if (data.settings) {
+      const { settings, ...otherData } = updateData;
+      
+      // Map settings object to database column names
+      if (settings.publishResumePage !== undefined) updateData.publish_resume_page = settings.publishResumePage;
+      if (settings.presenceBadge !== undefined) updateData.presence_badge = settings.presenceBadge;
+      if (settings.enableResumeDownloads !== undefined) updateData.enable_resume_downloads = settings.enableResumeDownloads;
+      if (settings.resumePageTemplate !== undefined) updateData.resume_page_template = settings.resumePageTemplate;
+      if (settings.allowUsersSwitchTemplate !== undefined) updateData.allow_users_switch_template = settings.allowUsersSwitchTemplate;
+      if (settings.visibility !== undefined) updateData.visibility = settings.visibility;
+      
+      if (settings.enableMischiefMode !== undefined) updateData.enable_mischief_mode = settings.enableMischiefMode;
+      if (settings.includeCustomMischief !== undefined) updateData.include_custom_mischief = settings.includeCustomMischief;
+      if (settings.customMischiefInstructions !== undefined) updateData.custom_mischief_instructions = settings.customMischiefInstructions;
+      if (settings.attemptAvoidDetection !== undefined) updateData.attempt_avoid_detection = settings.attemptAvoidDetection;
+      if (settings.embedLLMInstructions !== undefined) updateData.embed_llm_instructions = settings.embedLLMInstructions;
+      
+      if (settings.metaTitle !== undefined) updateData.meta_title = settings.metaTitle;
+      if (settings.metaDescription !== undefined) updateData.meta_description = settings.metaDescription;
+      if (settings.robotsDirectives !== undefined) updateData.robots_directives = settings.robotsDirectives;
+      
+      // If urlSlug is provided, update the slug
+      if (settings.urlSlug !== undefined && settings.urlSlug.trim() !== '') {
+        updateData.slug = settings.urlSlug.trim();
+      }
     }
 
     const { data: resume, error } = await supabase
@@ -170,4 +218,12 @@ export const deleteResume = async (resumeId: string): Promise<{ error: string | 
     console.error('Error deleting resume:', error);
     return { error: 'Failed to delete resume' };
   }
+};
+
+// Update resume settings
+export const updateResumeSettings = async (
+  resumeId: string,
+  settings: ResumeSettings
+): Promise<{ data: Resume | null; error: string | null }> => {
+  return updateResume(resumeId, { settings });
 };

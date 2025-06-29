@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { ResumeHeader } from '../components/resume/ResumeHeader';
 import { ResumeContent } from '../components/resume/ResumeContent';
 import { ResumeFooter } from '../components/resume/ResumeFooter';
+import { supabase } from '../lib/supabase';
 import type { ResumeData, ResumeStyle } from '../types/resume';
 
 // Mock resume data
@@ -277,31 +278,158 @@ const mockResumeData: ResumeData = {
   ]
 };
 
+interface ResumeSettings {
+  publish_resume_page: boolean;
+  presence_badge: 'none' | 'count-only' | 'show-profile';
+  enable_resume_downloads: boolean;
+  resume_page_template: ResumeStyle;
+  allow_users_switch_template: boolean;
+  visibility: 'public' | 'authenticated' | 'unlisted';
+  meta_title: string;
+  meta_description: string;
+  robots_directives: string[];
+}
+
 export const ResumePreviewPage: FC = () => {
   const { userId, resumeSlug } = useParams<{ userId: string; resumeSlug: string }>();
   const [currentStyle, setCurrentStyle] = useState<ResumeStyle>('standard');
+  const [resumeSettings, setResumeSettings] = useState<ResumeSettings | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load saved style preference
+  // Load resume data and settings
   useEffect(() => {
-    const savedStyle = localStorage.getItem('resumeStyle') as ResumeStyle;
-    if (savedStyle && ['standard', 'traditional', 'neo-brutalist', 'namaste', 'zine', 'enterprise'].includes(savedStyle)) {
-      setCurrentStyle(savedStyle);
+    const fetchResumeData = async () => {
+      if (!userId || !resumeSlug) {
+        setError('Invalid URL parameters');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Query the resumes table to get the resume by slug
+        const { data, error } = await supabase
+          .from('resumes')
+          .select('*')
+          .eq('slug', resumeSlug)
+          .single();
+
+        if (error) {
+          console.error('Error fetching resume:', error);
+          setError('Resume not found');
+          setIsLoading(false);
+          return;
+        }
+
+        if (!data) {
+          setError('Resume not found');
+          setIsLoading(false);
+          return;
+        }
+
+        // Check if resume is published
+        if (!data.publish_resume_page) {
+          setError('This resume is not currently published');
+          setIsLoading(false);
+          return;
+        }
+
+        // Check visibility settings
+        if (data.visibility === 'authenticated') {
+          // Check if user is authenticated
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) {
+            setError('You must be logged in to view this resume');
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // Set resume settings
+        setResumeSettings({
+          publish_resume_page: data.publish_resume_page,
+          presence_badge: data.presence_badge,
+          enable_resume_downloads: data.enable_resume_downloads,
+          resume_page_template: data.resume_page_template,
+          allow_users_switch_template: data.allow_users_switch_template,
+          visibility: data.visibility,
+          meta_title: data.meta_title,
+          meta_description: data.meta_description,
+          robots_directives: data.robots_directives
+        });
+
+        // Set the initial style based on the resume settings
+        setCurrentStyle(data.resume_page_template);
+        
+        // In a real implementation, you would fetch the actual resume content here
+        // For now, we'll continue using the mock data
+        
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error fetching resume:', err);
+        setError('Failed to load resume');
+        setIsLoading(false);
+      }
+    };
+
+    fetchResumeData();
+  }, [userId, resumeSlug]);
+
+  // Load saved style preference if allowed by settings
+  useEffect(() => {
+    if (resumeSettings?.allow_users_switch_template) {
+      const savedStyle = localStorage.getItem('resumeStyle') as ResumeStyle;
+      if (savedStyle && ['standard', 'traditional', 'neo-brutalist', 'namaste', 'zine', 'enterprise'].includes(savedStyle)) {
+        setCurrentStyle(savedStyle);
+      }
     }
-  }, []);
+  }, [resumeSettings]);
 
   const handleStyleChange = (style: ResumeStyle) => {
-    setCurrentStyle(style);
-    localStorage.setItem('resumeStyle', style);
+    if (resumeSettings?.allow_users_switch_template) {
+      setCurrentStyle(style);
+      localStorage.setItem('resumeStyle', style);
+    }
   };
 
-  // In a real implementation, you would fetch the resume data based on userId and resumeSlug
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading resume...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="bg-destructive/10 rounded-full p-4 w-fit mx-auto mb-4">
+            <div className="h-12 w-12 text-destructive">⚠️</div>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Resume Not Available</h1>
+          <p className="text-muted-foreground mb-6">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // In a real implementation, you would use the actual resume data
   // For now, we'll use the mock data
   const username = userId || 'johndoe';
   const slug = resumeSlug || 'senior-full-stack-developer';
 
-  // Generate meta title and description based on resume data
-  const metaTitle = `${mockResumeData.basics.name} | ${mockResumeData.basics.label}`;
-  const metaDescription = mockResumeData.basics.summary.substring(0, 160) + (mockResumeData.basics.summary.length > 160 ? '...' : '');
+  // Generate meta title and description based on resume data and settings
+  const metaTitle = resumeSettings?.meta_title || `${mockResumeData.basics.name} | ${mockResumeData.basics.label}`;
+  const metaDescription = resumeSettings?.meta_description || mockResumeData.basics.summary.substring(0, 160) + (mockResumeData.basics.summary.length > 160 ? '...' : '');
+  
+  // Generate robots meta tag based on settings
+  const robotsContent = resumeSettings?.robots_directives?.join(', ') || 'index, follow';
   
   // Generate structured data for better SEO
   const structuredData = {
@@ -328,6 +456,7 @@ export const ResumePreviewPage: FC = () => {
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
+        <meta name="robots" content={robotsContent} />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="profile" />
@@ -346,6 +475,8 @@ export const ResumePreviewPage: FC = () => {
         resumeSlug={slug}
         currentStyle={currentStyle}
         onStyleChange={handleStyleChange}
+        allowStyleChange={resumeSettings?.allow_users_switch_template || false}
+        enableDownloads={resumeSettings?.enable_resume_downloads || true}
       />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -12,7 +12,7 @@ import { AutoSaveIndicator, type SaveStatus } from './AutoSaveIndicator';
 import { ResumeSettingsDrawer, type ResumeSettings } from './ResumeSettingsDrawer';
 import { useResumeStore } from '../../store/resume';
 import { useAutoSave } from '../../hooks/useAutoSave';
-import { createResume, updateResume, getResume } from '../../lib/resumeService';
+import { createResume, updateResume, getResume, updateResumeSettings } from '../../lib/resumeService';
 import type { CreateResumeData, UpdateResumeData } from '../../lib/resumeService';
 
 interface ResumeEditorProps {
@@ -109,11 +109,26 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           });
           setIsNewResume(false);
           
-          // Set URL slug from the loaded resume
-          setResumeSettings(prev => ({
-            ...prev,
-            urlSlug: result.data.slug || ''
-          }));
+          // Set settings from the loaded resume
+          setResumeSettings({
+            publishResumePage: result.data.publish_resume_page,
+            presenceBadge: result.data.presence_badge,
+            enableResumeDownloads: result.data.enable_resume_downloads,
+            resumePageTemplate: result.data.resume_page_template,
+            allowUsersSwitchTemplate: result.data.allow_users_switch_template,
+            visibility: result.data.visibility,
+            
+            enableMischiefMode: result.data.enable_mischief_mode,
+            includeCustomMischief: result.data.include_custom_mischief,
+            customMischiefInstructions: result.data.custom_mischief_instructions,
+            attemptAvoidDetection: result.data.attempt_avoid_detection,
+            embedLLMInstructions: result.data.embed_llm_instructions,
+            
+            urlSlug: result.data.slug || '',
+            metaTitle: result.data.meta_title || '',
+            metaDescription: result.data.meta_description || '',
+            robotsDirectives: result.data.robots_directives || ['index', 'follow']
+          });
         } else {
           setNotFound(true);
         }
@@ -220,10 +235,28 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     }
   };
 
-  const handleSaveSettings = (newSettings: ResumeSettings) => {
+  const handleSaveSettings = async (newSettings: ResumeSettings) => {
     setResumeSettings(newSettings);
-    // In a real implementation, you would save these settings to the backend
-    console.log('Saving settings:', newSettings);
+    
+    // Only save settings if we have a resume ID
+    if (currentResume.id) {
+      try {
+        setSaveStatus('saving');
+        const result = await updateResumeSettings(currentResume.id, newSettings);
+        
+        if (result.error) {
+          console.error('Error saving settings:', result.error);
+          setSaveStatus('error');
+        } else {
+          setSaveStatus('saved');
+        }
+      } catch (error) {
+        console.error('Error saving settings:', error);
+        setSaveStatus('error');
+      }
+    }
+    
+    setIsAdvancedSettingsOpen(false);
   };
 
   // Loading state
