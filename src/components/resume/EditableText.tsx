@@ -1,6 +1,6 @@
 import type { FC, ReactNode, KeyboardEvent } from 'react';
 import { useState, useRef, useEffect } from 'react';
-import { WandSparkles } from 'lucide-react'; 
+import { Sparkles } from 'lucide-react'; 
 import { HypeButton } from '../ui/HypeButton';
 
 interface EditableTextProps {
@@ -91,7 +91,7 @@ export const EditableText: FC<EditableTextProps> = ({
             className="h-8 w-8 p-0 text-xs"
             title="Add some AI magic ✨"
           >
-            <WandSparkles className="h-4 w-4" />
+            <Sparkles className="h-4 w-4" />
           </HypeButton>
         </div>
       </div>
