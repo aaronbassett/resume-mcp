@@ -339,7 +339,8 @@ export const HypeButton: FC<HypeButtonProps> = ({
             style={{
               left: sparkle.x,
               top: sparkle.y,
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
+              zIndex: 99
             }}
             initial={{ opacity: 0, scale: 0, rotate: 0 }}
             animate={{ 
