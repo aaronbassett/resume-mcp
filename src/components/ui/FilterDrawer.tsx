@@ -66,26 +66,28 @@ export const FilterDrawer: FC<FilterDrawerProps> = ({
     filters.status !== 'all';
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`w-full ${className}`}>
       {/* Filter Toggle Button */}
-      <Button
-        variant="outline"
-        onClick={onToggle}
-        className="h-12 px-4 relative"
-      >
-        <div className="flex items-center space-x-2">
-          <span>Filter</span>
-          {hasActiveFilters && (
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
-          )}
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <ChevronDown className="h-4 w-4" />
-          </motion.div>
-        </div>
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          onClick={onToggle}
+          className="h-12 px-4 relative"
+        >
+          <div className="flex items-center space-x-2">
+            <span>Filter</span>
+            {hasActiveFilters && (
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+            )}
+            <motion.div
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronDown className="h-4 w-4" />
+            </motion.div>
+          </div>
+        </Button>
+      </div>
 
       {/* Drawer Content */}
       <AnimatePresence>
@@ -95,7 +97,7 @@ export const FilterDrawer: FC<FilterDrawerProps> = ({
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="absolute top-full left-0 right-0 z-50 mt-2 bg-card border rounded-lg shadow-lg overflow-hidden"
+            className="w-full mt-4 bg-background/80 dark:bg-background/40 rounded-lg border shadow-inner overflow-hidden"
           >
             <div className="p-6 space-y-6">
               {/* Header */}
