@@ -129,7 +129,14 @@ export const CreateResumePage: FC = () => {
                   className="text-4xl font-bold leading-tight w-full"
                   llmOptions={{
                     additionalContext: [
-                      'The user is updating the Resume Title form field. The placeholder for this field is "Untitled Resume".'
+                      'The user is updating the Resume Title form field. The placeholder for this field is "Untitled Resume".',
+                      JSON.stringify({
+                        "other_fields": {
+                          "role": currentResume.role,
+                          "user's display name": currentResume.displayName,
+                          "tags": currentResume.tags
+                        }
+                      })
                     ]
                   }}
                 />
