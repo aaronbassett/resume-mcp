@@ -105,7 +105,13 @@ export const updateResume = async (
   data: UpdateResumeData
 ): Promise<{ data: Resume | null; error: string | null }> => {
   try {
-    const updateData: any = { ...data };
+    const updateData: any = {};
+    
+    // Copy non-settings properties
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.display_name !== undefined) updateData.display_name = data.display_name;
+    if (data.tags !== undefined) updateData.tags = data.tags;
     
     // Update slug if title changed
     if (data.title) {
@@ -114,7 +120,7 @@ export const updateResume = async (
 
     // Handle settings update if provided
     if (data.settings) {
-      const { settings, ...otherData } = updateData;
+      const settings = data.settings;
       
       // Map settings object to database column names
       if (settings.publishResumePage !== undefined) updateData.publish_resume_page = settings.publishResumePage;
