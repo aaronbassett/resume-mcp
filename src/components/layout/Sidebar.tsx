@@ -30,7 +30,7 @@ const navSections: NavSection[] = [
     title: 'Overview',
     items: [
       { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-      { label: 'Analytics', href: '/analytics', icon: BarChart3, badge: '12' },
+      { label: 'Analytics', href: '/analytics', icon: BarChart3 },
     ],
   },
   {
