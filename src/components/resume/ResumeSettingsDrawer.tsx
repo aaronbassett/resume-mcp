@@ -4,7 +4,7 @@ import { X, Settings, Globe, Eye, Wand2, Code, OctagonMinus } from 'lucide-react
 import { Button } from '../ui/Button';
 import { TextInput, Select, Textarea } from 'flowbite-react';
 import { ToggleSwitch } from '../analytics/ToggleSwitch';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 
 interface ResumeSettingsDrawerProps {
   isOpen: boolean;
@@ -66,6 +66,15 @@ const robotsDirectiveOptions = [
   { value: 'notranslate', label: 'notranslate - Don\'t offer translation for this page' }
 ];
 
+// Custom component to show value instead of label in multi-value pills
+const CustomMultiValueLabel = (props: any) => {
+  return (
+    <components.MultiValueLabel {...props}>
+      {props.data.value}
+    </components.MultiValueLabel>
+  );
+};
+
 export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
   isOpen,
   onClose,
@@ -79,7 +88,6 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
   
   const [showMischiefSettings, setShowMischiefSettings] = useState(false);
   const [showMischiefWarning, setShowMischiefWarning] = useState(true);
-  const [showMischiefMessage, setShowMischiefMessage] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -101,13 +109,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
 
   const handleMischiefProceed = () => {
     setShowMischiefWarning(false);
-    setShowMischiefMessage(true);
-    
-    // After 3 seconds, show the mischief settings
-    setTimeout(() => {
-      setShowMischiefMessage(false);
-      setShowMischiefSettings(true);
-    }, 3000);
+    setShowMischiefSettings(true);
   };
 
   return (
@@ -121,15 +123,11 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
       <div className="border-t bg-muted/30 dark:bg-muted/10 shadow-inner">
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold flex items-center">
-              <Settings className="h-5 w-5 mr-2 text-primary" />
-              Advanced Resume Settings
-            </h3>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 ml-auto"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -154,6 +152,19 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                   
                   <div className={settings.publishResumePage ? '' : 'opacity-50 pointer-events-none'}>
                     <div className="space-y-2">
+                      <label className="text-sm font-medium">Visibility</label>
+                      <Select
+                        value={settings.visibility}
+                        onChange={(e) => updateSetting('visibility', e.target.value as any)}
+                        disabled={!settings.publishResumePage}
+                      >
+                        <option value="public">Public</option>
+                        <option value="authenticated">Authenticated Users Only</option>
+                        <option value="unlisted">Unlisted - Requires Direct Link to View</option>
+                      </Select>
+                    </div>
+                    
+                    <div className="mt-4 space-y-2">
                       <label className="text-sm font-medium">Presence Badge</label>
                       <Select
                         value={settings.presenceBadge}
@@ -201,19 +212,6 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                         label="Allow Users to Switch Template"
                         description="Let visitors change the resume template when viewing"
                       />
-                    </div>
-                    
-                    <div className="mt-4 space-y-2">
-                      <label className="text-sm font-medium">Visibility</label>
-                      <Select
-                        value={settings.visibility}
-                        onChange={(e) => updateSetting('visibility', e.target.value as any)}
-                        disabled={!settings.publishResumePage}
-                      >
-                        <option value="public">Public</option>
-                        <option value="authenticated">Authenticated Users Only</option>
-                        <option value="unlisted">Unlisted - Requires Direct Link to View</option>
-                      </Select>
                     </div>
                   </div>
                 </div>
@@ -297,6 +295,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                       className="react-select-container"
                       classNamePrefix="react-select"
                       isDisabled={!settings.publishResumePage}
+                      components={{ MultiValueLabel: CustomMultiValueLabel }}
                     />
                     <p className="text-xs text-muted-foreground">
                       Control how search engines interact with your resume page
@@ -345,20 +344,6 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                           </div>
                         </div>
                       </div>
-                    </motion.div>
-                  )}
-
-                  {showMischiefMessage && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg min-h-[200px]"
-                    >
-                      <p className="text-sm text-amber-800 dark:text-amber-200 text-center">
-                        Mischief & LLMs settings enabled. <strong>Don't say we didn't warn you.</strong>
-                      </p>
                     </motion.div>
                   )}
 
