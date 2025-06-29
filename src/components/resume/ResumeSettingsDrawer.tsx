@@ -354,7 +354,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg"
+                      className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg min-h-[200px]"
                     >
                       <p className="text-sm text-amber-800 dark:text-amber-200 text-center">
                         Mischief & LLMs settings enabled. <strong>Don't say we didn't warn you.</strong>
