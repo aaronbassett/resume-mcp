@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
+import { X, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
@@ -394,7 +394,7 @@ export const AddEventModal: FC<AddEventModalProps> = ({
                 onClick={handleClose} 
                 className="absolute top-4 right-4 h-12 w-12 p-0 hover:bg-destructive/10 hover:text-destructive"
               >
-                <CircleX className="h-8 w-8" />
+                <X className="h-8 w-8" />
               </Button>
               
               {/* Header content aligned left with icon */}
