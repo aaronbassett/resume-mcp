@@ -1,4 +1,4 @@
-import type { FC, useState } from 'react';
+import { type FC, useState } from 'react';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Dropdown, DropdownItem } from '../ui/Dropdown';
