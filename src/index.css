@@ -28,6 +28,13 @@
   --sidebar-foreground: 71 85 105;
   --gradient-primary: linear-gradient(135deg, rgb(99 102 241) 0%, rgb(139 92 246) 100%);
   --gradient-secondary: linear-gradient(135deg, rgb(236 72 153) 0%, rgb(239 68 68) 100%);
+  
+  /* Rainbow colors */
+  --color-1: 0 100% 63%;
+  --color-2: 270 100% 63%;
+  --color-3: 210 100% 63%;
+  --color-4: 195 100% 63%;
+  --color-5: 90 100% 63%;
 }
 
 .dark {
@@ -248,6 +255,19 @@ body {
 
 /* Aurora text animation - animated gradient background */
 @keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Rainbow animation for HypeButton */
+@keyframes rainbow {
   0% {
     background-position: 0% 50%;
   }

@@ -20,6 +20,7 @@
     "@nivo/sunburst": "^0.87.0",
     "@supabase/supabase-js": "^2.38.4",
     "@theme-toggles/react": "^4.1.0",
+    "canvas-confetti": "^1.9.3",
     "clsx": "^2.0.0",
     "cmdk": "^1.0.0",
     "flowbite": "^2.2.1",
