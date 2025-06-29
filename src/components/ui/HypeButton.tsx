@@ -142,10 +142,10 @@ export const HypeButton: FC<HypeButtonProps> = ({
     // Multiple bursts for more impact
     const burst = () => {
       confetti({
-        particleCount: 30,
-        spread: 360,
-        ticks: 50,
-        gravity: 0.6,
+        particleCount: 15,
+        spread: 200,
+        ticks: 30,
+        gravity: 0.4,
         decay: 0.94,
         startVelocity: 25,
         shapes: [star, 'circle'],
@@ -155,10 +155,10 @@ export const HypeButton: FC<HypeButtonProps> = ({
       });
 
       confetti({
-        particleCount: 15,
-        spread: 360,
-        ticks: 50,
-        gravity: 0.6,
+        particleCount: 7,
+        spread: 200,
+        ticks: 30,
+        gravity: 0.4,
         decay: 0.94,
         startVelocity: 25,
         shapes: [triangle, square],
