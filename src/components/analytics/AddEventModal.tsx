@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { Circle as CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
+import { CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
