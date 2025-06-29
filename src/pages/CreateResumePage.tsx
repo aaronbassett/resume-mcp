@@ -127,6 +127,11 @@ export const CreateResumePage: FC = () => {
                   onSave={updateTitle}
                   as="h1"
                   className="text-4xl font-bold leading-tight w-full"
+                  llmOptions={{
+                    additionalContext: [
+                      'The user is updating the Resume Title form field. The placeholder for this field is "Untitled Resume".'
+                    ]
+                  }}
                 />
               </div>
 
