@@ -215,11 +215,6 @@ export const AnalyticsPage: FC = () => {
                     onCustomRangeChange={handleCustomRangeChange}
                   />
                   
-                  <ResumeSelector
-                    resumes={mockResumes}
-                    selectedResumeId={filters.resumeId}
-                    onResumeChange={handleResumeChange}
-                  />
                 </div>
                 
                 <ToggleSwitch
