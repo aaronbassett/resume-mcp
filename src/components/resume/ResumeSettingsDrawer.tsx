@@ -319,7 +319,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 300 }}
                       className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg"
                     >
                       <div className="flex items-start space-x-3">
@@ -351,7 +351,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 300 }}
                       className="space-y-4"
                     >
                       <ToggleSwitch
