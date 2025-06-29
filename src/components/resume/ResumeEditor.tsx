@@ -380,21 +380,23 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
               </div>
             )}
 
-            {/* Advanced Settings Toggle */}
-            <div className="absolute bottom-4 right-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsAdvancedSettingsOpen(!isAdvancedSettingsOpen)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                <span>Advanced Settings</span>
-                <ChevronDown 
-                  className={`ml-2 h-4 w-4 transition-transform ${isAdvancedSettingsOpen ? 'rotate-180' : ''}`} 
-                />
-              </Button>
-            </div>
+            {/* Advanced Settings Toggle - Only show for non-new resumes */}
+            {!isNewResume && (
+              <div className="absolute bottom-4 right-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setIsAdvancedSettingsOpen(!isAdvancedSettingsOpen)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  <span>Advanced Settings</span>
+                  <ChevronDown 
+                    className={`ml-2 h-4 w-4 transition-transform ${isAdvancedSettingsOpen ? 'rotate-180' : ''}`} 
+                  />
+                </Button>
+              </div>
+            )}
           </CardContent>
 
           {/* Advanced Settings Drawer */}
@@ -405,6 +407,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
                 onClose={() => setIsAdvancedSettingsOpen(false)}
                 onSave={handleSaveSettings}
                 initialSettings={resumeSettings}
+                resumeId={currentResume.id}
               />
             )}
           </AnimatePresence>

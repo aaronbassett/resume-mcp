@@ -11,6 +11,7 @@ interface ResumeSettingsDrawerProps {
   onClose: () => void;
   onSave: (settings: ResumeSettings) => void;
   initialSettings?: Partial<ResumeSettings>;
+  resumeId?: string;
 }
 
 export interface ResumeSettings {
@@ -79,7 +80,8 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
   isOpen,
   onClose,
   onSave,
-  initialSettings = {}
+  initialSettings = {},
+  resumeId
 }) => {
   const [settings, setSettings] = useState<ResumeSettings>({
     ...defaultSettings,
@@ -95,8 +97,20 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
         ...defaultSettings,
         ...initialSettings
       });
+      
+      // Check if mischief warning has been dismissed for this resume
+      if (resumeId) {
+        const dismissedMischief = localStorage.getItem(`mischief_dismissed_${resumeId}`);
+        if (dismissedMischief === 'true') {
+          setShowMischiefWarning(false);
+          setShowMischiefSettings(true);
+        } else {
+          setShowMischiefWarning(true);
+          setShowMischiefSettings(false);
+        }
+      }
     }
-  }, [isOpen, initialSettings]);
+  }, [isOpen, initialSettings, resumeId]);
 
   const handleSave = () => {
     onSave(settings);
@@ -110,6 +124,11 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
   const handleMischiefProceed = () => {
     setShowMischiefWarning(false);
     setShowMischiefSettings(true);
+    
+    // Store dismissal in localStorage if we have a resumeId
+    if (resumeId) {
+      localStorage.setItem(`mischief_dismissed_${resumeId}`, 'true');
+    }
   };
 
   return (
@@ -316,10 +335,10 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                 <AnimatePresence mode="wait">
                   {showMischiefWarning && (
                     <motion.div
-                      initial={{ opacity: 1 }}
+                      initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 2 }}
+                      transition={{ duration: 0.3 }}
                       className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg"
                     >
                       <div className="flex items-start space-x-3">
@@ -351,7 +370,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ duration: 4 }}
+                      transition={{ duration: 0.3 }}
                       className="space-y-4"
                     >
                       <ToggleSwitch
