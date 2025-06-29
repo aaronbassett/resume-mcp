@@ -1,6 +1,6 @@
 import type { FC, ReactNode, KeyboardEvent } from 'react';
 import { useState, useRef, useEffect } from 'react';
-import { WandSparkles } from 'lucide-react';
+import { WandSparkles } from 'lucide-react'; 
 import { HypeButton } from '../ui/HypeButton';
 
 interface EditableTextProps {
