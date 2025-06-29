@@ -150,6 +150,18 @@ export const CreateResumePage: FC = () => {
                   onSave={updateRole}
                   as="h2"
                   className="text-2xl font-semibold text-muted-foreground leading-tight w-full"
+                  llmOptions={{
+                    additionalContext: [
+                      'The user is updating the Role form field.',
+                      JSON.stringify({
+                        "other_fields": {
+                          "resume title": currentResume.title,
+                          "user's display name": currentResume.displayName,
+                          "tags": currentResume.tags
+                        }
+                      })
+                    ]
+                  }}
                 />
               </div>
 
