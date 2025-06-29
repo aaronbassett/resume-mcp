@@ -23,6 +23,7 @@ export const EditableText: FC<EditableTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputContainerRef = useRef<HTMLDivElement>(null);
 
   const displayValue = value || placeholder;
   const isPlaceholder = !value;
@@ -33,6 +34,23 @@ export const EditableText: FC<EditableTextProps> = ({
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    // Only add click outside listener when editing
+    if (isEditing) {
+      const handleClickOutside = (e: MouseEvent) => {
+        // Only save and exit if click is outside the input container
+        if (inputContainerRef.current && !inputContainerRef.current.contains(e.target as Node)) {
+          handleSave();
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isEditing, editValue]);
 
   const handleEdit = () => {
     setEditValue(value);
@@ -59,11 +77,10 @@ export const EditableText: FC<EditableTextProps> = ({
     }
   };
 
-  const handleBlur = () => {
-    handleSave();
-  };
-
-  const handleHypeButtonClick = () => {
+  const handleHypeButtonClick = (e: React.MouseEvent) => {
+    // Stop propagation to prevent the blur event from firing
+    e.stopPropagation();
+    
     // This is where the magic happens! 
     // In a real implementation, this could trigger AI enhancement of the text
     console.log('✨ Hype button clicked! Adding some magic...');
@@ -71,14 +88,13 @@ export const EditableText: FC<EditableTextProps> = ({
 
   if (isEditing) {
     return (
-      <div className="relative">
+      <div ref={inputContainerRef} className="relative">
         <input
           ref={inputRef}
           type="text"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          onBlur={handleBlur}
           className={`${className} bg-muted/30 border border-border rounded-md px-3 py-2 pr-12 outline-none focus:outline-none focus:ring-offset-0 focus:ring-0 focus:border-border focus:shadow-none w-full`}
           placeholder={placeholder}
         />
