@@ -394,7 +394,7 @@ export const AddEventModal: FC<AddEventModalProps> = ({
                 onClick={handleClose} 
                 className="absolute top-4 right-4 h-12 w-12 p-0 hover:bg-destructive/10 hover:text-destructive"
               >
-                <CircleX className="h-8 w-8" />
+                <CircleX className="h-8 w-8" />HERE
               </Button>
               
               {/* Header content aligned left with icon */}
