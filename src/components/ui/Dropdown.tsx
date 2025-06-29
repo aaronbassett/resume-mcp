@@ -1,3 +1,4 @@
+import React from 'react';
 import type { FC, ReactNode } from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
