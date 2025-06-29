@@ -42,9 +42,13 @@ export const Dropdown: FC<DropdownProps> = ({
     };
   }, [isOpen]);
 
+  const handleTriggerClick = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
+      <div onClick={handleTriggerClick} className="cursor-pointer">
         {trigger}
       </div>
       
@@ -82,9 +86,15 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   className = '',
   disabled = false 
 }) => {
+  const handleClick = () => {
+    if (!disabled && onClick) {
+      onClick();
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled}
       className={`w-full text-left px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >

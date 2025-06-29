@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { FileText } from 'lucide-react';
-import Select, { MultiValue, StylesConfig } from 'react-select';
+import Select, { SingleValue, StylesConfig } from 'react-select';
 import type { Resume } from '../../types/analytics';
 import { useThemeStore } from '../../store/theme';
 
@@ -11,32 +11,35 @@ interface ResumeOption {
 
 interface ResumeMultiSelectorProps {
   resumes: Resume[];
-  selectedResumeIds: string[];
-  onResumeChange: (resumeIds: string[]) => void;
+  selectedResumeId?: string;
+  onResumeChange: (resumeId?: string) => void;
 }
 
 export const ResumeMultiSelector: FC<ResumeMultiSelectorProps> = ({
   resumes,
-  selectedResumeIds,
+  selectedResumeId,
   onResumeChange
 }) => {
   const { theme } = useThemeStore();
 
-  const options: ResumeOption[] = resumes.map(resume => ({
-    value: resume.id,
-    label: resume.title
-  }));
+  const options: ResumeOption[] = [
+    { value: '', label: 'All Resumes' },
+    ...resumes.map(resume => ({
+      value: resume.id,
+      label: resume.title
+    }))
+  ];
 
-  const selectedOptions = options.filter(option => 
-    selectedResumeIds.includes(option.value)
+  const selectedOption = options.find(option => 
+    option.value === (selectedResumeId || '')
   );
 
-  const handleChange = (newValue: MultiValue<ResumeOption>) => {
-    const newIds = newValue.map(option => option.value);
-    onResumeChange(newIds);
+  const handleChange = (newValue: SingleValue<ResumeOption>) => {
+    const newId = newValue?.value || undefined;
+    onResumeChange(newId === '' ? undefined : newId);
   };
 
-  const customStyles: StylesConfig<ResumeOption, true> = {
+  const customStyles: StylesConfig<ResumeOption, false> = {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(255 255 255)',
@@ -74,24 +77,6 @@ export const ResumeMultiSelector: FC<ResumeMultiSelectorProps> = ({
           : (theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(241 245 249)'),
       },
     }),
-    multiValue: (provided) => ({
-      ...provided,
-      backgroundColor: theme === 'dark' ? 'rgb(99 102 241)' : 'rgb(99 102 241)',
-      borderRadius: '0.375rem',
-    }),
-    multiValueLabel: (provided) => ({
-      ...provided,
-      color: 'white',
-      fontSize: '0.875rem',
-    }),
-    multiValueRemove: (provided) => ({
-      ...provided,
-      color: 'white',
-      '&:hover': {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        color: 'white',
-      },
-    }),
     placeholder: (provided) => ({
       ...provided,
       color: theme === 'dark' ? 'rgb(148 163 184)' : 'rgb(100 116 139)',
@@ -104,18 +89,26 @@ export const ResumeMultiSelector: FC<ResumeMultiSelectorProps> = ({
       ...provided,
       color: theme === 'dark' ? 'rgb(248 250 252)' : 'rgb(15 23 42)',
     }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      color: theme === 'dark' ? 'rgb(148 163 184)' : 'rgb(100 116 139)',
+    }),
+    indicatorSeparator: (provided) => ({
+      ...provided,
+      backgroundColor: theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(226 232 240)',
+    }),
   };
 
   return (
-    <div className="flex items-center space-x-2 min-w-[300px]">
+    <div className="flex items-center space-x-2 min-w-[200px]">
       <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
       <Select
-        isMulti
-        isSearchable
+        isMulti={false}
+        isSearchable={true}
         options={options}
-        value={selectedOptions}
+        value={selectedOption}
         onChange={handleChange}
-        placeholder="Select resumes..."
+        placeholder="Select resume..."
         className="flex-1"
         classNamePrefix="react-select"
         styles={customStyles}

@@ -9,7 +9,6 @@ import {
   Zap,
   Code,
   Blocks,
-  Filter,
   Download,
   RefreshCw,
   Target,
@@ -103,11 +102,11 @@ export const AnalyticsPage: FC = () => {
     }));
   };
 
-  const handleResumeChange = (resumeIds: string[]) => {
-    setSelectedResumeIds(resumeIds);
+  const handleResumeChange = (resumeId?: string) => {
+    setSelectedResumeIds(resumeId ? [resumeId] : []);
     setFilters(prev => ({
       ...prev,
-      resumeId: resumeIds.length === 1 ? resumeIds[0] : undefined
+      resumeId
     }));
   };
 
@@ -208,11 +207,6 @@ export const AnalyticsPage: FC = () => {
           {/* Filters */}
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <Filter className="h-5 w-5 text-muted-foreground" />
-                <span className="font-medium text-foreground">Filters</span>
-              </div>
-              
               <div className="flex flex-wrap items-center gap-6">
                 <TimeRangeSelector
                   selectedRange={filters.timeRange.preset || 'last_30d'}
@@ -224,7 +218,7 @@ export const AnalyticsPage: FC = () => {
                 
                 <ResumeMultiSelector
                   resumes={mockResumes}
-                  selectedResumeIds={selectedResumeIds}
+                  selectedResumeId={filters.resumeId}
                   onResumeChange={handleResumeChange}
                 />
                 
@@ -448,7 +442,7 @@ export const AnalyticsPage: FC = () => {
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <ResumeMultiSelector
                   resumes={mockResumes}
-                  selectedResumeIds={selectedResumeIds}
+                  selectedResumeId={filters.resumeId}
                   onResumeChange={handleResumeChange}
                 />
               </div>
