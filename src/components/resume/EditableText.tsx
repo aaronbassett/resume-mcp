@@ -2,6 +2,7 @@ import type { FC, ReactNode, KeyboardEvent } from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { Wand2 } from 'lucide-react'; 
 import { HypeButton } from '../ui/HypeButton';
+import { LLMTextAssist } from '../ui/LLMTextAssist';
 
 interface EditableTextProps {
   value: string;
@@ -80,10 +81,6 @@ export const EditableText: FC<EditableTextProps> = ({
   const handleHypeButtonClick = (e: React.MouseEvent) => {
     // Stop propagation to prevent the blur event from firing
     e.stopPropagation();
-    
-    // This is where the magic happens! 
-    // In a real implementation, this could trigger AI enhancement of the text
-    console.log('✨ Hype button clicked! Adding some magic...');
   };
 
   if (isEditing) {
@@ -99,15 +96,17 @@ export const EditableText: FC<EditableTextProps> = ({
           placeholder={placeholder}
         />
         
-        {/* HypeButton positioned on the right side of the input */}
+        {/* LLMTextAssist positioned on the right side of the input */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2">
-          <HypeButton
-            variant="primary"
+          <LLMTextAssist
+            existingValue={editValue}
+            setNewValue={setEditValue}
+            additionalContext={[
+              `The user is editing a ${Component} element with placeholder "${placeholder}"`,
+              `Current field value: ${editValue || "empty"}`
+            ]}
             onClick={handleHypeButtonClick}
-            className="h-8 w-8 p-0 text-xs"
-          >
-            <Wand2 className="h-4 w-4" />
-          </HypeButton>
+          />
         </div>
       </div>
     );
