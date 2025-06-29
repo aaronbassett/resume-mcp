@@ -1,8 +1,9 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { Plus, Calendar, Building, Phone, Users, Award, XCircle, DollarSign, Clock, TrendingUp } from 'lucide-react';
+import { Plus, Calendar, Building, Phone, Users, Award, XCircle, DollarSign, Clock, TrendingUp, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { AddEventModal } from './AddEventModal';
 import type { SelfReportedJourney, JourneyEvent, OutcomeMetrics } from '../../types/analytics';
 
 interface SelfReportedJourneyTrackerProps {
@@ -16,7 +17,7 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
   selectedResumeId,
   outcomeMetrics
 }) => {
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState<string>('');
 
   // Filter journeys by selected resume
@@ -31,12 +32,12 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
 
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
-      case 'initial_outreach': return <Building className="h-4 w-4" />;
-      case 'follow_up_call': return <Phone className="h-4 w-4" />;
-      case 'interview_round': return <Users className="h-4 w-4" />;
-      case 'offer': return <Award className="h-4 w-4" />;
-      case 'rejection': return <XCircle className="h-4 w-4" />;
-      default: return <Calendar className="h-4 w-4" />;
+      case 'initial_outreach': return Building;
+      case 'follow_up_call': return Phone;
+      case 'interview_round': return Users;
+      case 'offer': return Award;
+      case 'rejection': return XCircle;
+      default: return Calendar;
     }
   };
 
@@ -83,6 +84,28 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
       default:
         return '';
     }
+  };
+
+  const handleAddEvent = (eventType?: string) => {
+    setSelectedEventType(eventType || '');
+    setShowAddModal(true);
+  };
+
+  const handleSaveEvent = (event: Omit<JourneyEvent, 'id'>) => {
+    // In a real implementation, this would save to the backend
+    console.log('Saving event:', event);
+    // For now, just close the modal
+    setShowAddModal(false);
+  };
+
+  const handleEditEvent = (event: JourneyEvent) => {
+    // In a real implementation, this would open the edit modal
+    console.log('Editing event:', event);
+  };
+
+  const handleDeleteEvent = (event: JourneyEvent) => {
+    // In a real implementation, this would delete the event
+    console.log('Deleting event:', event);
   };
 
   return (
@@ -243,10 +266,7 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => {
-                  setSelectedEventType('initial_outreach');
-                  setShowAddForm(true);
-                }}
+                onClick={() => handleAddEvent('initial_outreach')}
               >
                 <Building className="mr-2 h-4 w-4" />
                 Log New Application
@@ -254,10 +274,7 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => {
-                  setSelectedEventType('interview_round');
-                  setShowAddForm(true);
-                }}
+                onClick={() => handleAddEvent('interview_round')}
               >
                 <Users className="mr-2 h-4 w-4" />
                 Record Interview
@@ -265,10 +282,7 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => {
-                  setSelectedEventType('offer');
-                  setShowAddForm(true);
-                }}
+                onClick={() => handleAddEvent('offer')}
               >
                 <Award className="mr-2 h-4 w-4" />
                 Log Offer Received
@@ -288,7 +302,7 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
                 {selectedResumeId ? 'Events for selected resume' : 'All self-reported events across resumes'}
               </CardDescription>
             </div>
-            <Button onClick={() => setShowAddForm(true)}>
+            <Button onClick={() => handleAddEvent()}>
               <Plus className="mr-2 h-4 w-4" />
               Add Event
             </Button>
@@ -302,41 +316,65 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
               <p className="text-muted-foreground mb-4">
                 Start tracking your job search journey by logging applications, interviews, and outcomes.
               </p>
-              <Button onClick={() => setShowAddForm(true)}>
+              <Button onClick={() => handleAddEvent()}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Your First Event
               </Button>
             </div>
           ) : (
             <div className="space-y-4">
-              {allEvents.slice(0, 20).map((event, index) => (
-                <div key={`${event.id}-${index}`} className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-accent transition-colors">
-                  <div className={`${getEventColor(event.type)} rounded-full p-2 text-white`}>
-                    {getEventIcon(event.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">{formatEventTitle(event)}</h4>
-                      <span className="text-sm text-muted-foreground">
-                        {event.date.toLocaleDateString()}
-                      </span>
+              {allEvents.slice(0, 20).map((event, index) => {
+                const IconComponent = getEventIcon(event.type);
+                
+                return (
+                  <div key={`${event.id || index}-${index}`} className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-accent transition-colors group">
+                    <div className={`${getEventColor(event.type)} rounded-full p-2 text-white`}>
+                      <IconComponent className="h-4 w-4" />
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {formatEventDetails(event)}
-                    </p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${getEventColor(event.type)} text-white`}>
-                        {event.type.replace('_', ' ')}
-                      </span>
-                      {selectedResumeId === undefined && (
-                        <span className="text-xs text-muted-foreground">
-                          Resume: {event.resumeId}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium">{formatEventTitle(event)}</h4>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-muted-foreground">
+                            {event.date.toLocaleDateString()}
+                          </span>
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditEvent(event)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteEvent(event)}
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {formatEventDetails(event)}
+                      </p>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${getEventColor(event.type)} text-white`}>
+                          {event.type.replace('_', ' ')}
                         </span>
-                      )}
+                        {selectedResumeId === undefined && (
+                          <span className="text-xs text-muted-foreground">
+                            Resume: {event.resumeId}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               
               {allEvents.length > 20 && (
                 <div className="text-center py-4">
@@ -350,39 +388,14 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
         </CardContent>
       </Card>
 
-      {/* Add Event Form Modal (placeholder) */}
-      {showAddForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Add New Event</CardTitle>
-              <CardDescription>Record a new event in your job search journey</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Event form would go here. In a real implementation, this would include:
-                </p>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  <li>• Event type selection</li>
-                  <li>• Date picker</li>
-                  <li>• Company/position fields</li>
-                  <li>• Outcome selection</li>
-                  <li>• Notes field</li>
-                </ul>
-                <div className="flex space-x-3">
-                  <Button variant="outline" onClick={() => setShowAddForm(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={() => setShowAddForm(false)}>
-                    Save Event
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Add Event Modal */}
+      <AddEventModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleSaveEvent}
+        resumeId={selectedResumeId || 'default'}
+        preselectedEventType={selectedEventType}
+      />
     </div>
   );
 };
