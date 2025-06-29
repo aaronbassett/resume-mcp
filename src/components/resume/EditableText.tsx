@@ -86,7 +86,7 @@ export const EditableText: FC<EditableTextProps> = ({
         {/* HypeButton positioned on the right side of the input */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2">
           <HypeButton
-            variant="accent"
+            variant="secondary"
             onClick={handleHypeButtonClick}
             className="h-8 w-8 p-0 text-xs"
             title="Add some AI magic ✨"
