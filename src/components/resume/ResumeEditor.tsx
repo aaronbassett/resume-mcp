@@ -55,10 +55,10 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     allowUsersSwitchTemplate: false,
     visibility: 'public',
     
-    enableMischiefMode: true,
+    enableMischiefMode: false,
     includeCustomMischief: false,
     customMischiefInstructions: '',
-    attemptAvoidDetection: true,
+    attemptAvoidDetection: false,
     embedLLMInstructions: true,
     
     urlSlug: '',
