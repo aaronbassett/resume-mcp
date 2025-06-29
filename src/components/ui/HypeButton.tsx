@@ -151,7 +151,7 @@ export const HypeButton: FC<HypeButtonProps> = ({
         shapes: [star, 'circle'],
         colors,
         origin: { x, y },
-        scalar: 0.8
+        scalar: 0.5
       });
 
       confetti({
@@ -164,7 +164,7 @@ export const HypeButton: FC<HypeButtonProps> = ({
         shapes: [triangle, square],
         colors,
         origin: { x, y },
-        scalar: 0.6
+        scalar: 0.3
       });
     };
 
