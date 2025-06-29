@@ -2,18 +2,18 @@ import { FC, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ArrowLeft, AlertCircle, ChevronDown, Settings, X, Globe, Eye, Lock, Calendar, Tag, Bell, Clock, FileText } from 'lucide-react';
+import { ArrowLeft, AlertCircle, ChevronDown, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { EditableText } from './EditableText';
 import { EditableTags } from './EditableTags';
 import { AutoSaveIndicator, type SaveStatus } from './AutoSaveIndicator';
+import { ResumeSettingsDrawer, type ResumeSettings } from './ResumeSettingsDrawer';
 import { useResumeStore } from '../../store/resume';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { createResume, updateResume, getResume } from '../../lib/resumeService';
 import type { CreateResumeData, UpdateResumeData } from '../../lib/resumeService';
-import { TextInput, Select, Checkbox } from 'flowbite-react';
 
 interface ResumeEditorProps {
   resumeId?: string;
@@ -47,16 +47,25 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
-
-  // Advanced settings state
-  const [visibility, setVisibility] = useState<'public' | 'private' | 'unlisted'>('public');
-  const [expirationDate, setExpirationDate] = useState<string>('');
-  const [allowComments, setAllowComments] = useState(false);
-  const [allowDuplication, setAllowDuplication] = useState(true);
-  const [trackViews, setTrackViews] = useState(true);
-  const [customSlug, setCustomSlug] = useState('');
-  const [enableNotifications, setEnableNotifications] = useState(true);
-  const [autoUpdateBlocks, setAutoUpdateBlocks] = useState(true);
+  const [resumeSettings, setResumeSettings] = useState<ResumeSettings>({
+    publishResumePage: true,
+    presenceBadge: 'none',
+    enableResumeDownloads: true,
+    resumePageTemplate: 'standard',
+    allowUsersSwitchTemplate: false,
+    visibility: 'public',
+    
+    enableMischiefMode: true,
+    includeCustomMischief: false,
+    customMischiefInstructions: '',
+    attemptAvoidDetection: true,
+    embedLLMInstructions: true,
+    
+    urlSlug: '',
+    metaTitle: '',
+    metaDescription: '',
+    robotsDirectives: ['index', 'follow']
+  });
 
   // Load resume data on mount if editing an existing resume
   useEffect(() => {
@@ -100,8 +109,11 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           });
           setIsNewResume(false);
           
-          // Set custom slug from the loaded resume
-          setCustomSlug(result.data.slug || '');
+          // Set URL slug from the loaded resume
+          setResumeSettings(prev => ({
+            ...prev,
+            urlSlug: result.data.slug || ''
+          }));
         } else {
           setNotFound(true);
         }
@@ -151,8 +163,11 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           setIsNewResume(false);
           clearUnsavedChanges();
 
-          // Set custom slug from the created resume
-          setCustomSlug(result.data.slug || '');
+          // Set URL slug from the created resume
+          setResumeSettings(prev => ({
+            ...prev,
+            urlSlug: result.data.slug || ''
+          }));
 
           // Update URL to edit route without navigation/refresh
           const newUrl = `/resumes/${result.data.id}/edit`;
@@ -203,6 +218,12 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     } else {
       navigate('/resumes');
     }
+  };
+
+  const handleSaveSettings = (newSettings: ResumeSettings) => {
+    setResumeSettings(newSettings);
+    // In a real implementation, you would save these settings to the backend
+    console.log('Saving settings:', newSettings);
   };
 
   // Loading state
@@ -379,206 +400,12 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           {/* Advanced Settings Drawer */}
           <AnimatePresence>
             {isAdvancedSettingsOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="overflow-hidden"
-              >
-                <div className="border-t bg-muted/30 dark:bg-muted/10 shadow-inner">
-                  <div className="p-6 space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold flex items-center">
-                        <Settings className="h-5 w-5 mr-2 text-primary" />
-                        Advanced Resume Settings
-                      </h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsAdvancedSettingsOpen(false)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Visibility Settings */}
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                          Visibility & Access
-                        </h4>
-                        
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium flex items-center space-x-2">
-                            <Eye className="h-4 w-4" />
-                            <span>Visibility</span>
-                          </label>
-                          <Select
-                            value={visibility}
-                            onChange={(e) => setVisibility(e.target.value as any)}
-                          >
-                            <option value="public">Public - Anyone with the link can view</option>
-                            <option value="unlisted">Unlisted - Only accessible with direct link</option>
-                            <option value="private">Private - Only you can view</option>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium flex items-center space-x-2">
-                            <Lock className="h-4 w-4" />
-                            <span>Access Control</span>
-                          </label>
-                          <div className="space-y-3">
-                            <div className="flex items-center">
-                              <Checkbox
-                                id="allowComments"
-                                checked={allowComments}
-                                onChange={(e) => setAllowComments(e.target.checked)}
-                                className="mr-2"
-                              />
-                              <label htmlFor="allowComments" className="text-sm">
-                                Allow comments on this resume
-                              </label>
-                            </div>
-                            <div className="flex items-center">
-                              <Checkbox
-                                id="allowDuplication"
-                                checked={allowDuplication}
-                                onChange={(e) => setAllowDuplication(e.target.checked)}
-                                className="mr-2"
-                              />
-                              <label htmlFor="allowDuplication" className="text-sm">
-                                Allow others to duplicate this resume
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium flex items-center space-x-2">
-                            <Calendar className="h-4 w-4" />
-                            <span>Expiration Date</span>
-                          </label>
-                          <TextInput
-                            type="date"
-                            value={expirationDate}
-                            onChange={(e) => setExpirationDate(e.target.value)}
-                            min={new Date().toISOString().split('T')[0]}
-                            placeholder="Never expires"
-                          />
-                          <p className="text-xs text-muted-foreground">
-                            Leave blank for no expiration
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Customization & Tracking */}
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                          Customization & Tracking
-                        </h4>
-                        
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium flex items-center space-x-2">
-                            <Globe className="h-4 w-4" />
-                            <span>Custom URL Slug</span>
-                          </label>
-                          <TextInput
-                            value={customSlug}
-                            onChange={(e) => setCustomSlug(e.target.value)}
-                            placeholder="custom-resume-url"
-                          />
-                          <p className="text-xs text-muted-foreground">
-                            yourprofile.com/r/{customSlug || '[auto-generated]'}
-                          </p>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium flex items-center space-x-2">
-                            <Tag className="h-4 w-4" />
-                            <span>Resume Metadata</span>
-                          </label>
-                          <div className="space-y-3">
-                            <div className="flex items-center">
-                              <Checkbox
-                                id="trackViews"
-                                checked={trackViews}
-                                onChange={(e) => setTrackViews(e.target.checked)}
-                                className="mr-2"
-                              />
-                              <label htmlFor="trackViews" className="text-sm">
-                                Track views and analytics
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium flex items-center space-x-2">
-                            <Bell className="h-4 w-4" />
-                            <span>Notifications</span>
-                          </label>
-                          <div className="space-y-3">
-                            <div className="flex items-center">
-                              <Checkbox
-                                id="enableNotifications"
-                                checked={enableNotifications}
-                                onChange={(e) => setEnableNotifications(e.target.checked)}
-                                className="mr-2"
-                              />
-                              <label htmlFor="enableNotifications" className="text-sm">
-                                Receive notifications about this resume
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Block Update Settings */}
-                    <div className="pt-4 border-t">
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                          Block Management
-                        </h4>
-                        <div className="flex items-center justify-between bg-background/50 p-4 rounded-lg border">
-                          <div className="flex items-start space-x-3">
-                            <FileText className="h-5 w-5 text-primary mt-0.5" />
-                            <div>
-                              <p className="font-medium">Automatic Block Updates</p>
-                              <p className="text-sm text-muted-foreground">
-                                When you update a block in your library, automatically update it in this resume
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="autoUpdateBlocks"
-                              checked={autoUpdateBlocks}
-                              onChange={(e) => setAutoUpdateBlocks(e.target.checked)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex justify-end space-x-3 pt-2">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setIsAdvancedSettingsOpen(false)}
-                      >
-                        Close
-                      </Button>
-                      <Button>
-                        Save Settings
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <ResumeSettingsDrawer
+                isOpen={isAdvancedSettingsOpen}
+                onClose={() => setIsAdvancedSettingsOpen(false)}
+                onSave={handleSaveSettings}
+                initialSettings={resumeSettings}
+              />
             )}
           </AnimatePresence>
         </Card>
