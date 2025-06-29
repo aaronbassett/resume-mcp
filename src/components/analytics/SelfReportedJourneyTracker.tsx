@@ -86,6 +86,14 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
     }
   };
 
+  // Format date to dd/mm/yyyy
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const handleAddEvent = (eventType?: string) => {
     setSelectedEventType(eventType || '');
     setShowAddModal(true);
@@ -336,7 +344,7 @@ export const SelfReportedJourneyTracker: FC<SelfReportedJourneyTrackerProps> = (
                         <h4 className="font-medium">{formatEventTitle(event)}</h4>
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-muted-foreground">
-                            {event.date.toLocaleDateString()}
+                            {formatDate(event.date)}
                           </span>
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1">
                             <Button

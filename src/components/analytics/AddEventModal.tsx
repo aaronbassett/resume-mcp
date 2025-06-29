@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { Circle as CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
+import { CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
@@ -54,19 +54,19 @@ interface FormData {
 }
 
 const eventTypeOptions = [
-  { value: 'initial_outreach', label: 'Application', icon: Building, color: 'bg-blue-500' },
-  { value: 'follow_up_call', label: 'Call', icon: Phone, color: 'bg-purple-500' },
-  { value: 'interview_round', label: 'Interview', icon: Users, color: 'bg-orange-500' },
-  { value: 'offer', label: 'Offer', icon: Award, color: 'bg-green-500' },
-  { value: 'rejection', label: 'Rejection', icon: XCircle, color: 'bg-red-500' },
+  { value: 'initial_outreach', label: 'Application', icon: Building, color: 'text-blue-500' },
+  { value: 'follow_up_call', label: 'Call', icon: Phone, color: 'text-purple-500' },
+  { value: 'interview_round', label: 'Interview', icon: Users, color: 'text-orange-500' },
+  { value: 'offer', label: 'Offer', icon: Award, color: 'text-green-500' },
+  { value: 'rejection', label: 'Rejection', icon: XCircle, color: 'text-red-500' },
 ];
 
 // Mock API keys - in a real app, these would come from the backend
 const mockApiKeys = [
-  { value: 'mcp_key_fullstack_001', label: 'Full Stack Developer Resume' },
-  { value: 'mcp_key_frontend_002', label: 'Frontend Specialist Resume' },
-  { value: 'mcp_key_react_003', label: 'Senior React Engineer Resume' },
-  { value: 'mcp_key_devops_004', label: 'DevOps Engineer Resume' },
+  { value: 'mcp_key_fullstack_001', label: 'Full Stack Developer API Key' },
+  { value: 'mcp_key_frontend_002', label: 'Frontend Specialist API Key' },
+  { value: 'mcp_key_react_003', label: 'Senior React Engineer API Key' },
+  { value: 'mcp_key_devops_004', label: 'DevOps Engineer API Key' },
 ];
 
 export const AddEventModal: FC<AddEventModalProps> = ({
@@ -322,6 +322,16 @@ export const AddEventModal: FC<AddEventModalProps> = ({
     onClose();
   };
 
+  // Format date to dd/mm/yyyy
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -352,38 +362,55 @@ export const AddEventModal: FC<AddEventModalProps> = ({
                 variant="ghost" 
                 size="sm" 
                 onClick={handleClose} 
-                className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                className="absolute top-4 right-4 h-10 w-10 p-0 hover:bg-destructive/10 hover:text-destructive"
               >
-                <CircleX className="h-5 w-5" />
+                <CircleX className="h-6 w-6" />
               </Button>
               
-              {/* Header content aligned left */}
-              <div className="flex items-center space-x-3 pr-12">
+              {/* Header content aligned left with icon */}
+              <div className="flex items-center space-x-3 pr-16">
+                {selectedEventType && (
+                  <div className={`p-2 rounded-lg ${selectedEventType.color} shadow-lg`} style={{
+                    filter: `drop-shadow(0 0 8px ${selectedEventType.color.includes('blue') ? '#3b82f6' : 
+                      selectedEventType.color.includes('purple') ? '#8b5cf6' :
+                      selectedEventType.color.includes('orange') ? '#f97316' :
+                      selectedEventType.color.includes('green') ? '#10b981' :
+                      selectedEventType.color.includes('red') ? '#ef4444' : '#6b7280'}40)`
+                  }}>
+                    <selectedEventType.icon className="h-5 w-5 text-white" />
+                  </div>
+                )}
                 <div>
-                  <CardTitle>Add New Event</CardTitle>
+                  <CardTitle>Add New {selectedEventType?.label || 'Event'}</CardTitle>
                   <CardDescription>Log a new event in your job search journey</CardDescription>
                 </div>
               </div>
             </CardHeader>
 
             <CardContent className="space-y-6">
-              {/* Event Type Selection - Horizontal row of icons */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Event Type</label>
+              {/* Event Type Selection - Horizontal row of icons without borders */}
+              <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   {eventTypeOptions.map((option) => (
                     <Tooltip key={option.value} content={option.label}>
                       <button
                         onClick={() => updateField('type', option.value)}
-                        className={`p-3 rounded-lg border-2 transition-all ${
+                        className={`p-3 rounded-lg transition-all ${
                           formData.type === option.value
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:border-primary/50'
+                            ? `${option.color} shadow-lg`
+                            : 'hover:bg-accent'
                         }`}
+                        style={formData.type === option.value ? {
+                          filter: `drop-shadow(0 0 8px ${option.color.includes('blue') ? '#3b82f6' : 
+                            option.color.includes('purple') ? '#8b5cf6' :
+                            option.color.includes('orange') ? '#f97316' :
+                            option.color.includes('green') ? '#10b981' :
+                            option.color.includes('red') ? '#ef4444' : '#6b7280'}40)`
+                        } : {}}
                       >
-                        <div className={`${option.color} rounded p-2`}>
-                          <option.icon className="h-4 w-4 text-white" />
-                        </div>
+                        <option.icon className={`h-5 w-5 ${
+                          formData.type === option.value ? 'text-white' : 'text-muted-foreground'
+                        }`} />
                       </button>
                     </Tooltip>
                   ))}
@@ -409,7 +436,7 @@ export const AddEventModal: FC<AddEventModalProps> = ({
                 <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center space-x-2">
                     <Key className="h-4 w-4" />
-                    <span>Resume/API Key</span>
+                    <span>API Key</span>
                   </label>
                   <Select
                     value={formData.apiKey}
