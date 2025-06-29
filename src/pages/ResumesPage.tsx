@@ -1,10 +1,11 @@
 import { type FC, useState, useEffect } from 'react';
-import { Plus, Search, Eye, Edit, BarChart3, Copy, Trash2 } from 'lucide-react';
+import { Plus, Search, Eye, Edit, BarChart3, Copy, Trash2, ChevronDown, X, Calendar, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { TextInput } from 'flowbite-react';
+import { TextInput, Select } from 'flowbite-react';
 import { BorderBottomBeam } from '../components/ui/BorderBottomBeam';
 import { SparklesText } from '../components/ui/SparklesText';
 import { DeleteConfirmationModal } from '../components/ui/DeleteConfirmationModal';
