@@ -43,7 +43,7 @@ export const CardDescription: FC<HTMLAttributes<HTMLParagraphElement>> = ({ chil
 );
 
 export const CardContent: FC<HTMLAttributes<HTMLDivElement>> = ({ children, className = '', ...props }) => (
-  <div className={`p-6 ${className}`} {...props}>
+  <div className={`p-4 ${className}`} {...props}>
     {children}
   </div>
 );
