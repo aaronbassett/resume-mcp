@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { type FC } from 'react';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Dropdown, DropdownItem } from '../ui/Dropdown';
@@ -27,17 +27,10 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
   onRangeChange,
   onCustomRangeChange
 }) => {
-  const [showCustomPicker, setShowCustomPicker] = useState(selectedRange === 'custom');
-  
   const selectedLabel = timeRanges.find(range => range.value === selectedRange)?.label || 'Select range';
 
   const handleRangeSelect = (range: string) => {
     onRangeChange(range);
-    if (range === 'custom') {
-      setShowCustomPicker(true);
-    } else {
-      setShowCustomPicker(false);
-    }
   };
 
   const handleCustomRangeChange = (start: Date, end: Date) => {
@@ -69,11 +62,12 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
           ))}
         </Dropdown>
 
-        {showCustomPicker && customStartDate && customEndDate && onCustomRangeChange && (
+        {customStartDate && customEndDate && onCustomRangeChange && (
           <CustomDateRangePicker
             startDate={customStartDate}
             endDate={customEndDate}
             onDateRangeChange={handleCustomRangeChange}
+            selectedRange={selectedRange}
           />
         )}
       </div>

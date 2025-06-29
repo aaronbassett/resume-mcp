@@ -7,12 +7,14 @@ import { Button } from '../ui/Button';
 interface CustomDateRangePickerProps {
   startDate: Date;
   endDate: Date;
+  selectedRange: string;
   onDateRangeChange: (start: Date, end: Date) => void;
 }
 
 export const CustomDateRangePicker: FC<CustomDateRangePickerProps> = ({
   startDate,
   endDate,
+  selectedRange,
   onDateRangeChange
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +25,14 @@ export const CustomDateRangePicker: FC<CustomDateRangePickerProps> = ({
   const [selectingStart, setSelectingStart] = useState(true);
   const popoverRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Update internal dates when props change
+  useEffect(() => {
+    setTempStartDate(startDate);
+    setTempEndDate(endDate);
+    setLeftCalendarDate(new Date(startDate.getFullYear(), startDate.getMonth(), 1));
+    setRightCalendarDate(new Date(endDate.getFullYear(), endDate.getMonth(), 1));
+  }, [startDate, endDate]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

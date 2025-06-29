@@ -21,7 +21,7 @@ import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { MetricsCard } from '../components/analytics/MetricsCard';
 import { TimeRangeSelector } from '../components/analytics/TimeRangeSelector';
-import { ResumeMultiSelector } from '../components/analytics/ResumeMultiSelector';
+import { ResumeSelector } from '../components/analytics/ResumeSelector';
 import { ToggleSwitch } from '../components/analytics/ToggleSwitch';
 import { SecurityInsights } from '../components/analytics/SecurityInsights';
 import { SelfReportedJourneyTracker } from '../components/analytics/SelfReportedJourneyTracker';
@@ -58,7 +58,6 @@ export const AnalyticsPage: FC = () => {
     includeSpam: false
   });
 
-  const [selectedResumeIds, setSelectedResumeIds] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'mcp_analytics' | 'self_reported'>('mcp_analytics');
 
@@ -103,7 +102,6 @@ export const AnalyticsPage: FC = () => {
   };
 
   const handleResumeChange = (resumeId?: string) => {
-    setSelectedResumeIds(resumeId ? [resumeId] : []);
     setFilters(prev => ({
       ...prev,
       resumeId
@@ -206,7 +204,7 @@ export const AnalyticsPage: FC = () => {
         <>
           {/* Filters */}
           <Card>
-            <CardContent className="py-6">
+            <CardContent className="p-4">
               <div className="flex flex-wrap items-center justify-between gap-6">
                 <div className="flex flex-wrap items-center gap-6">
                   <TimeRangeSelector
@@ -217,7 +215,7 @@ export const AnalyticsPage: FC = () => {
                     onCustomRangeChange={handleCustomRangeChange}
                   />
                   
-                  <ResumeMultiSelector
+                  <ResumeSelector
                     resumes={mockResumes}
                     selectedResumeId={filters.resumeId}
                     onResumeChange={handleResumeChange}
@@ -442,7 +440,7 @@ export const AnalyticsPage: FC = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap items-center gap-4 mb-6">
-                <ResumeMultiSelector
+                <ResumeSelector
                   resumes={mockResumes}
                   selectedResumeId={filters.resumeId}
                   onResumeChange={handleResumeChange}
