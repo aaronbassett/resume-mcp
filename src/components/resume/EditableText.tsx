@@ -91,7 +91,7 @@ export const EditableText: FC<EditableTextProps> = ({
             className="h-8 w-8 p-0 text-xs"
             title="Add some AI magic ✨"
           >
-            <Sparkles className="h-4 w-4" />
+            <Wand2 className="h-4 w-4" />
           </HypeButton>
         </div>
       </div>
