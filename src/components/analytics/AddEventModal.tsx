@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { Circle as CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
+import { CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
@@ -54,11 +54,41 @@ interface FormData {
 }
 
 const eventTypeOptions = [
-  { value: 'initial_outreach', label: 'Application', icon: Building, color: 'text-blue-500' },
-  { value: 'follow_up_call', label: 'Call', icon: Phone, color: 'text-purple-500' },
-  { value: 'interview_round', label: 'Interview', icon: Users, color: 'text-orange-500' },
-  { value: 'offer', label: 'Offer', icon: Award, color: 'text-green-500' },
-  { value: 'rejection', label: 'Rejection', icon: XCircle, color: 'text-red-500' },
+  { 
+    value: 'initial_outreach', 
+    label: 'Application', 
+    icon: Building, 
+    bgColor: 'bg-blue-500',
+    glowColor: '#3b82f6'
+  },
+  { 
+    value: 'follow_up_call', 
+    label: 'Call', 
+    icon: Phone, 
+    bgColor: 'bg-purple-500',
+    glowColor: '#8b5cf6'
+  },
+  { 
+    value: 'interview_round', 
+    label: 'Interview', 
+    icon: Users, 
+    bgColor: 'bg-orange-500',
+    glowColor: '#f97316'
+  },
+  { 
+    value: 'offer', 
+    label: 'Offer', 
+    icon: Award, 
+    bgColor: 'bg-green-500',
+    glowColor: '#10b981'
+  },
+  { 
+    value: 'rejection', 
+    label: 'Rejection', 
+    icon: XCircle, 
+    bgColor: 'bg-red-500',
+    glowColor: '#ef4444'
+  },
 ];
 
 // Mock API keys - in a real app, these would come from the backend
@@ -362,22 +392,21 @@ export const AddEventModal: FC<AddEventModalProps> = ({
                 variant="ghost" 
                 size="sm" 
                 onClick={handleClose} 
-                className="absolute top-4 right-4 h-10 w-10 p-0 hover:bg-destructive/10 hover:text-destructive"
+                className="absolute top-4 right-4 h-12 w-12 p-0 hover:bg-destructive/10 hover:text-destructive"
               >
-                <CircleX className="h-6 w-6" />
+                <CircleX className="h-8 w-8" />
               </Button>
               
               {/* Header content aligned left with icon */}
               <div className="flex items-center space-x-3 pr-16">
                 {selectedEventType && (
-                  <div className={`p-2 rounded-lg ${selectedEventType.color} shadow-lg`} style={{
-                    filter: `drop-shadow(0 0 8px ${selectedEventType.color.includes('blue') ? '#3b82f6' : 
-                      selectedEventType.color.includes('purple') ? '#8b5cf6' :
-                      selectedEventType.color.includes('orange') ? '#f97316' :
-                      selectedEventType.color.includes('green') ? '#10b981' :
-                      selectedEventType.color.includes('red') ? '#ef4444' : '#6b7280'}40)`
-                  }}>
-                    <selectedEventType.icon className="h-5 w-5 text-white" />
+                  <div 
+                    className={`p-2 rounded-lg ${selectedEventType.bgColor} text-white`}
+                    style={{
+                      filter: `drop-shadow(0 0 8px ${selectedEventType.glowColor}40)`
+                    }}
+                  >
+                    <selectedEventType.icon className="h-5 w-5" />
                   </div>
                 )}
                 <div>
@@ -388,7 +417,7 @@ export const AddEventModal: FC<AddEventModalProps> = ({
             </CardHeader>
 
             <CardContent className="space-y-6">
-              {/* Event Type Selection - Horizontal row of icons without borders */}
+              {/* Event Type Selection - Horizontal row of icons with different colors */}
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   {eventTypeOptions.map((option) => (
@@ -397,20 +426,14 @@ export const AddEventModal: FC<AddEventModalProps> = ({
                         onClick={() => updateField('type', option.value)}
                         className={`p-3 rounded-lg transition-all ${
                           formData.type === option.value
-                            ? `${option.color} shadow-lg`
-                            : 'hover:bg-accent'
+                            ? `${option.bgColor} text-white`
+                            : 'hover:bg-accent text-muted-foreground hover:text-accent-foreground'
                         }`}
                         style={formData.type === option.value ? {
-                          filter: `drop-shadow(0 0 8px ${option.color.includes('blue') ? '#3b82f6' : 
-                            option.color.includes('purple') ? '#8b5cf6' :
-                            option.color.includes('orange') ? '#f97316' :
-                            option.color.includes('green') ? '#10b981' :
-                            option.color.includes('red') ? '#ef4444' : '#6b7280'}40)`
+                          filter: `drop-shadow(0 0 8px ${option.glowColor}40)`
                         } : {}}
                       >
-                        <option.icon className={`h-5 w-5 ${
-                          formData.type === option.value ? 'text-white' : 'text-muted-foreground'
-                        }`} />
+                        <option.icon className="h-5 w-5" />
                       </button>
                     </Tooltip>
                   ))}
