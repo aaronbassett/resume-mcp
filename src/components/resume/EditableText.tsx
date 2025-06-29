@@ -4,6 +4,14 @@ import { Wand2 } from 'lucide-react';
 import { HypeButton } from '../ui/HypeButton';
 import { LLMTextAssist } from '../ui/LLMTextAssist';
 
+interface LLMTextAssistProps {
+  existingValue?: string;
+  setNewValue: (value: string) => void;
+  additionalContext?: string[];
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+}
+
 interface EditableTextProps {
   value: string;
   placeholder: string;
@@ -11,6 +19,7 @@ interface EditableTextProps {
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span';
   className?: string;
   children?: ReactNode;
+  llmOptions?: Omit<LLMTextAssistProps, 'existingValue' | 'setNewValue'>;
 }
 
 export const EditableText: FC<EditableTextProps> = ({
@@ -19,7 +28,8 @@ export const EditableText: FC<EditableTextProps> = ({
   onSave,
   as: Component = 'p',
   className = '',
-  children
+  children,
+  llmOptions
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -97,17 +107,20 @@ export const EditableText: FC<EditableTextProps> = ({
         />
         
         {/* LLMTextAssist positioned on the right side of the input */}
-        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-          <LLMTextAssist
-            existingValue={editValue}
-            setNewValue={setEditValue}
-            additionalContext={[
-              `The user is editing a ${Component} element with placeholder "${placeholder}"`,
-              `Current field value: ${editValue || "empty"}`
-            ]}
-            onClick={handleHypeButtonClick}
-          />
-        </div>
+        {llmOptions && (
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <LLMTextAssist
+              existingValue={editValue}
+              setNewValue={setEditValue}
+              additionalContext={llmOptions.additionalContext || [
+                `The user is editing a ${Component} element with placeholder "${placeholder}"`,
+                `Current field value: ${editValue || "empty"}`
+              ]}
+              onClick={handleHypeButtonClick}
+              {...llmOptions}
+            />
+          </div>
+        )}
       </div>
     );
   }
