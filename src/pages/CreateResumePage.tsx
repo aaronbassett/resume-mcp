@@ -8,6 +8,7 @@ import { Card, CardContent } from '../components/ui/Card';
 import { EditableText } from '../components/resume/EditableText';
 import { EditableTags } from '../components/resume/EditableTags';
 import { AutoSaveIndicator, type SaveStatus } from '../components/resume/AutoSaveIndicator';
+import { LLMTextAssist } from '../components/ui/LLMTextAssist';
 import { useResumeStore } from '../store/resume';
 import { useAutoSave } from '../hooks/useAutoSave';
 import { createResume, updateResume } from '../lib/resumeService';
@@ -120,36 +121,69 @@ export const CreateResumePage: FC = () => {
 
             <div className="space-y-2">
               {/* Resume Title */}
-              <div>
+              <div className="relative">
                 <EditableText
                   value={currentResume.title}
                   placeholder="Untitled Resume"
                   onSave={updateTitle}
                   as="h1"
-                  className="text-4xl font-bold leading-tight w-full"
+                  className="text-4xl font-bold leading-tight w-full pr-12"
                 />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <LLMTextAssist
+                    existingValue={currentResume.title}
+                    setNewValue={updateTitle}
+                    additionalContext={[
+                      `The user is updating the 'title' form field. The placeholder for this field is 'Untitled Resume'.`,
+                      `role: "${currentResume.role}"`,
+                      `displayName: "${currentResume.displayName}"`
+                    ]}
+                  />
+                </div>
               </div>
 
               {/* Role */}
-              <div>
+              <div className="relative">
                 <EditableText
                   value={currentResume.role}
                   placeholder="Click to Edit Role"
                   onSave={updateRole}
                   as="h2"
-                  className="text-2xl font-semibold text-muted-foreground leading-tight w-full"
+                  className="text-2xl font-semibold text-muted-foreground leading-tight w-full pr-12"
                 />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <LLMTextAssist
+                    existingValue={currentResume.role}
+                    setNewValue={updateRole}
+                    additionalContext={[
+                      `The user is updating the 'role' form field. The placeholder for this field is 'Click to Edit Role'.`,
+                      `title: "${currentResume.title}"`,
+                      `displayName: "${currentResume.displayName}"`
+                    ]}
+                  />
+                </div>
               </div>
 
               {/* Display Name */}
-              <div>
+              <div className="relative">
                 <EditableText
                   value={currentResume.displayName}
                   placeholder="Click to Edit Display Name"
                   onSave={updateDisplayName}
                   as="p"
-                  className="text-lg italic text-muted-foreground leading-tight w-full"
+                  className="text-lg italic text-muted-foreground leading-tight w-full pr-12"
                 />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <LLMTextAssist
+                    existingValue={currentResume.displayName}
+                    setNewValue={updateDisplayName}
+                    additionalContext={[
+                      `The user is updating the 'displayName' form field. The placeholder for this field is 'Click to Edit Display Name'.`,
+                      `title: "${currentResume.title}"`,
+                      `role: "${currentResume.role}"`
+                    ]}
+                  />
+                </div>
               </div>
 
               {/* Tags */}
