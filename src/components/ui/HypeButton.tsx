@@ -93,7 +93,7 @@ export const HypeButton: FC<HypeButtonProps> = ({
       y: `${Math.random() * 100}%`,
       color: variantConfig.colors[Math.floor(Math.random() * variantConfig.colors.length)],
       delay: Math.random() * 0.5,
-      scale: Math.random() * 0.5 + 0.5
+      scale: Math.random() * 0.5 + 1
     }));
 
     setSparkles(newSparkles);
