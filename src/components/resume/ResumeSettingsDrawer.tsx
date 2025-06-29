@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Settings, Globe, Eye, Wand2, Code, OctagonMinus } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { TextInput, Select, Textarea, HRText } from 'flowbite-react';
+import { TextInput, Select, Textarea } from 'flowbite-react';
 import { ToggleSwitch } from '../analytics/ToggleSwitch';
 import ReactSelect from 'react-select';
 
@@ -330,7 +330,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                             <strong>Before You Proceed:</strong> Some of these features manipulate how LLMs interact with your profile data. While hilarious <i>(and likely unethical)</i>, hiring managers might not share your sense of humor when they discover their AI assistant has been… enriched. By enabling these features, you accept full responsibility for any resulting chaos.
                           </p>
                           
-                          <HRText text="hello" />
+                          <hr className="my-4 border-destructive/20" />
                           
                           <p className="text-lg text-destructive/90">
                             Could this mischief lead to spontaneous CEO offers with absolutely unhinged comp packages? It's not <i><b>impossible</b></i>. But, what are much more likely are rescinded job offers, awkward LinkedIn messages, and potential criminal charges. Either way, we're just here to provide the tools; what you do with them is between you, your conscience, and whatever poor LLM stumbles into your web of deception.
