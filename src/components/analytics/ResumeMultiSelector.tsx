@@ -46,6 +46,7 @@ export const ResumeMultiSelector: FC<ResumeMultiSelectorProps> = ({
       borderColor: theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(226 232 240)',
       borderRadius: '0.375rem',
       minHeight: '2.5rem',
+      height: '2.5rem',
       boxShadow: state.isFocused ? 
         (theme === 'dark' ? '0 0 0 2px rgb(129 140 248)' : '0 0 0 2px rgb(99 102 241)') : 
         'none',
@@ -96,6 +97,11 @@ export const ResumeMultiSelector: FC<ResumeMultiSelectorProps> = ({
     indicatorSeparator: (provided) => ({
       ...provided,
       backgroundColor: theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(226 232 240)',
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      height: '2.5rem',
+      padding: '0 8px',
     }),
   };
 

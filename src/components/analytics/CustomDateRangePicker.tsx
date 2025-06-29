@@ -206,7 +206,7 @@ export const CustomDateRangePicker: FC<CustomDateRangePickerProps> = ({
         ref={buttonRef}
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="justify-start min-w-[200px]"
+        className="justify-start min-w-[280px] h-10"
       >
         <CalendarDays className="mr-2 h-4 w-4" />
         {formatDateRange()}
@@ -221,6 +221,7 @@ export const CustomDateRangePicker: FC<CustomDateRangePickerProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
             className="absolute top-full mt-2 bg-popover border rounded-lg shadow-lg z-50 right-0"
+            style={{ width: '600px' }}
           >
             <div className="flex">
               {renderCalendar(leftCalendarDate, true)}

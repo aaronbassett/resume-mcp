@@ -207,20 +207,22 @@ export const AnalyticsPage: FC = () => {
           {/* Filters */}
           <Card>
             <CardContent className="p-6">
-              <div className="flex flex-wrap items-center gap-6">
-                <TimeRangeSelector
-                  selectedRange={filters.timeRange.preset || 'last_30d'}
-                  customStartDate={filters.timeRange.start}
-                  customEndDate={filters.timeRange.end}
-                  onRangeChange={handleTimeRangeChange}
-                  onCustomRangeChange={handleCustomRangeChange}
-                />
-                
-                <ResumeMultiSelector
-                  resumes={mockResumes}
-                  selectedResumeId={filters.resumeId}
-                  onResumeChange={handleResumeChange}
-                />
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <div className="flex flex-wrap items-center gap-6">
+                  <TimeRangeSelector
+                    selectedRange={filters.timeRange.preset || 'last_30d'}
+                    customStartDate={filters.timeRange.start}
+                    customEndDate={filters.timeRange.end}
+                    onRangeChange={handleTimeRangeChange}
+                    onCustomRangeChange={handleCustomRangeChange}
+                  />
+                  
+                  <ResumeMultiSelector
+                    resumes={mockResumes}
+                    selectedResumeId={filters.resumeId}
+                    onResumeChange={handleResumeChange}
+                  />
+                </div>
                 
                 <ToggleSwitch
                   checked={filters.includeSpam}

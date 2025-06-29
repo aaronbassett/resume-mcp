@@ -27,24 +27,23 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
   onRangeChange,
   onCustomRangeChange
 }) => {
-  const [showCustomPicker, setShowCustomPicker] = useState(false);
+  const [showCustomPicker, setShowCustomPicker] = useState(selectedRange === 'custom');
   
   const selectedLabel = timeRanges.find(range => range.value === selectedRange)?.label || 'Select range';
 
   const handleRangeSelect = (range: string) => {
+    onRangeChange(range);
     if (range === 'custom') {
       setShowCustomPicker(true);
     } else {
       setShowCustomPicker(false);
     }
-    onRangeChange(range);
   };
 
   const handleCustomRangeChange = (start: Date, end: Date) => {
     if (onCustomRangeChange) {
       onCustomRangeChange(start, end);
     }
-    setShowCustomPicker(false);
   };
 
   return (
@@ -53,7 +52,7 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = ({
       <div className="flex items-center space-x-2">
         <Dropdown
           trigger={
-            <Button variant="outline" className="justify-between min-w-[160px]">
+            <Button variant="outline" className="justify-between min-w-[160px] h-10">
               <span>{selectedLabel}</span>
               <ChevronDown className="h-4 w-4" />
             </Button>

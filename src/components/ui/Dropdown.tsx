@@ -7,13 +7,15 @@ interface DropdownProps {
   children: ReactNode;
   align?: 'left' | 'right';
   className?: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const Dropdown: FC<DropdownProps> = ({ 
   trigger, 
   children, 
   align = 'right',
-  className = '' 
+  className = '',
+  onOpenChange
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -22,12 +24,14 @@ export const Dropdown: FC<DropdownProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        onOpenChange?.(false);
       }
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsOpen(false);
+        onOpenChange?.(false);
       }
     };
 
@@ -40,10 +44,17 @@ export const Dropdown: FC<DropdownProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isOpen]);
+  }, [isOpen, onOpenChange]);
 
   const handleTriggerClick = () => {
-    setIsOpen(!isOpen);
+    const newState = !isOpen;
+    setIsOpen(newState);
+    onOpenChange?.(newState);
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false);
+    onOpenChange?.(false);
   };
 
   return (
@@ -64,7 +75,14 @@ export const Dropdown: FC<DropdownProps> = ({
             }`}
           >
             <div className="py-1">
-              {children}
+              {React.Children.map(children, (child) => {
+                if (React.isValidElement(child) && child.type === DropdownItem) {
+                  return React.cloneElement(child as React.ReactElement<DropdownItemProps>, {
+                    onItemClick: closeDropdown
+                  });
+                }
+                return child;
+              })}
             </div>
           </motion.div>
         )}
@@ -78,17 +96,20 @@ interface DropdownItemProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  onItemClick?: () => void;
 }
 
 export const DropdownItem: FC<DropdownItemProps> = ({ 
   children, 
   onClick, 
   className = '',
-  disabled = false 
+  disabled = false,
+  onItemClick
 }) => {
   const handleClick = () => {
     if (!disabled && onClick) {
       onClick();
+      onItemClick?.();
     }
   };
 
