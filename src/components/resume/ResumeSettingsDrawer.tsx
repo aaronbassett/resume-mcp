@@ -351,7 +351,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ duration: 1 }}
+                      transition={{ duration: 2 }}
                       className="space-y-4"
                     >
                       <ToggleSwitch
