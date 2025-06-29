@@ -327,7 +327,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                         <OctagonMinus className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
                         <div className="space-y-2">
                           <p className="text-lg text-destructive/90">
-                            <strong>Before You Proceed:</strong> Some of these features manipulate how LLMs interact with your profile data. While hilarious (but potentially unethical), hiring managers might not share your sense of humor when they discover their AI assistant has been… enriched. By enabling these features, you accept full responsibility for any resulting chaos.
+                            <strong>Before You Proceed:</strong> Some of these features manipulate how LLMs interact with your profile data. While hilarious <i>(and likely unethical)</i>, hiring managers might not share your sense of humor when they discover their AI assistant has been… enriched. By enabling these features, you accept full responsibility for any resulting chaos.
                           </p>
                           <p className="text-lg text-destructive/90">
                             Could this mischief lead to spontaneous CEO offers with absolutely unhinged comp packages? It's not <i><b>impossible</b></i>. But, what is much more likely is rescinded offers, awkward LinkedIn messages, and potential charges. Either way, we're just here to provide the tools; what you do with them is between you, your conscience, and whatever poor LLM stumbles into your web of deception.
