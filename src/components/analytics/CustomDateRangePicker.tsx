@@ -70,7 +70,18 @@ export const CustomDateRangePicker: FC<CustomDateRangePickerProps> = ({
     return isSameDay(date, today);
   };
 
+  const isFutureDate = (date: Date) => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
+    return date > today;
+  };
+
   const handleDateClick = (date: Date) => {
+    // Prevent selecting future dates
+    if (isFutureDate(date)) {
+      return;
+    }
+
     if (selectingStart) {
       setTempStartDate(date);
       if (date > tempEndDate) {
@@ -146,20 +157,24 @@ export const CustomDateRangePicker: FC<CustomDateRangePickerProps> = ({
       const isSelected = isSameDay(date, tempStartDate) || isSameDay(date, tempEndDate);
       const isInDateRange = isInRange(date);
       const isCurrentDay = isToday(date);
+      const isFuture = isFutureDate(date);
       
       days.push(
         <button
           key={day}
           onClick={() => handleDateClick(date)}
+          disabled={isFuture}
           className={`
             w-8 h-8 text-sm rounded-md transition-colors relative
-            ${isSelected 
-              ? 'bg-primary text-primary-foreground font-semibold' 
-              : isInDateRange 
-                ? 'bg-primary/20 text-primary' 
-                : 'hover:bg-accent hover:text-accent-foreground'
+            ${isFuture 
+              ? 'text-muted-foreground/40 cursor-not-allowed' 
+              : isSelected 
+                ? 'bg-primary text-primary-foreground font-semibold' 
+                : isInDateRange 
+                  ? 'bg-primary/20 text-primary' 
+                  : 'hover:bg-accent hover:text-accent-foreground'
             }
-            ${isCurrentDay && !isSelected ? 'ring-2 ring-primary ring-offset-1' : ''}
+            ${isCurrentDay && !isSelected && !isFuture ? 'ring-2 ring-primary ring-offset-1' : ''}
           `}
         >
           {day}

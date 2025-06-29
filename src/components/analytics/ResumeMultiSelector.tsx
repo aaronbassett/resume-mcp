@@ -42,7 +42,7 @@ export const ResumeMultiSelector: FC<ResumeMultiSelectorProps> = ({
   const customStyles: StylesConfig<ResumeOption, false> = {
     control: (provided, state) => ({
       ...provided,
-      backgroundColor: theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(255 255 255)',
+      backgroundColor: 'transparent',
       borderColor: theme === 'dark' ? 'rgb(30 41 59)' : 'rgb(226 232 240)',
       borderRadius: '0.375rem',
       minHeight: '2.5rem',

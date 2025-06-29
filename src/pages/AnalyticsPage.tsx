@@ -206,7 +206,7 @@ export const AnalyticsPage: FC = () => {
         <>
           {/* Filters */}
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="py-6">
               <div className="flex flex-wrap items-center justify-between gap-6">
                 <div className="flex flex-wrap items-center gap-6">
                   <TimeRangeSelector
