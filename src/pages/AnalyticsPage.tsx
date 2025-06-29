@@ -22,7 +22,8 @@ import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { MetricsCard } from '../components/analytics/MetricsCard';
 import { TimeRangeSelector } from '../components/analytics/TimeRangeSelector';
-import { ResumeSelector } from '../components/analytics/ResumeSelector';
+import { ResumeMultiSelector } from '../components/analytics/ResumeMultiSelector';
+import { ToggleSwitch } from '../components/analytics/ToggleSwitch';
 import { SecurityInsights } from '../components/analytics/SecurityInsights';
 import { SelfReportedJourneyTracker } from '../components/analytics/SelfReportedJourneyTracker';
 import { ApplicationFunnelSankey } from '../components/analytics/ApplicationFunnelSankey';
@@ -58,6 +59,7 @@ export const AnalyticsPage: FC = () => {
     includeSpam: false
   });
 
+  const [selectedResumeIds, setSelectedResumeIds] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'mcp_analytics' | 'self_reported'>('mcp_analytics');
 
@@ -81,6 +83,9 @@ export const AnalyticsPage: FC = () => {
       case 'last_90d':
         start = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
         break;
+      case 'custom':
+        // Keep existing dates for custom range
+        return;
       default:
         start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     }
@@ -91,10 +96,25 @@ export const AnalyticsPage: FC = () => {
     }));
   };
 
-  const handleResumeChange = (resumeId?: string) => {
+  const handleCustomRangeChange = (start: Date, end: Date) => {
     setFilters(prev => ({
       ...prev,
-      resumeId
+      timeRange: { start, end, preset: 'custom' }
+    }));
+  };
+
+  const handleResumeChange = (resumeIds: string[]) => {
+    setSelectedResumeIds(resumeIds);
+    setFilters(prev => ({
+      ...prev,
+      resumeId: resumeIds.length === 1 ? resumeIds[0] : undefined
+    }));
+  };
+
+  const handleSpamToggle = (includeSpam: boolean) => {
+    setFilters(prev => ({
+      ...prev,
+      includeSpam
     }));
   };
 
@@ -187,36 +207,33 @@ export const AnalyticsPage: FC = () => {
         <>
           {/* Filters */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Filter className="h-5 w-5" />
-                <span>Filters</span>
-              </CardTitle>
-              <CardDescription>Customize your analytics view</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap items-center gap-4">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <Filter className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium text-foreground">Filters</span>
+              </div>
+              
+              <div className="flex flex-wrap items-center gap-6">
                 <TimeRangeSelector
                   selectedRange={filters.timeRange.preset || 'last_30d'}
+                  customStartDate={filters.timeRange.start}
+                  customEndDate={filters.timeRange.end}
                   onRangeChange={handleTimeRangeChange}
+                  onCustomRangeChange={handleCustomRangeChange}
                 />
-                <ResumeSelector
+                
+                <ResumeMultiSelector
                   resumes={mockResumes}
-                  selectedResumeId={filters.resumeId}
+                  selectedResumeIds={selectedResumeIds}
                   onResumeChange={handleResumeChange}
                 />
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="includeSpam"
-                    checked={filters.includeSpam}
-                    onChange={(e) => setFilters(prev => ({ ...prev, includeSpam: e.target.checked }))}
-                    className="rounded border-gray-300"
-                  />
-                  <label htmlFor="includeSpam" className="text-sm font-medium">
-                    Include spam requests
-                  </label>
-                </div>
+                
+                <ToggleSwitch
+                  checked={filters.includeSpam}
+                  onChange={handleSpamToggle}
+                  label="Include spam requests"
+                  description="Show flagged and suspicious requests"
+                />
               </div>
             </CardContent>
           </Card>
@@ -429,9 +446,9 @@ export const AnalyticsPage: FC = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap items-center gap-4 mb-6">
-                <ResumeSelector
+                <ResumeMultiSelector
                   resumes={mockResumes}
-                  selectedResumeId={filters.resumeId}
+                  selectedResumeIds={selectedResumeIds}
                   onResumeChange={handleResumeChange}
                 />
               </div>
