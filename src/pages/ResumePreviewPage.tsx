@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { ResumeHeader } from '../components/resume/ResumeHeader';
 import { ResumeContent } from '../components/resume/ResumeContent';
 import { ResumeFooter } from '../components/resume/ResumeFooter';
@@ -298,8 +299,48 @@ export const ResumePreviewPage: FC = () => {
   const username = userId || 'johndoe';
   const slug = resumeSlug || 'senior-full-stack-developer';
 
+  // Generate meta title and description based on resume data
+  const metaTitle = `${mockResumeData.basics.name} | ${mockResumeData.basics.label}`;
+  const metaDescription = mockResumeData.basics.summary.substring(0, 160) + (mockResumeData.basics.summary.length > 160 ? '...' : '');
+  
+  // Generate structured data for better SEO
+  const structuredData = {
+    "@context": "https://schema.org/",
+    "@type": "Person",
+    "name": mockResumeData.basics.name,
+    "jobTitle": mockResumeData.basics.label,
+    "description": mockResumeData.basics.summary,
+    "email": mockResumeData.basics.email,
+    "telephone": mockResumeData.basics.phone,
+    "url": mockResumeData.basics.url,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": mockResumeData.basics.location.city,
+      "addressRegion": mockResumeData.basics.location.region,
+      "postalCode": mockResumeData.basics.location.postalCode,
+      "addressCountry": mockResumeData.basics.location.countryCode
+    },
+    "sameAs": mockResumeData.basics.profiles?.map(profile => profile.url) || []
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:type" content="profile" />
+        <meta property="og:url" content={`${window.location.origin}/r/${username}/${slug}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <link rel="canonical" href={`${window.location.origin}/r/${username}/${slug}`} />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
+      
       <ResumeHeader 
         username={username} 
         resumeSlug={slug}
