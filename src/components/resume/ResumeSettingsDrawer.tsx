@@ -183,22 +183,6 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                       </Select>
                     </div>
                     
-                    <div className="mt-4 space-y-2">
-                      <label className="text-sm font-medium">Presence Badge</label>
-                      <Select
-                        value={settings.presenceBadge}
-                        onChange={(e) => updateSetting('presenceBadge', e.target.value as any)}
-                        disabled={!settings.publishResumePage}
-                      >
-                        <option value="none">None</option>
-                        <option value="count-only">Count Only</option>
-                        <option value="show-profile">Show Profile Information</option>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        Show a badge indicating how many people are currently viewing your resume
-                      </p>
-                    </div>
-                    
                     <div className="mt-4">
                       <ToggleSwitch
                         checked={settings.enableResumeDownloads}
@@ -231,6 +215,22 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                         label="Allow Users to Switch Template"
                         description="Let visitors change the resume template when viewing"
                       />
+                    </div>
+
+                    <div className="mt-4 space-y-2">
+                      <label className="text-sm font-medium">Presence Badge</label>
+                      <Select
+                        value={settings.presenceBadge}
+                        onChange={(e) => updateSetting('presenceBadge', e.target.value as any)}
+                        disabled={!settings.publishResumePage}
+                      >
+                        <option value="none">None</option>
+                        <option value="count-only">Count Only</option>
+                        <option value="show-profile">Show Profile Information</option>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Show a badge indicating how many people are currently viewing your resume
+                      </p>
                     </div>
                   </div>
                 </div>
