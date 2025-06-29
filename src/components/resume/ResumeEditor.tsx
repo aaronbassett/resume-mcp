@@ -302,7 +302,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 pb-4">
               {/* Resume Title */}
               <div>
                 <EditableText
