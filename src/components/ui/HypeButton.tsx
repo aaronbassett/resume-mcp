@@ -91,7 +91,7 @@ export const HypeButton: FC<HypeButtonProps> = ({
       id: `sparkle-${Date.now()}-${i}`,
       x: `${Math.random() * 100}%`,
       y: `${Math.random() * 100}%`,
-      color: variantConfig.colors[Math.floor(Math.random() * variantConfig.colors.length)],
+      color: "#FFFFFF",
       delay: Math.random() * 0.5,
       scale: Math.random() * 0.5 + 1
     }));
