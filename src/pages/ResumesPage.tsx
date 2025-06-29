@@ -1,5 +1,5 @@
 import { type FC, useState, useEffect } from 'react';
-import { Plus, Search, Filter, Eye, Edit, BarChart3, Copy, Trash2 } from 'lucide-react';
+import { Plus, Search, Eye, Edit, BarChart3, Copy, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
@@ -8,8 +8,17 @@ import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../components/ui/BorderBottomBeam';
 import { SparklesText } from '../components/ui/SparklesText';
 import { DeleteConfirmationModal } from '../components/ui/DeleteConfirmationModal';
+import { FilterDrawer } from '../components/ui/FilterDrawer';
 import { getUserResumes, deleteResume } from '../lib/resumeService';
 import type { Resume } from '../lib/resumeService';
+
+interface FilterOptions {
+  dateRange: 'all' | 'last_week' | 'last_month' | 'last_3_months' | 'last_year';
+  tags: string[];
+  sortBy: 'updated' | 'created' | 'title' | 'views';
+  sortOrder: 'asc' | 'desc';
+  status: 'all' | 'active' | 'draft' | 'archived';
+}
 
 export const ResumesPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,6 +28,16 @@ export const ResumesPage: FC = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Filter state
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({
+    dateRange: 'all',
+    tags: [],
+    sortBy: 'updated',
+    sortOrder: 'desc',
+    status: 'all'
+  });
   
   // Delete modal state
   const [deleteModal, setDeleteModal] = useState<{
@@ -112,12 +131,95 @@ export const ResumesPage: FC = () => {
     alert('Resume duplication will be implemented soon!');
   };
 
-  // Filter resumes based on search query
-  const filteredResumes = resumes.filter(resume =>
-    resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    resume.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    resume.display_name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Get all unique tags from resumes
+  const availableTags = Array.from(
+    new Set(resumes.flatMap(resume => resume.tags.map(tag => tag.text)))
   );
+
+  // Apply filters and search to resumes
+  const getFilteredAndSortedResumes = () => {
+    let filtered = resumes;
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(resume =>
+        resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resume.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resume.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resume.tags.some(tag => tag.text.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Apply date range filter
+    if (filters.dateRange !== 'all') {
+      const now = new Date();
+      const cutoffDate = new Date();
+      
+      switch (filters.dateRange) {
+        case 'last_week':
+          cutoffDate.setDate(now.getDate() - 7);
+          break;
+        case 'last_month':
+          cutoffDate.setMonth(now.getMonth() - 1);
+          break;
+        case 'last_3_months':
+          cutoffDate.setMonth(now.getMonth() - 3);
+          break;
+        case 'last_year':
+          cutoffDate.setFullYear(now.getFullYear() - 1);
+          break;
+      }
+      
+      filtered = filtered.filter(resume => 
+        new Date(resume.updated_at) >= cutoffDate
+      );
+    }
+
+    // Apply tags filter
+    if (filters.tags.length > 0) {
+      filtered = filtered.filter(resume =>
+        filters.tags.some(filterTag =>
+          resume.tags.some(resumeTag => resumeTag.text === filterTag)
+        )
+      );
+    }
+
+    // Apply status filter (for now, all resumes are considered 'active')
+    if (filters.status !== 'all') {
+      // TODO: Implement status filtering when status field is added to resume schema
+      // For now, we'll treat all resumes as 'active'
+      if (filters.status !== 'active') {
+        filtered = [];
+      }
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (filters.sortBy) {
+        case 'updated':
+          comparison = new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
+          break;
+        case 'created':
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case 'title':
+          comparison = a.title.localeCompare(b.title);
+          break;
+        case 'views':
+          // TODO: Implement view count when analytics are added
+          comparison = 0;
+          break;
+      }
+      
+      return filters.sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  };
+
+  const filteredResumes = getFilteredAndSortedResumes();
 
   // Format time ago
   const formatTimeAgo = (dateString: string) => {
@@ -162,34 +264,40 @@ export const ResumesPage: FC = () => {
       />
 
       {/* Search and Filters */}
-      <div className="flex items-end space-x-4">
-        <div className="relative w-full">
-          <BorderBottomBeam 
-            play={searchFocused}
-            className="rounded-md"
-            colorFrom="#6366f1"
-            colorTo="#ec4899"
-            duration={2}
-            size={60}
-          >
-            <TextInput
-              id="search"
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              placeholder="Search Resumes"
-              icon={Search}
-              color="search"
-              sizing="full"
-            />
-          </BorderBottomBeam>
+      <div className="space-y-4">
+        <div className="flex items-end space-x-4">
+          <div className="relative flex-1">
+            <BorderBottomBeam 
+              play={searchFocused}
+              className="rounded-md"
+              colorFrom="#6366f1"
+              colorTo="#ec4899"
+              duration={2}
+              size={60}
+            >
+              <TextInput
+                id="search"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                placeholder="Search Resumes"
+                icon={Search}
+                color="search"
+                sizing="full"
+              />
+            </BorderBottomBeam>
+          </div>
+          
+          <FilterDrawer
+            isOpen={isFilterOpen}
+            onToggle={() => setIsFilterOpen(!isFilterOpen)}
+            filters={filters}
+            onFiltersChange={setFilters}
+            availableTags={availableTags}
+          />
         </div>
-        <Button variant="outline" className="h-12 px-4">
-          <Filter className="mr-2 h-4 w-4" />
-          Filter
-        </Button>
       </div>
 
       {/* Loading State */}
@@ -240,16 +348,35 @@ export const ResumesPage: FC = () => {
       )}
 
       {/* No Search Results */}
-      {!isLoading && !error && resumes.length > 0 && filteredResumes.length === 0 && searchQuery && (
+      {!isLoading && !error && resumes.length > 0 && filteredResumes.length === 0 && (
         <Card>
           <CardContent className="py-12 text-center">
             <h3 className="text-lg font-semibold mb-2">No resumes found</h3>
             <p className="text-muted-foreground mb-4">
-              No resumes match your search for "{searchQuery}"
+              {searchQuery 
+                ? `No resumes match your search for "${searchQuery}"`
+                : 'No resumes match your current filters'
+              }
             </p>
-            <Button variant="outline" onClick={() => setSearchQuery('')}>
-              Clear Search
-            </Button>
+            <div className="flex items-center justify-center space-x-3">
+              {searchQuery && (
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => {
+                setFilters({
+                  dateRange: 'all',
+                  tags: [],
+                  sortBy: 'updated',
+                  sortOrder: 'desc',
+                  status: 'all'
+                });
+                setSearchQuery('');
+              }}>
+                Clear All Filters
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
