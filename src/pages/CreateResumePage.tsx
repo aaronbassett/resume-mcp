@@ -15,16 +15,6 @@ export const CreateResumePage: FC = () => {
           { label: 'Resumes', href: '/resumes' },
           { label: 'Create Resume' }
         ]}
-        actions={
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => navigate('/resumes')}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        }
       />
 
       <ResumeEditor isNew={true} onBack={() => navigate('/resumes')} />
