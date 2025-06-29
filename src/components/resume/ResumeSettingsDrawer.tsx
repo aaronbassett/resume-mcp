@@ -4,7 +4,7 @@ import { X, Settings, Globe, Eye, Wand2, Code, OctagonMinus } from 'lucide-react
 import { Button } from '../ui/Button';
 import { TextInput, Select, Textarea } from 'flowbite-react';
 import { ToggleSwitch } from '../analytics/ToggleSwitch';
-import Select as ReactSelect from 'react-select';
+import ReactSelect from 'react-select';
 
 interface ResumeSettingsDrawerProps {
   isOpen: boolean;
