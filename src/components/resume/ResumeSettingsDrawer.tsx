@@ -335,7 +335,7 @@ export const ResumeSettingsDrawer: FC<ResumeSettingsDrawerProps> = ({
                           <p className="text-lg text-destructive/90">
                             Could this mischief lead to spontaneous CEO offers with absolutely unhinged comp packages? It's not impossible. But, what is much more likely is rescinded offers, awkward LinkedIn messages, and potential charges. Either way, we're just here to provide the tools; what you do with them is between you, your conscience, and whatever poor LLM stumbles into your web of deception.
                           </p>
-                          <div className="pt-2">
+                          <div className="py-4 flex justify-center">
                             <Button 
                               variant="destructive" 
                               onClick={handleMischiefProceed}
