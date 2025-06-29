@@ -1,10 +1,10 @@
 import type { FC } from 'react';
-import { useState } from 'react';
-import { X, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CircleX, Building, Phone, Users, Award, XCircle, Calendar, MapPin, Clock, DollarSign, Star, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
-import { TextInput, Textarea, Select } from 'flowbite-react';
+import { TextInput, Textarea, Select, Tooltip } from 'flowbite-react';
 import type { JourneyEvent } from '../../types/analytics';
 
 interface AddEventModalProps {
@@ -20,6 +20,7 @@ type EventType = 'initial_outreach' | 'follow_up_call' | 'interview_round' | 'of
 interface FormData {
   type: EventType;
   date: string;
+  apiKey: string;
   // Initial Outreach
   companyName: string;
   positionTitle: string;
@@ -53,11 +54,19 @@ interface FormData {
 }
 
 const eventTypeOptions = [
-  { value: 'initial_outreach', label: 'Initial Application', icon: Building, color: 'bg-blue-500' },
-  { value: 'follow_up_call', label: 'Follow-up Call', icon: Phone, color: 'bg-purple-500' },
-  { value: 'interview_round', label: 'Interview Round', icon: Users, color: 'bg-orange-500' },
-  { value: 'offer', label: 'Job Offer', icon: Award, color: 'bg-green-500' },
+  { value: 'initial_outreach', label: 'Application', icon: Building, color: 'bg-blue-500' },
+  { value: 'follow_up_call', label: 'Call', icon: Phone, color: 'bg-purple-500' },
+  { value: 'interview_round', label: 'Interview', icon: Users, color: 'bg-orange-500' },
+  { value: 'offer', label: 'Offer', icon: Award, color: 'bg-green-500' },
   { value: 'rejection', label: 'Rejection', icon: XCircle, color: 'bg-red-500' },
+];
+
+// Mock API keys - in a real app, these would come from the backend
+const mockApiKeys = [
+  { value: 'mcp_key_fullstack_001', label: 'Full Stack Developer Resume' },
+  { value: 'mcp_key_frontend_002', label: 'Frontend Specialist Resume' },
+  { value: 'mcp_key_react_003', label: 'Senior React Engineer Resume' },
+  { value: 'mcp_key_devops_004', label: 'DevOps Engineer Resume' },
 ];
 
 export const AddEventModal: FC<AddEventModalProps> = ({
@@ -70,6 +79,7 @@ export const AddEventModal: FC<AddEventModalProps> = ({
   const [formData, setFormData] = useState<FormData>({
     type: (preselectedEventType as EventType) || 'initial_outreach',
     date: new Date().toISOString().split('T')[0],
+    apiKey: mockApiKeys[0]?.value || '',
     companyName: '',
     positionTitle: '',
     notes: '',
@@ -99,6 +109,25 @@ export const AddEventModal: FC<AddEventModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const selectedEventType = eventTypeOptions.find(option => option.value === formData.type);
 
   const updateField = (field: keyof FormData, value: any) => {
@@ -114,6 +143,10 @@ export const AddEventModal: FC<AddEventModalProps> = ({
 
     if (!formData.date) {
       newErrors.date = 'Date is required';
+    }
+
+    if (!formData.apiKey) {
+      newErrors.apiKey = 'API key is required';
     }
 
     if (formData.type === 'initial_outreach') {
@@ -258,6 +291,7 @@ export const AddEventModal: FC<AddEventModalProps> = ({
     setFormData({
       type: 'initial_outreach',
       date: new Date().toISOString().split('T')[0],
+      apiKey: mockApiKeys[0]?.value || '',
       companyName: '',
       positionTitle: '',
       notes: '',
@@ -312,63 +346,84 @@ export const AddEventModal: FC<AddEventModalProps> = ({
           className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-background border rounded-xl shadow-2xl"
         >
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-              <div className="flex items-center space-x-3">
-                {selectedEventType && (
-                  <div className={`${selectedEventType.color} rounded-lg p-2`}>
-                    <selectedEventType.icon className="h-5 w-5 text-white" />
-                  </div>
-                )}
+            <CardHeader className="relative pb-4">
+              {/* Close button in top right */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleClose} 
+                className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+              >
+                <CircleX className="h-5 w-5" />
+              </Button>
+              
+              {/* Header content aligned left */}
+              <div className="flex items-center space-x-3 pr-12">
                 <div>
                   <CardTitle>Add New Event</CardTitle>
                   <CardDescription>Log a new event in your job search journey</CardDescription>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={handleClose} className="h-8 w-8 p-0">
-                <X className="h-4 w-4" />
-              </Button>
             </CardHeader>
 
             <CardContent className="space-y-6">
-              {/* Event Type Selection */}
+              {/* Event Type Selection - Horizontal row of icons */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Event Type</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="flex items-center space-x-3">
                   {eventTypeOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => updateField('type', option.value)}
-                      className={`p-3 rounded-lg border-2 transition-all text-left ${
-                        formData.type === option.value
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2 mb-1">
-                        <div className={`${option.color} rounded p-1`}>
-                          <option.icon className="h-3 w-3 text-white" />
+                    <Tooltip key={option.value} content={option.label}>
+                      <button
+                        onClick={() => updateField('type', option.value)}
+                        className={`p-3 rounded-lg border-2 transition-all ${
+                          formData.type === option.value
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className={`${option.color} rounded p-2`}>
+                          <option.icon className="h-4 w-4 text-white" />
                         </div>
-                        <span className="text-sm font-medium">{option.label}</span>
-                      </div>
-                    </button>
+                      </button>
+                    </Tooltip>
                   ))}
                 </div>
               </div>
 
-              {/* Date */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center space-x-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>Date</span>
-                </label>
-                <TextInput
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => updateField('date', e.target.value)}
-                  max={new Date().toISOString().split('T')[0]}
-                  color={errors.date ? 'failure' : 'gray'}
-                  helperText={errors.date}
-                />
+              {/* Date and API Key */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center space-x-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>Date</span>
+                  </label>
+                  <TextInput
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => updateField('date', e.target.value)}
+                    max={new Date().toISOString().split('T')[0]}
+                    color={errors.date ? 'failure' : 'gray'}
+                    helperText={errors.date}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center space-x-2">
+                    <Key className="h-4 w-4" />
+                    <span>Resume/API Key</span>
+                  </label>
+                  <Select
+                    value={formData.apiKey}
+                    onChange={(e) => updateField('apiKey', e.target.value)}
+                    color={errors.apiKey ? 'failure' : 'gray'}
+                    helperText={errors.apiKey}
+                  >
+                    {mockApiKeys.map((apiKey) => (
+                      <option key={apiKey.value} value={apiKey.value}>
+                        {apiKey.label}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
               </div>
 
               {/* Company Name (for all types) */}
