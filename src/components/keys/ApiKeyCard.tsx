@@ -58,7 +58,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
     try {
       const result = await rotateApiKey(apiKey.id, 'manual');
       if (result.error) {
-        throw new Error(result.error);
+        throw result.error;
       } else if (result.data?.newKey) {
         return result.data.newKey;
       }
@@ -353,6 +353,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
         onConfirm={performRotation}
         apiKey={apiKey}
         isLoading={isRotating}
+        onRotationComplete={handleRotationComplete}
       />
     </>
   );

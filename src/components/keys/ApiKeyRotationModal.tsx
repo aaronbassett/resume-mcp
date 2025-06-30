@@ -12,6 +12,7 @@ interface ApiKeyRotationModalProps {
   onConfirm: () => Promise<string | null>;
   apiKey: ApiKeyWithResume | null;
   isLoading?: boolean;
+  onRotationComplete?: (newKey: string) => void;
 }
 
 export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
@@ -19,7 +20,8 @@ export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
   onClose,
   onConfirm,
   apiKey,
-  isLoading = false
+  isLoading = false,
+  onRotationComplete
 }) => {
   const [confirmText, setConfirmText] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -71,6 +73,11 @@ export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
         const result = await onConfirm();
         if (result) {
           setNewKey(result);
+          if (onRotationComplete) {
+            onRotationComplete(result);
+          }
+        } else {
+          setError("Failed to rotate key - no new key was returned");
         }
       } catch (err) {
         // Extract the actual error message from the error object
