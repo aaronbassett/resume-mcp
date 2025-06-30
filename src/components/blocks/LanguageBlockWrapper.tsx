@@ -30,7 +30,7 @@ export const languageBlockConfig: BlockConfig<NaturalLanguageBlockData> = create
   {
     displayName: 'Languages',
     component: LanguageBlockWrapper,
-    defaultData: defaultBlockData[BlockType.NATURAL_LANGUAGE],
+    createDefault: () => defaultBlockData[BlockType.NATURAL_LANGUAGE],
     category: 'skills',
     description: 'Spoken and written languages',
     icon: 'Languages',

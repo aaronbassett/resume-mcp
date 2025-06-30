@@ -30,7 +30,7 @@ export const contactBlockConfig: BlockConfig<ContactBlockData> = createBlockConf
   {
     displayName: 'Contact Information',
     component: ContactBlockWrapper,
-    defaultData: defaultBlockData[BlockType.CONTACT],
+    createDefault: () => defaultBlockData[BlockType.CONTACT],
     category: 'personal',
     description: 'Email, phone, and website contact information',
     icon: 'Mail',

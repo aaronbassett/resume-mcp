@@ -30,7 +30,7 @@ export const volunteerBlockConfig: BlockConfig<VolunteerBlockData> = createBlock
   {
     displayName: 'Volunteer Experience',
     component: VolunteerBlockWrapper,
-    defaultData: defaultBlockData[BlockType.VOLUNTEER],
+    createDefault: () => defaultBlockData[BlockType.VOLUNTEER],
     category: 'professional',
     description: 'Community service and volunteer work',
     icon: 'Heart',

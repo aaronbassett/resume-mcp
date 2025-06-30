@@ -30,7 +30,7 @@ export const addressBlockConfig: BlockConfig<AddressBlockData> = createBlockConf
   {
     displayName: 'Address & Location',
     component: AddressBlockWrapper,
-    defaultData: defaultBlockData[BlockType.ADDRESS],
+    createDefault: () => defaultBlockData[BlockType.ADDRESS],
     category: 'personal',
     description: 'Physical location or remote work status',
     icon: 'MapPin',

@@ -30,7 +30,7 @@ export const skillBlockConfig: BlockConfig<SkillBlockData> = createBlockConfig(
   {
     displayName: 'Skills',
     component: SkillBlockWrapper,
-    defaultData: defaultBlockData[BlockType.SKILL],
+    createDefault: () => defaultBlockData[BlockType.SKILL],
     category: 'skills',
     description: 'Technical and professional skills',
     icon: 'Zap',

@@ -30,7 +30,7 @@ export const socialNetworksBlockConfig: BlockConfig<SocialNetworksBlockData> = c
   {
     displayName: 'Social Networks',
     component: SocialNetworksBlockWrapper,
-    defaultData: defaultBlockData[BlockType.SOCIAL_NETWORKS],
+    createDefault: () => defaultBlockData[BlockType.SOCIAL_NETWORKS],
     category: 'personal',
     description: 'Professional and social media profiles',
     icon: 'Users',

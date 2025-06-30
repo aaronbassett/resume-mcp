@@ -30,7 +30,7 @@ export const awardBlockConfig: BlockConfig<AwardBlockData> = createBlockConfig(
   {
     displayName: 'Awards & Recognition',
     component: AwardBlockWrapper,
-    defaultData: defaultBlockData[BlockType.AWARD],
+    createDefault: () => defaultBlockData[BlockType.AWARD],
     category: 'achievements',
     description: 'Professional awards and honors',
     icon: 'Trophy',

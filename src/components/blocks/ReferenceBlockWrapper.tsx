@@ -30,7 +30,7 @@ export const referenceBlockConfig: BlockConfig<ReferenceBlockData> = createBlock
   {
     displayName: 'References',
     component: ReferenceBlockWrapper,
-    defaultData: defaultBlockData[BlockType.REFERENCE],
+    createDefault: () => defaultBlockData[BlockType.REFERENCE],
     category: 'personal',
     description: 'Professional references',
     icon: 'UserCheck',

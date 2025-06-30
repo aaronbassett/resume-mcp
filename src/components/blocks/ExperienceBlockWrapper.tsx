@@ -30,7 +30,7 @@ export const experienceBlockConfig: BlockConfig<ExperienceBlockData> = createBlo
   {
     displayName: 'Work Experience',
     component: ExperienceBlockWrapper,
-    defaultData: defaultBlockData[BlockType.EXPERIENCE],
+    createDefault: () => defaultBlockData[BlockType.EXPERIENCE],
     category: 'professional',
     description: 'Employment history and achievements',
     icon: 'Briefcase',

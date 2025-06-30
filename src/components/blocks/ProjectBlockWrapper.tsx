@@ -30,7 +30,7 @@ export const projectBlockConfig: BlockConfig<ProjectBlockData> = createBlockConf
   {
     displayName: 'Projects',
     component: ProjectBlockWrapper,
-    defaultData: defaultBlockData[BlockType.PROJECT],
+    createDefault: () => defaultBlockData[BlockType.PROJECT],
     category: 'professional',
     description: 'Personal or professional projects',
     icon: 'Folder',

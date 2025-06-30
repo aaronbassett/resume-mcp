@@ -30,7 +30,7 @@ export const interestBlockConfig: BlockConfig<InterestBlockData> = createBlockCo
   {
     displayName: 'Interests',
     component: InterestBlockWrapper,
-    defaultData: defaultBlockData[BlockType.INTEREST],
+    createDefault: () => defaultBlockData[BlockType.INTEREST],
     category: 'personal',
     description: 'Personal interests and hobbies',
     icon: 'Sparkles',

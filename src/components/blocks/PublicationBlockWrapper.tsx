@@ -30,7 +30,7 @@ export const publicationBlockConfig: BlockConfig<PublicationBlockData> = createB
   {
     displayName: 'Publications',
     component: PublicationBlockWrapper,
-    defaultData: defaultBlockData[BlockType.PUBLICATION],
+    createDefault: () => defaultBlockData[BlockType.PUBLICATION],
     category: 'achievements',
     description: 'Academic papers and articles',
     icon: 'BookOpen',

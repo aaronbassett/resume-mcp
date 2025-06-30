@@ -59,7 +59,7 @@ export const avatarBlockConfig = {
   category: 'personal' as const,
   icon: 'User',
   supportsMultiple: false,
-  defaultData: (): AvatarBlockData => ({
+  createDefault: (): AvatarBlockData => ({
     imageUrl: '',
     altText: '',
   }),

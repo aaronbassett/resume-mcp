@@ -30,7 +30,7 @@ export const educationBlockConfig: BlockConfig<EducationBlockData> = createBlock
   {
     displayName: 'Education',
     component: EducationBlockWrapper,
-    defaultData: defaultBlockData[BlockType.EDUCATION],
+    createDefault: () => defaultBlockData[BlockType.EDUCATION],
     category: 'professional',
     description: 'Academic degrees and coursework',
     icon: 'GraduationCap',

@@ -30,7 +30,7 @@ export const certificateBlockConfig: BlockConfig<CertificateBlockData> = createB
   {
     displayName: 'Certifications',
     component: CertificateBlockWrapper,
-    defaultData: defaultBlockData[BlockType.CERTIFICATE],
+    createDefault: () => defaultBlockData[BlockType.CERTIFICATE],
     category: 'achievements',
     description: 'Professional certifications and licenses',
     icon: 'Award',
