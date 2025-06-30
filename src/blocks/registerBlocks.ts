@@ -1,35 +1,55 @@
 import { blockRegistry, createBlockConfig, defaultDataCreators, blockValidators } from './registry';
 import { BlockType, blockMetadata } from '../config/blockEditorConfig';
-import { ContactBlockView, ContactBlockEdit } from './implementations/ContactBlock';
-import type { ContactBlockData } from '../types/blocks';
+
+// Import all block configurations synchronously
+import { avatarBlockConfig } from '../components/blocks/AvatarBlockWrapper';
+import { contactBlockConfig } from '../components/blocks/ContactBlockWrapper';
+import { addressBlockConfig } from '../components/blocks/AddressBlockWrapper';
+import { socialNetworksBlockConfig } from '../components/blocks/SocialNetworksBlockWrapper';
+import { experienceBlockConfig } from '../components/blocks/ExperienceBlockWrapper';
+import { volunteerBlockConfig } from '../components/blocks/VolunteerBlockWrapper';
+import { educationBlockConfig } from '../components/blocks/EducationBlockWrapper';
+import { awardBlockConfig } from '../components/blocks/AwardBlockWrapper';
+import { certificateBlockConfig } from '../components/blocks/CertificateBlockWrapper';
+import { publicationBlockConfig } from '../components/blocks/PublicationBlockWrapper';
+import { projectBlockConfig } from '../components/blocks/ProjectBlockWrapper';
+import { skillBlockConfig } from '../components/blocks/SkillBlockWrapper';
+import { languageBlockConfig } from '../components/blocks/LanguageBlockWrapper';
+import { interestBlockConfig } from '../components/blocks/InterestBlockWrapper';
+import { referenceBlockConfig } from '../components/blocks/ReferenceBlockWrapper';
 
 /**
  * Register all block types with the registry
  * This function should be called once during app initialization
  */
 export function registerAllBlocks(): void {
-  // Register Contact Block as an example
-  blockRegistry.register(
-    BlockType.CONTACT,
-    createBlockConfig<ContactBlockData>(BlockType.CONTACT, {
-      displayName: blockMetadata[BlockType.CONTACT].displayName,
-      maxBlocks: blockMetadata[BlockType.CONTACT].maxBlocks,
-      renderView: ContactBlockView,
-      renderEdit: ContactBlockEdit,
-      createDefault: defaultDataCreators[BlockType.CONTACT],
-      validate: blockValidators[BlockType.CONTACT],
-      onSave: async (block) => {
-        // TODO: Integrate with blockService to persist to database
-        console.log('Saving contact block:', block);
-      },
-    })
-  );
+  // Map of block types to their configurations
+  const blockConfigs = {
+    [BlockType.AVATAR]: avatarBlockConfig,
+    [BlockType.CONTACT]: contactBlockConfig,
+    [BlockType.ADDRESS]: addressBlockConfig,
+    [BlockType.SOCIAL_NETWORKS]: socialNetworksBlockConfig,
+    [BlockType.EXPERIENCE]: experienceBlockConfig,
+    [BlockType.VOLUNTEER]: volunteerBlockConfig,
+    [BlockType.EDUCATION]: educationBlockConfig,
+    [BlockType.AWARD]: awardBlockConfig,
+    [BlockType.CERTIFICATE]: certificateBlockConfig,
+    [BlockType.PUBLICATION]: publicationBlockConfig,
+    [BlockType.PROJECT]: projectBlockConfig,
+    [BlockType.SKILL]: skillBlockConfig,
+    [BlockType.NATURAL_LANGUAGE]: languageBlockConfig,
+    [BlockType.INTEREST]: interestBlockConfig,
+    [BlockType.REFERENCE]: referenceBlockConfig,
+  };
 
-  // TODO: Register remaining 14 block types as they are implemented
-  // Each block type will follow the same pattern:
-  // 1. Import the View and Edit components
-  // 2. Use blockRegistry.register() with the appropriate type
-  // 3. Use metadata, defaultDataCreators, and validators from our configs
+  // Register all block configurations
+  Object.entries(blockConfigs).forEach(([blockType, config]) => {
+    if (config) {
+      blockRegistry.register(blockType as BlockType, config);
+    } else {
+      console.warn(`No configuration found for block type: ${blockType}`);
+    }
+  });
 
   console.log(`Registered ${blockRegistry.getTypes().length} block types`);
 }
