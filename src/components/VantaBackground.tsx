@@ -47,7 +47,7 @@ export const VantaBackground: React.FC<VantaBackgroundProps> = ({ children, clas
     }
 
     // Create new effect with theme-appropriate colors
-    const newEffect = VANTA.TOPOLOGY({
+    const newEffect = VANTA({
       el: vantaRef.current,
       THREE: THREE,
       mouseControls: true,
