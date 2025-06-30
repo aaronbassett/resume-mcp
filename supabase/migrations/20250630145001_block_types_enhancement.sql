@@ -20,7 +20,19 @@ CREATE TABLE IF NOT EXISTS block_types (
 CREATE INDEX idx_block_types_name ON block_types(name);
 CREATE INDEX idx_block_types_category ON block_types(category);
 
--- 2. Enhance the existing blocks table if needed
+-- 2. Create or enhance the blocks table
+-- Create blocks table if it doesn't exist
+CREATE TABLE IF NOT EXISTS blocks (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    type TEXT NOT NULL,
+    data JSONB NOT NULL DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    visibility TEXT DEFAULT 'private' CHECK (visibility IN ('public', 'private')),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
 -- Add missing columns if they don't exist
 DO $$ 
 BEGIN
@@ -117,8 +129,14 @@ FROM block_types bt
 WHERE b.type = bt.name
 AND b.type_id IS NULL;
 
+-- Add foreign key constraint to resume_blocks now that blocks table exists
+ALTER TABLE resume_blocks 
+    ADD CONSTRAINT resume_blocks_block_id_fkey 
+    FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE;
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE block_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blocks ENABLE ROW LEVEL SECURITY;
 
 -- Block types are read-only for all authenticated users
 CREATE POLICY "Block types are viewable by all authenticated users" ON block_types
@@ -127,6 +145,22 @@ CREATE POLICY "Block types are viewable by all authenticated users" ON block_typ
 -- Only service role can modify block types
 CREATE POLICY "Block types can only be modified by service role" ON block_types
     FOR ALL USING (auth.role() = 'service_role');
+
+-- RLS Policies for blocks
+CREATE POLICY "Users can view their own blocks" ON blocks
+    FOR SELECT USING (user_id = auth.uid());
+
+CREATE POLICY "Users can create their own blocks" ON blocks
+    FOR INSERT WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can update their own blocks" ON blocks
+    FOR UPDATE USING (user_id = auth.uid());
+
+CREATE POLICY "Users can delete their own blocks" ON blocks
+    FOR DELETE USING (user_id = auth.uid());
+
+CREATE POLICY "Public blocks are viewable by all" ON blocks
+    FOR SELECT USING (visibility = 'public');
 
 -- Update triggers for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -138,6 +172,9 @@ END;
 $$ language 'plpgsql';
 
 CREATE TRIGGER update_block_types_updated_at BEFORE UPDATE ON block_types
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_blocks_updated_at BEFORE UPDATE ON blocks
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Add comments for documentation
