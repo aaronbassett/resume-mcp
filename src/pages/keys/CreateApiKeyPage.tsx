@@ -13,46 +13,33 @@ import type { Resume } from '../../lib/resumeService';
 
 export const CreateApiKeyPage: FC = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
-  const [availablePermissions, setAvailablePermissions] = useState<ApiKeyScope[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [createdKey, setCreatedKey] = useState<ApiKey | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadResumes = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // Fetch resumes and permissions in parallel
-        const [resumesResult, permissionsResult] = await Promise.all([
-          getUserResumes(),
-          getApiKeyScopes()
-        ]);
+        const result = await getUserResumes();
 
-        if (resumesResult.error) {
-          setError(resumesResult.error);
+        if (result.error) {
+          setError(result.error);
         } else {
-          setResumes(resumesResult.data || []);
-        }
-
-        if (permissionsResult.error) {
-          console.error('Error loading permissions:', permissionsResult.error);
-          // Don't set error state for permissions to avoid blocking the form
-          // Just log the error and continue with empty permissions
-        } else {
-          setAvailablePermissions(permissionsResult.data || []);
+          setResumes(result.data || []);
         }
       } catch (error) {
-        console.error('Error loading data:', error);
-        setError('Failed to load necessary data');
+        console.error('Error loading resumes:', error);
+        setError('Failed to load resumes');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadData();
+    loadResumes();
   }, []);
 
   const handleKeyCreated = (key: ApiKey) => {
@@ -87,7 +74,7 @@ export const CreateApiKeyPage: FC = () => {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your resumes and permissions...</p>
+            <p className="text-muted-foreground">Loading your resumes...</p>
           </div>
         </div>
       )}
@@ -127,11 +114,7 @@ export const CreateApiKeyPage: FC = () => {
           {createdKey ? (
             <ApiKeySuccess apiKey={createdKey} onDone={handleDone} />
           ) : (
-            <ApiKeyForm 
-              resumes={resumes} 
-              availablePermissions={availablePermissions}
-              onKeyCreated={handleKeyCreated} 
-            />
+            <ApiKeyForm resumes={resumes} onKeyCreated={handleKeyCreated} />
           )}
         </>
       )}
