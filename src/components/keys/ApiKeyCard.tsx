@@ -63,9 +63,6 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
         return result.data.newKey;
       }
       return null;
-    } catch (error) {
-      console.error('Error rotating key:', error);
-      throw new Error('Failed to rotate key');
     } finally {
       setIsRotating(false);
     }

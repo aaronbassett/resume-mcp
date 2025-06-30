@@ -73,7 +73,18 @@ export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
           setNewKey(result);
         }
       } catch (err) {
-        setError(typeof err === 'string' ? err : 'Failed to rotate API key');
+        // Extract the actual error message from the error object
+        let errorMessage = 'Failed to rotate API key';
+        
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        } else if (typeof err === 'string') {
+          errorMessage = err;
+        } else if (err && typeof err === 'object' && 'message' in err) {
+          errorMessage = String(err.message);
+        }
+        
+        setError(errorMessage);
       }
     }
   };
