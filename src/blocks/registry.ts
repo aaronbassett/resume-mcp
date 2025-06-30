@@ -289,3 +289,13 @@ import('../components/blocks/ContactBlockWrapper').then((module) => {
 import('../components/blocks/AddressBlockWrapper').then((module) => {
   blockRegistry.register(BlockType.ADDRESS, module.addressBlockConfig);
 });
+
+// Auto-register Social Networks Block
+import('../components/blocks/SocialNetworksBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.SOCIAL_NETWORKS, module.socialNetworksBlockConfig);
+});
+
+// Auto-register Experience Block
+import('../components/blocks/ExperienceBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.EXPERIENCE, module.experienceBlockConfig);
+});

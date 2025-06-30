@@ -7,9 +7,13 @@ export type { ResumeBlockProviderProps } from './ResumeBlockContext';
 export { AvatarBlock } from './avatar';
 export { ContactBlock } from './contact';
 export { AddressBlock } from './address';
+export { SocialNetworksBlock } from './social';
+export { ExperienceBlock } from './experience';
 export { AvatarBlockWrapper, avatarBlockConfig } from './AvatarBlockWrapper';
 export { ContactBlockWrapper, contactBlockConfig } from './ContactBlockWrapper';
 export { AddressBlockWrapper, addressBlockConfig } from './AddressBlockWrapper';
+export { SocialNetworksBlockWrapper, socialNetworksBlockConfig } from './SocialNetworksBlockWrapper';
+export { ExperienceBlockWrapper, experienceBlockConfig } from './ExperienceBlockWrapper';
 
 // Block Registry
 export { blockRegistry } from '../../blocks/registry';
