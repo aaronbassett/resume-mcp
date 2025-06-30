@@ -7,11 +7,8 @@ export interface ApiKey {
   resume_id: string | null;
   name: string;
   expires_at: string | null;
-  max_uses: number | null;
   created_at: string;
   last_used_at: string | null;
-  unique_ips: number;
-  notes: string | null;
   is_active: boolean;
   
   // Enhanced fields
