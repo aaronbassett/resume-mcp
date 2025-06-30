@@ -61,6 +61,7 @@ const auroraTexts = [
 export const LandingPage: FC = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isCtaHovered, setIsCtaHovered] = useState(false);
+  const [isStartBuildingHovered, setIsStartBuildingHovered] = useState(false);
   
   // Scroll animations
   const { scrollYProgress } = useScroll();
@@ -82,7 +83,7 @@ export const LandingPage: FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
@@ -98,9 +99,14 @@ export const LandingPage: FC = () => {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <Button variant="fluid-secondary">
-                    Dashboard
-                  </Button>
+                  <PointerHighlight 
+                    rectangleClassName="bg-primary/10 border-primary/30"
+                    pointerClassName="text-primary"
+                  >
+                    <Button variant="fluid-secondary">
+                      Dashboard
+                    </Button>
+                  </PointerHighlight>
                 </Link>
               ) : (
                 <>
@@ -135,7 +141,7 @@ export const LandingPage: FC = () => {
               <SwitchRevealHeading
                 headingText="Turn Your Resume into"
                 auroraTexts={auroraTexts}
-                className="text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl leading-tight"
+                className="text-6xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl leading-tight"
                 pauseDuration={6000}
                 fadeDuration={0.3}
               />
@@ -143,10 +149,10 @@ export const LandingPage: FC = () => {
                 Create dynamic, AI-powered professional profiles that LLMs can actually understand and interact with. 
                 Instead of static PDFs, build modular resumes that negotiate on your behalf.
               </p>
-              <div className="mt-12 flex items-center justify-center gap-x-6">
+              <div className="mt-16 flex items-center justify-center gap-x-6">
                 {isAuthenticated ? (
                   <Link to="/dashboard">
-                    <Button size="lg" variant="fluid-secondary" className="text-lg px-8">
+                    <Button size="lg" variant="fluid-secondary" className="text-lg px-8 py-6">
                       Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
@@ -159,8 +165,8 @@ export const LandingPage: FC = () => {
                       <Button 
                         size="lg" 
                         className="text-xl px-10 py-7"
-                        onMouseEnter={() => setIsCtaHovered(true)}
-                        onMouseLeave={() => setIsCtaHovered(false)}
+                        onMouseEnter={() => setIsStartBuildingHovered(true)}
+                        onMouseLeave={() => setIsStartBuildingHovered(false)}
                       >
                         Start Building <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
@@ -180,16 +186,18 @@ export const LandingPage: FC = () => {
 
       {/* Scrolling Text */}
       <section className="py-16 overflow-hidden">
-        <VelocityScroll defaultVelocity={3} className="text-4xl md:text-6xl font-bold opacity-20">
-          AI-POWERED RESUMES • INTELLIGENT AGENTS • CAREER ACCELERATION • SMART PROFILES •
-        </VelocityScroll>
+        <div className="transform rotate-[30deg] origin-center">
+          <VelocityScroll defaultVelocity={3} className="text-5xl md:text-7xl font-bold opacity-20">
+            AI-POWERED RESUMES • INTELLIGENT AGENTS • CAREER ACCELERATION • SMART PROFILES •
+          </VelocityScroll>
+        </div>
       </section>
 
       {/* Features Section */}
       <section className="py-24 relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-8">
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-8">
               Everything you need to land your dream job
             </h2>
             <p className="text-xl leading-8 text-muted-foreground">
@@ -231,10 +239,19 @@ export const LandingPage: FC = () => {
         </div>
       </section>
 
+      {/* Text Reveal Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <TextReveal className="text-5xl md:text-6xl font-bold">
+            Create intelligent resume agents that work 24/7 to land you better opportunities. Your professional profile becomes an AI-powered advocate.
+          </TextReveal>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section 
         ref={ctaRef}
-        className="py-24 relative overflow-hidden"
+        className="py-32 relative overflow-hidden"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
@@ -244,9 +261,14 @@ export const LandingPage: FC = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-primary-foreground mb-6">
-                Ready to supercharge your career?
-              </h2>
+              <PointerHighlight
+                rectangleClassName="bg-white/10 border-white/30"
+                pointerClassName="text-white"
+              >
+                <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight text-primary-foreground mb-6">
+                  Ready to supercharge your career?
+                </h2>
+              </PointerHighlight>
               <p className="mt-6 text-xl leading-8 text-primary-foreground/90 max-w-2xl mx-auto">
                 Join thousands of developers who are already using Resume MCP to land better opportunities.
               </p>
@@ -302,7 +324,7 @@ export const LandingPage: FC = () => {
       <section className="py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
               Trusted by developers worldwide
             </h2>
             <p className="mt-4 text-xl text-muted-foreground">
