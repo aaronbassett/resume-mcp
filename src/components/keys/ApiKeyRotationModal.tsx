@@ -71,6 +71,7 @@ export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
       try {
         setError(null);
         const result = await onConfirm();
+        
         if (result) {
           setNewKey(result);
           if (onRotationComplete) {
@@ -80,6 +81,8 @@ export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
           setError("Failed to rotate key - no new key was returned");
         }
       } catch (err) {
+        console.error("Key rotation error:", err);
+        
         // Extract the actual error message from the error object
         let errorMessage = 'Failed to rotate API key';
         

@@ -58,6 +58,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
     try {
       const result = await rotateApiKey(apiKey.id, 'manual');
       if (result.error) {
+        // Just return the error message directly, don't wrap in Error
         throw result.error;
       } else if (result.data?.newKey) {
         return result.data.newKey;

@@ -234,12 +234,15 @@ export const rotateApiKey = async (keyId: string, reason: 'scheduled' | 'manual'
     }
 
     if (!data || !data.new_api_key) {
-      return { data: null, error: 'Failed to rotate API key' };
+      return { data: null, error: 'Failed to rotate API key - no new key was generated' };
     }
 
     return { data: { newKey: data.new_api_key }, error: null };
   } catch (error) {
     console.error('Error rotating API key:', error);
+    if (error instanceof Error) {
+      return { data: null, error: error.message };
+    }
     return { data: null, error: 'Failed to rotate API key' };
   }
 };
