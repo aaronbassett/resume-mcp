@@ -6,6 +6,9 @@
 import { z } from 'zod';
 import { BlockType } from '../config/blockEditorConfig';
 
+// Re-export BlockType for convenience
+export { BlockType };
+
 // ==========================================
 // Base Block Structure
 // ==========================================

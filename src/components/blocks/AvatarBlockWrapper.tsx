@@ -6,7 +6,8 @@
 
 import React from 'react';
 import { AvatarBlock } from './avatar/AvatarBlock';
-import { AvatarBlockData, BlockType } from '../../types/blocks';
+import { AvatarBlockData } from '../../types/blocks';
+import { BlockType } from '../../config/blockEditorConfig';
 import { blockService } from '../../lib/blockService';
 import { useBlockStore } from '@aaronbassett/block-party';
 
