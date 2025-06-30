@@ -12,6 +12,9 @@ export { ExperienceBlock } from './experience';
 export { EducationBlock } from './education';
 export { VolunteerBlock } from './volunteer';
 export { AwardBlock } from './award';
+export { CertificateBlock } from './certificate';
+export { PublicationBlock } from './publication';
+export { ProjectBlock } from './project';
 export { AvatarBlockWrapper, avatarBlockConfig } from './AvatarBlockWrapper';
 export { ContactBlockWrapper, contactBlockConfig } from './ContactBlockWrapper';
 export { AddressBlockWrapper, addressBlockConfig } from './AddressBlockWrapper';
@@ -20,6 +23,9 @@ export { ExperienceBlockWrapper, experienceBlockConfig } from './ExperienceBlock
 export { EducationBlockWrapper, educationBlockConfig } from './EducationBlockWrapper';
 export { VolunteerBlockWrapper, volunteerBlockConfig } from './VolunteerBlockWrapper';
 export { AwardBlockWrapper, awardBlockConfig } from './AwardBlockWrapper';
+export { CertificateBlockWrapper, certificateBlockConfig } from './CertificateBlockWrapper';
+export { PublicationBlockWrapper, publicationBlockConfig } from './PublicationBlockWrapper';
+export { ProjectBlockWrapper, projectBlockConfig } from './ProjectBlockWrapper';
 
 // Block Registry
 export { blockRegistry } from '../../blocks/registry';

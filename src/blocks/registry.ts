@@ -314,3 +314,18 @@ import('../components/blocks/VolunteerBlockWrapper').then((module) => {
 import('../components/blocks/AwardBlockWrapper').then((module) => {
   blockRegistry.register(BlockType.AWARD, module.awardBlockConfig);
 });
+
+// Auto-register Certificate Block
+import('../components/blocks/CertificateBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.CERTIFICATE, module.certificateBlockConfig);
+});
+
+// Auto-register Publication Block
+import('../components/blocks/PublicationBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.PUBLICATION, module.publicationBlockConfig);
+});
+
+// Auto-register Project Block
+import('../components/blocks/ProjectBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.PROJECT, module.projectBlockConfig);
+});

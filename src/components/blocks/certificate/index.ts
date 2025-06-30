@@ -1,0 +1,1 @@
+export { CertificateBlock } from './CertificateBlock';
