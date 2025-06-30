@@ -10,10 +10,13 @@ import { EditableText } from './EditableText';
 import { EditableTags } from './EditableTags';
 import { AutoSaveIndicator, type SaveStatus } from './AutoSaveIndicator';
 import { ResumeSettingsDrawer, type ResumeSettings } from './ResumeSettingsDrawer';
+import { BlockEditor } from '../blocks/BlockEditor';
+import { BlockEditorWrapper } from '../blocks/BlockEditorWrapper';
 import { useResumeStore } from '../../store/resume';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { createResume, updateResume, getResume, updateResumeSettings } from '../../lib/resumeService';
 import type { CreateResumeData, UpdateResumeData } from '../../lib/resumeService';
+import type { Block } from '@aaronbassett/block-party';
 
 interface ResumeEditorProps {
   resumeId?: string;
@@ -66,6 +69,8 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     metaDescription: '',
     robotsDirectives: ['index', 'follow']
   });
+  
+  const [blocks, setBlocks] = useState<Block[]>([]);
 
   // Load resume data on mount if editing an existing resume
   useEffect(() => {
@@ -259,6 +264,12 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     setIsAdvancedSettingsOpen(false);
   };
 
+  const handleBlocksChange = useCallback((newBlocks: Block[]) => {
+    setBlocks(newBlocks);
+    // TODO: Implement block saving logic here
+    // This would integrate with your block service to persist changes
+  }, []);
+
   // Loading state
   if (isLoading) {
     return (
@@ -446,17 +457,25 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           </AnimatePresence>
         </Card>
 
-        {/* Content Builder Section - Placeholder for future development */}
-        <Card>
-          <CardContent className="p-8">
-            <div className="text-center py-12">
-              <h3 className="text-lg font-semibold mb-2">Resume Builder</h3>
-              <p className="text-muted-foreground">
-                Content builder with blocks will be implemented here.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Content Builder Section */}
+        {!isNewResume && currentResume.id && (
+          <Card>
+            <CardContent className="p-8">
+              <BlockEditorWrapper
+                onBlocksChange={handleBlocksChange}
+                onError={(error) => {
+                  console.error('Block editor error:', error);
+                  setError(error.message);
+                }}
+              >
+                <BlockEditor 
+                  resumeId={currentResume.id}
+                  onBlocksChange={handleBlocksChange}
+                />
+              </BlockEditorWrapper>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DndProvider>
   );
