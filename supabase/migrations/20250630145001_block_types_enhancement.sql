@@ -3,49 +3,109 @@
 -- with proper validation and versioning support
 
 -- 1. Create block_types table to define available block types and their schemas
-CREATE TABLE IF NOT EXISTS block_types (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE,
-    display_name TEXT NOT NULL,
-    category TEXT NOT NULL CHECK (category IN ('personal', 'professional', 'qualifications', 'additional')),
-    schema JSONB NOT NULL,
-    icon TEXT,
-    description TEXT,
-    supports_multiple BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
-
--- Create index for faster lookups
-CREATE INDEX idx_block_types_name ON block_types(name);
-CREATE INDEX idx_block_types_category ON block_types(category);
-
--- 2. Create or enhance the blocks table
--- Create blocks table if it doesn't exist
-CREATE TABLE IF NOT EXISTS blocks (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    type TEXT NOT NULL,
-    data JSONB NOT NULL DEFAULT '{}',
-    metadata JSONB DEFAULT '{}',
-    visibility TEXT DEFAULT 'private' CHECK (visibility IN ('public', 'private')),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
-
--- Add missing columns if they don't exist
 DO $$ 
 BEGIN
-    -- Add name column if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_name = 'blocks' AND column_name = 'name') THEN
-        ALTER TABLE blocks ADD COLUMN name TEXT;
+    -- Check if block_types exists from old migration
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'block_types') THEN
+        -- Table exists, check if it has our required columns
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name = 'block_types' AND column_name = 'display_name') THEN
+            -- It's the old version, drop and recreate
+            DROP TABLE block_types CASCADE;
+            
+            CREATE TABLE block_types (
+                id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                display_name TEXT NOT NULL,
+                category TEXT NOT NULL CHECK (category IN ('personal', 'professional', 'qualifications', 'additional')),
+                schema JSONB NOT NULL,
+                icon TEXT,
+                description TEXT,
+                supports_multiple BOOLEAN DEFAULT true,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+            );
+        END IF;
+    ELSE
+        -- Table doesn't exist, create it
+        CREATE TABLE block_types (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            name TEXT NOT NULL UNIQUE,
+            display_name TEXT NOT NULL,
+            category TEXT NOT NULL CHECK (category IN ('personal', 'professional', 'qualifications', 'additional')),
+            schema JSONB NOT NULL,
+            icon TEXT,
+            description TEXT,
+            supports_multiple BOOLEAN DEFAULT true,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+        );
     END IF;
-    
-    -- Add type_id column to reference block_types
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_name = 'blocks' AND column_name = 'type_id') THEN
-        ALTER TABLE blocks ADD COLUMN type_id UUID REFERENCES block_types(id);
+END $$;
+
+-- Create index for faster lookups
+CREATE INDEX IF NOT EXISTS idx_block_types_name ON block_types(name);
+CREATE INDEX IF NOT EXISTS idx_block_types_category ON block_types(category);
+
+-- 2. Create or enhance the blocks table
+DO $$ 
+BEGIN
+    -- Create blocks table if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'blocks') THEN
+        CREATE TABLE blocks (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            type TEXT NOT NULL,
+            data JSONB NOT NULL DEFAULT '{}',
+            metadata JSONB DEFAULT '{}',
+            visibility TEXT DEFAULT 'private' CHECK (visibility IN ('public', 'private')),
+            user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+            name TEXT,
+            type_id UUID REFERENCES block_types(id),
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+        );
+    ELSE
+        -- Table exists, handle schema differences
+        
+        -- Add metadata column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name = 'blocks' AND column_name = 'metadata') THEN
+            ALTER TABLE blocks ADD COLUMN metadata JSONB DEFAULT '{}';
+        END IF;
+        
+        -- Add visibility column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name = 'blocks' AND column_name = 'visibility') THEN
+            ALTER TABLE blocks ADD COLUMN visibility TEXT DEFAULT 'private' CHECK (visibility IN ('public', 'private'));
+        END IF;
+        
+        -- Add type_id column to reference block_types
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name = 'blocks' AND column_name = 'type_id') THEN
+            ALTER TABLE blocks ADD COLUMN type_id UUID REFERENCES block_types(id);
+        END IF;
+        
+        -- Handle user_id reference change from public.users to auth.users
+        IF EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'blocks' 
+                   AND constraint_name = 'blocks_user_id_fkey') THEN
+            -- Get the referenced table
+            IF EXISTS (SELECT 1 FROM information_schema.constraint_column_usage 
+                      WHERE constraint_name = 'blocks_user_id_fkey' 
+                      AND table_schema = 'public' 
+                      AND table_name = 'users') THEN
+                -- It references public.users, we need to drop and recreate
+                ALTER TABLE blocks DROP CONSTRAINT blocks_user_id_fkey;
+                ALTER TABLE blocks ADD CONSTRAINT blocks_user_id_fkey 
+                    FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+            END IF;
+        END IF;
+        
+        -- Remove old type constraint if it exists
+        IF EXISTS (SELECT 1 FROM information_schema.check_constraints 
+                   WHERE constraint_name = 'blocks_type_check') THEN
+            ALTER TABLE blocks DROP CONSTRAINT blocks_type_check;
+        END IF;
     END IF;
 END $$;
 
@@ -130,9 +190,16 @@ WHERE b.type = bt.name
 AND b.type_id IS NULL;
 
 -- Add foreign key constraint to resume_blocks now that blocks table exists
-ALTER TABLE resume_blocks 
-    ADD CONSTRAINT resume_blocks_block_id_fkey 
-    FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE;
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'resume_blocks' 
+                   AND constraint_name = 'resume_blocks_block_id_fkey') THEN
+        ALTER TABLE resume_blocks 
+            ADD CONSTRAINT resume_blocks_block_id_fkey 
+            FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE;
+    END IF;
+END $$;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE block_types ENABLE ROW LEVEL SECURITY;

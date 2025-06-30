@@ -14,11 +14,11 @@ CREATE TABLE IF NOT EXISTS block_versions (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_block_versions_block_id ON block_versions(block_id);
-CREATE INDEX idx_block_versions_created_at ON block_versions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_block_versions_block_id ON block_versions(block_id);
+CREATE INDEX IF NOT EXISTS idx_block_versions_created_at ON block_versions(created_at DESC);
 
 -- Create unique constraint for version numbers per block
-CREATE UNIQUE INDEX idx_block_versions_block_version ON block_versions(block_id, version_number);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_block_versions_block_version ON block_versions(block_id, version_number);
 
 -- Function to get the next version number for a block
 CREATE OR REPLACE FUNCTION get_next_block_version_number(p_block_id UUID)
@@ -84,6 +84,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create trigger to automatically track versions
+DROP TRIGGER IF EXISTS track_block_versions ON blocks;
 CREATE TRIGGER track_block_versions
     BEFORE UPDATE ON blocks
     FOR EACH ROW

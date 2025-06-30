@@ -1,31 +1,60 @@
 -- Block Templates Table Migration
 -- This migration creates the block_templates table for reusable block templates
 
--- Create block_templates table
-CREATE TABLE IF NOT EXISTS block_templates (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    type_id UUID NOT NULL REFERENCES block_types(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    description TEXT,
-    content JSONB NOT NULL,
-    tags TEXT[] DEFAULT '{}',
-    is_public BOOLEAN DEFAULT false,
-    is_featured BOOLEAN DEFAULT false,
-    user_id UUID REFERENCES auth.users(id),
-    usage_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- Create or enhance block_templates table
+DO $$ 
+BEGIN
+    -- Check if block_templates exists from old migration
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'block_templates') THEN
+        -- Table exists, check if it has our required columns
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name = 'block_templates' AND column_name = 'type_id') THEN
+            -- It's the old version, drop and recreate
+            DROP TABLE block_templates CASCADE;
+            
+            CREATE TABLE block_templates (
+                id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                type_id UUID NOT NULL REFERENCES block_types(id) ON DELETE CASCADE,
+                name TEXT NOT NULL,
+                description TEXT,
+                content JSONB NOT NULL,
+                tags TEXT[] DEFAULT '{}',
+                is_public BOOLEAN DEFAULT false,
+                is_featured BOOLEAN DEFAULT false,
+                user_id UUID REFERENCES auth.users(id),
+                usage_count INTEGER DEFAULT 0,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+            );
+        END IF;
+    ELSE
+        -- Table doesn't exist, create it
+        CREATE TABLE block_templates (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            type_id UUID NOT NULL REFERENCES block_types(id) ON DELETE CASCADE,
+            name TEXT NOT NULL,
+            description TEXT,
+            content JSONB NOT NULL,
+            tags TEXT[] DEFAULT '{}',
+            is_public BOOLEAN DEFAULT false,
+            is_featured BOOLEAN DEFAULT false,
+            user_id UUID REFERENCES auth.users(id),
+            usage_count INTEGER DEFAULT 0,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+        );
+    END IF;
+END $$;
 
 -- Create indexes for performance
-CREATE INDEX idx_block_templates_type_id ON block_templates(type_id);
-CREATE INDEX idx_block_templates_user_id ON block_templates(user_id);
-CREATE INDEX idx_block_templates_is_public ON block_templates(is_public);
-CREATE INDEX idx_block_templates_is_featured ON block_templates(is_featured);
-CREATE INDEX idx_block_templates_tags ON block_templates USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_block_templates_type_id ON block_templates(type_id);
+CREATE INDEX IF NOT EXISTS idx_block_templates_user_id ON block_templates(user_id);
+CREATE INDEX IF NOT EXISTS idx_block_templates_is_public ON block_templates(is_public);
+CREATE INDEX IF NOT EXISTS idx_block_templates_is_featured ON block_templates(is_featured);
+CREATE INDEX IF NOT EXISTS idx_block_templates_tags ON block_templates USING GIN(tags);
 
 -- Ensure template names are unique per type and user/public
-CREATE UNIQUE INDEX idx_block_templates_unique_name 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_block_templates_unique_name 
     ON block_templates(type_id, name, COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid));
 
 -- Function to validate template content against block type schema
@@ -56,6 +85,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create validation trigger
+DROP TRIGGER IF EXISTS validate_template_content_trigger ON block_templates;
 CREATE TRIGGER validate_template_content_trigger
     BEFORE INSERT OR UPDATE ON block_templates
     FOR EACH ROW
