@@ -329,3 +329,23 @@ import('../components/blocks/PublicationBlockWrapper').then((module) => {
 import('../components/blocks/ProjectBlockWrapper').then((module) => {
   blockRegistry.register(BlockType.PROJECT, module.projectBlockConfig);
 });
+
+// Auto-register Skill Block
+import('../components/blocks/SkillBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.SKILL, module.skillBlockConfig);
+});
+
+// Auto-register Language Block
+import('../components/blocks/LanguageBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.NATURAL_LANGUAGE, module.languageBlockConfig);
+});
+
+// Auto-register Interest Block
+import('../components/blocks/InterestBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.INTEREST, module.interestBlockConfig);
+});
+
+// Auto-register Reference Block
+import('../components/blocks/ReferenceBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.REFERENCE, module.referenceBlockConfig);
+});
