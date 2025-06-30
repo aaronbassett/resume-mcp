@@ -24,7 +24,7 @@ const hashApiKey = (key: string): string => {
 };
 
 // Create a new API key
-export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiKey | null; error: string | null }> => {
+export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiKey | null; plainKey?: string; error: string | null }> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -35,7 +35,6 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
     const apiKey = generateApiKey();
     const keyHash = hashApiKey(apiKey);
     const keyFirstChars = apiKey.substring(0, 8);
-    const keyLastChars = apiKey.substring(apiKey.length - 4);
 
     // Default permissions if not provided
     const permissions = data.permissions || ['read'];
@@ -61,15 +60,13 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
     }
 
     const keyData = {
-      key: apiKey, // Store full key temporarily for return value
+      // Do not store the plain text key in the database
       key_hash: keyHash,
       key_prefix: keyFirstChars,
       user_id: user.id,
       resume_id: data.resume_id,
       name: data.name,
       expires_at: data.expires_at || null,
-      max_uses: data.max_uses || null,
-      notes: data.notes || null,
       
       // Enhanced fields
       key_version: 1,
@@ -94,7 +91,13 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
       return { data: null, error: error.message };
     }
 
-    return { data: createdKey, error: null };
+    // Return the created key record with the plain text key separately
+    // The plain text key is only available at creation time
+    return { 
+      data: createdKey, 
+      plainKey: apiKey, 
+      error: null 
+    };
   } catch (error) {
     console.error('Error creating API key:', error);
     return { data: null, error: 'Failed to create API key' };

@@ -82,7 +82,6 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
   };
 
   const isExpired = apiKey.expires_at && new Date(apiKey.expires_at) < new Date();
-  const isMaxedOut = apiKey.max_uses !== null && apiKey.use_count >= apiKey.max_uses;
   const needsRotation = apiKey.next_rotation_date && new Date(apiKey.next_rotation_date) < new Date();
   
   // Format the masked key
@@ -100,7 +99,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
 
   return (
     <>
-      <Card className={`${!apiKey.is_active || isExpired || isMaxedOut ? 'opacity-70' : ''}`}>
+      <Card className={`${!apiKey.is_active || isExpired ? 'opacity-70' : ''}`}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -115,13 +114,13 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
               </div>
             </div>
             
-            {(!apiKey.is_active || isExpired || isMaxedOut) && (
+            {(!apiKey.is_active || isExpired) && (
               <div className="bg-destructive/10 text-destructive text-xs font-medium px-2 py-1 rounded-full">
-                {!apiKey.is_active ? 'Inactive' : isExpired ? 'Expired' : 'Max Uses Reached'}
+                {!apiKey.is_active ? 'Inactive' : 'Expired'}
               </div>
             )}
             
-            {needsRotation && apiKey.is_active && !isExpired && !isMaxedOut && (
+            {needsRotation && apiKey.is_active && !isExpired && (
               <div className="bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-xs font-medium px-2 py-1 rounded-full">
                 Rotation Needed
               </div>
@@ -160,7 +159,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
             
             <div>
               <div className="text-muted-foreground mb-1">Usage</div>
-              <div>{apiKey.usage_count} calls from {apiKey.unique_ips || 0} IPs</div>
+              <div>{apiKey.usage_count} calls</div>
             </div>
           </div>
           
@@ -174,22 +173,6 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
               {permissionsString}
             </div>
           </div>
-          
-          {/* Max Uses */}
-          {apiKey.max_uses !== null && (
-            <div className="bg-muted/50 p-3 rounded-lg">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">Usage Limit</span>
-                <span className="text-sm">{apiKey.usage_count} / {apiKey.max_uses}</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full ${!apiKey.is_active ? 'bg-gray-400' : 'bg-primary'}`}
-                  style={{ width: `${Math.min(100, (apiKey.usage_count / apiKey.max_uses) * 100)}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
           
           {/* Rate Limit */}
           {apiKey.rate_limit && (
@@ -205,7 +188,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
           )}
           
           {/* Advanced Details Toggle */}
-          {apiKey.is_active && !isExpired && !isMaxedOut && (
+          {apiKey.is_active && !isExpired && (
             <Button 
               variant="ghost" 
               size="sm" 
@@ -281,16 +264,8 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
             </div>
           )}
           
-          {/* Notes */}
-          {apiKey.notes && (
-            <div className="bg-muted/30 p-3 rounded-lg text-sm">
-              <div className="font-medium mb-1">Notes</div>
-              <p className="text-muted-foreground">{apiKey.notes}</p>
-            </div>
-          )}
-          
           {/* Actions */}
-          {apiKey.is_active && !isExpired && !isMaxedOut && (
+          {apiKey.is_active && !isExpired && (
             <div className="flex items-center justify-end space-x-2 pt-2">
               <Button 
                 variant="outline" 

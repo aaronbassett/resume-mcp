@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { CheckCircle, Copy, Key, AlertTriangle, Shield, Clock, Globe } from 'lucide-react';
+import { CheckCircle, Copy, Key, AlertTriangle, Shield, Clock, Globe, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { CodeSnippets } from './CodeSnippets';
@@ -8,14 +8,15 @@ import type { ApiKey } from '../../types/apiKeys';
 
 interface ApiKeySuccessProps {
   apiKey: ApiKey;
+  plainKey: string;
   onDone: () => void;
 }
 
-export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, onDone }) => {
+export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, plainKey, onDone }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(apiKey.key || '');
+    navigator.clipboard.writeText(plainKey);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
@@ -43,7 +44,7 @@ export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, onDone }) => {
             <div className="text-sm font-medium">Your API Key</div>
             <div className="flex items-center space-x-2">
               <div className="flex-1 font-mono text-sm bg-muted p-3 rounded-lg overflow-x-auto">
-                {apiKey.key}
+                {plainKey}
               </div>
               <Button 
                 variant="outline" 
@@ -136,7 +137,7 @@ export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, onDone }) => {
       </Card>
       
       {/* Integration Examples */}
-      <CodeSnippets apiKey={apiKey.key || ''} />
+      <CodeSnippets apiKey={plainKey} />
     </div>
   );
 };

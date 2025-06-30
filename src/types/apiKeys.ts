@@ -7,12 +7,8 @@ export interface ApiKey {
   resume_id: string | null;
   name: string;
   expires_at: string | null;
-  max_uses: number | null;
   created_at: string;
   last_used_at: string | null;
-  use_count: number;
-  unique_ips: number;
-  notes: string | null;
   is_active: boolean;
   
   // Enhanced fields
@@ -33,8 +29,6 @@ export interface CreateApiKeyData {
   name: string;
   resume_id: string | null; // Null for admin keys
   expires_at?: string | null;
-  max_uses?: number | null;
-  notes?: string;
   
   // Enhanced fields
   rotation_policy?: 'never' | 'monthly' | 'quarterly' | 'yearly' | null;
@@ -47,7 +41,6 @@ export interface CreateApiKeyData {
 
 export interface UpdateApiKeyData {
   name?: string;
-  notes?: string;
   is_active?: boolean;
   
   // Enhanced fields

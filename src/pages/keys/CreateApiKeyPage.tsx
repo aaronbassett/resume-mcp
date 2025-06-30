@@ -14,7 +14,7 @@ export const CreateApiKeyPage: FC = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [createdKey, setCreatedKey] = useState<ApiKey | null>(null);
+  const [createdKey, setCreatedKey] = useState<{ apiKey: ApiKey; plainKey: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,8 +41,8 @@ export const CreateApiKeyPage: FC = () => {
     loadResumes();
   }, []);
 
-  const handleKeyCreated = (key: ApiKey) => {
-    setCreatedKey(key);
+  const handleKeyCreated = (key: ApiKey, plainKey: string) => {
+    setCreatedKey({ apiKey: key, plainKey });
   };
 
   const handleDone = () => {
@@ -111,7 +111,7 @@ export const CreateApiKeyPage: FC = () => {
       {!isLoading && !error && resumes.length > 0 && (
         <>
           {createdKey ? (
-            <ApiKeySuccess apiKey={createdKey} onDone={handleDone} />
+            <ApiKeySuccess apiKey={createdKey.apiKey} plainKey={createdKey.plainKey} onDone={handleDone} />
           ) : (
             <ApiKeyForm resumes={resumes} onKeyCreated={handleKeyCreated} />
           )}
