@@ -123,3 +123,5 @@ export function VelocityScroll({
     </div>
   );
 }
+
+export { ParallaxText }
