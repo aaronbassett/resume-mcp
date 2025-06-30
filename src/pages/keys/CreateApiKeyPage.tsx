@@ -7,8 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { ApiKeyForm } from '../../components/keys/ApiKeyForm';
 import { ApiKeySuccess } from '../../components/keys/ApiKeySuccess';
 import { getUserResumes } from '../../lib/resumeService';
-import { getApiKeyScopes } from '../../lib/apiKeyService';
-import type { ApiKey, ApiKeyScope } from '../../types/apiKeys';
+import type { ApiKey } from '../../types/apiKeys';
 import type { Resume } from '../../lib/resumeService';
 
 export const CreateApiKeyPage: FC = () => {
