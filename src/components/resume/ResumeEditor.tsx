@@ -36,6 +36,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     updateRole,
     updateDisplayName,
     updateTags,
+    updateBodyContent,
     setResume,
     setIsNewResume,
     resetResume,
@@ -66,8 +67,6 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     metaDescription: '',
     robotsDirectives: ['index', 'follow']
   });
-  
-  const [bodyContent, setBodyContent] = useState<string>('');
 
   // Load resume data on mount if editing an existing resume
   useEffect(() => {
@@ -107,7 +106,8 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
             title: result.data.title,
             role: result.data.role,
             displayName: result.data.display_name,
-            tags: result.data.tags
+            tags: result.data.tags,
+            bodyContent: result.data.body_content || ''
           });
           setIsNewResume(false);
           
@@ -131,9 +131,6 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
             metaDescription: result.data.meta_description ?? '',
             robotsDirectives: result.data.robots_directives ?? ['index', 'follow']
           });
-          
-          // Load body content
-          setBodyContent(result.data.body_content || '');
         } else {
           setNotFound(true);
         }
@@ -154,7 +151,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
   }, [resumeId, isNew, setResume, setIsNewResume, resetResume]);
 
   // Auto-save function
-  const handleSave = useCallback(async (data: typeof currentResume & { bodyContent?: string }) => {
+  const handleSave = useCallback(async (data: typeof currentResume) => {
     try {
       if (isNewResume) {
         // Create new resume
@@ -179,7 +176,8 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
             title: result.data.title,
             role: result.data.role,
             displayName: result.data.display_name,
-            tags: result.data.tags
+            tags: result.data.tags,
+            bodyContent: result.data.body_content || ''
           });
           setIsNewResume(false);
           clearUnsavedChanges();
@@ -227,7 +225,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
 
   // Set up auto-save
   const { manualSave } = useAutoSave({
-    data: { ...currentResume, bodyContent },
+    data: currentResume,
     onSave: handleSave,
     delay: 1500, // 1.5 second delay
     onStatusChange: setSaveStatus,
@@ -465,8 +463,8 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
                 </p>
               </div>
               <textarea
-                value={bodyContent}
-                onChange={(e) => setBodyContent(e.target.value)}
+                value={currentResume.bodyContent || ''}
+                onChange={(e) => updateBodyContent(e.target.value)}
                 placeholder="Start writing your resume content..."
                 className="w-full min-h-[400px] p-4 text-base leading-relaxed rounded-lg border border-input bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
                 style={{ fontFamily: 'inherit' }}

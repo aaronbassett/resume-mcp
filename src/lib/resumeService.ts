@@ -95,6 +95,7 @@ export const createResume = async (data: CreateResumeData): Promise<{ data: Resu
       role: data.role || '',
       display_name: data.display_name || '',
       tags: data.tags || [],
+      body_content: data.body_content || '',
       // Default settings as individual columns
       publish_resume_page: true,
       presence_badge: 'none',
@@ -144,6 +145,7 @@ export const updateResume = async (
     if (data.role !== undefined) updateData.role = data.role;
     if (data.display_name !== undefined) updateData.display_name = data.display_name;
     if (data.tags !== undefined) updateData.tags = data.tags;
+    if (data.body_content !== undefined) updateData.body_content = data.body_content;
     
     // Setting properties as individual columns
     if (data.publish_resume_page !== undefined) updateData.publish_resume_page = data.publish_resume_page;

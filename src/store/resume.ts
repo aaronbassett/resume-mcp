@@ -12,6 +12,7 @@ export interface ResumeFormData {
   role: string;
   displayName: string;
   tags: Tag[];
+  bodyContent?: string;
 }
 
 interface ResumeState {
@@ -22,6 +23,7 @@ interface ResumeState {
   updateRole: (role: string) => void;
   updateDisplayName: (displayName: string) => void;
   updateTags: (tags: Tag[]) => void;
+  updateBodyContent: (bodyContent: string) => void;
   setResume: (resume: ResumeFormData) => void;
   resetResume: () => void;
   setIsNewResume: (isNew: boolean) => void;
@@ -33,7 +35,8 @@ const defaultResume: ResumeFormData = {
   title: 'Untitled Resume',
   role: '',
   displayName: '',
-  tags: []
+  tags: [],
+  bodyContent: ''
 };
 
 export const useResumeStore = create<ResumeState>()((set) => ({
@@ -62,6 +65,12 @@ export const useResumeStore = create<ResumeState>()((set) => ({
   updateTags: (tags: Tag[]) =>
     set((state) => ({
       currentResume: { ...state.currentResume, tags },
+      hasUnsavedChanges: true
+    })),
+  
+  updateBodyContent: (bodyContent: string) =>
+    set((state) => ({
+      currentResume: { ...state.currentResume, bodyContent },
       hasUnsavedChanges: true
     })),
   
