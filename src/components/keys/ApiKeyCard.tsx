@@ -86,8 +86,8 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
   const needsRotation = apiKey.next_rotation_date && new Date(apiKey.next_rotation_date) < new Date();
   
   // Format the masked key
-  const maskedKey = apiKey.key_first_chars && apiKey.key_last_chars 
-    ? `${apiKey.key_first_chars}••••••••••••••••••••••${apiKey.key_last_chars}`
+  const maskedKey = apiKey.key_prefix 
+    ? `${apiKey.key_prefix}••••••••••••••••••••••••••••••••`
     : '••••••••••••••••••••••••••••••••••••••••';
 
   // Get permissions as a string
@@ -95,30 +95,33 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
     ? apiKey.permissions.join(', ') 
     : 'read';
 
+  // Check if key has admin permissions
+  const hasAdminPermissions = apiKey.permissions?.includes('read:all') && apiKey.permissions?.includes('write:all');
+
   return (
     <>
-      <Card className={`${apiKey.is_revoked || isExpired || isMaxedOut ? 'opacity-70' : ''}`}>
+      <Card className={`${!apiKey.is_active || isExpired || isMaxedOut ? 'opacity-70' : ''}`}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className={`p-2 rounded-lg ${apiKey.is_admin ? 'bg-amber-100 dark:bg-amber-900/20' : 'bg-blue-100 dark:bg-blue-900/20'}`}>
-                <Key className={`h-5 w-5 ${apiKey.is_admin ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'}`} />
+              <div className={`p-2 rounded-lg ${hasAdminPermissions ? 'bg-amber-100 dark:bg-amber-900/20' : 'bg-blue-100 dark:bg-blue-900/20'}`}>
+                <Key className={`h-5 w-5 ${hasAdminPermissions ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'}`} />
               </div>
               <div>
                 <CardTitle className="text-lg">{apiKey.name}</CardTitle>
                 <CardDescription>
-                  {apiKey.is_admin ? 'Admin Key' : 'Standard Key'} • {apiKey.resume?.title || 'All Resumes'}
+                  {hasAdminPermissions ? 'Admin Key' : 'Standard Key'} • {apiKey.resume?.title || 'All Resumes'}
                 </CardDescription>
               </div>
             </div>
             
-            {(apiKey.is_revoked || isExpired || isMaxedOut) && (
+            {(!apiKey.is_active || isExpired || isMaxedOut) && (
               <div className="bg-destructive/10 text-destructive text-xs font-medium px-2 py-1 rounded-full">
-                {apiKey.is_revoked ? 'Revoked' : isExpired ? 'Expired' : 'Max Uses Reached'}
+                {!apiKey.is_active ? 'Inactive' : isExpired ? 'Expired' : 'Max Uses Reached'}
               </div>
             )}
             
-            {needsRotation && !apiKey.is_revoked && !isExpired && !isMaxedOut && (
+            {needsRotation && apiKey.is_active && !isExpired && !isMaxedOut && (
               <div className="bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-xs font-medium px-2 py-1 rounded-full">
                 Rotation Needed
               </div>
@@ -157,7 +160,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
             
             <div>
               <div className="text-muted-foreground mb-1">Usage</div>
-              <div>{apiKey.use_count} calls from {apiKey.unique_ips} IPs</div>
+              <div>{apiKey.usage_count} calls from {apiKey.unique_ips || 0} IPs</div>
             </div>
           </div>
           
@@ -177,12 +180,12 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
             <div className="bg-muted/50 p-3 rounded-lg">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-medium">Usage Limit</span>
-                <span className="text-sm">{apiKey.use_count} / {apiKey.max_uses}</span>
+                <span className="text-sm">{apiKey.usage_count} / {apiKey.max_uses}</span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div 
-                  className={`h-2 rounded-full ${apiKey.is_revoked ? 'bg-gray-400' : 'bg-primary'}`}
-                  style={{ width: `${Math.min(100, (apiKey.use_count / apiKey.max_uses) * 100)}%` }}
+                  className={`h-2 rounded-full ${!apiKey.is_active ? 'bg-gray-400' : 'bg-primary'}`}
+                  style={{ width: `${Math.min(100, (apiKey.usage_count / apiKey.max_uses) * 100)}%` }}
                 ></div>
               </div>
             </div>
@@ -202,7 +205,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
           )}
           
           {/* Advanced Details Toggle */}
-          {!apiKey.is_revoked && !isExpired && !isMaxedOut && (
+          {apiKey.is_active && !isExpired && !isMaxedOut && (
             <Button 
               variant="ghost" 
               size="sm" 
@@ -287,7 +290,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
           )}
           
           {/* Actions */}
-          {!apiKey.is_revoked && !isExpired && !isMaxedOut && (
+          {apiKey.is_active && !isExpired && !isMaxedOut && (
             <div className="flex items-center justify-end space-x-2 pt-2">
               <Button 
                 variant="outline" 

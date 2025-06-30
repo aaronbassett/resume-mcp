@@ -37,16 +37,11 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
     const keyFirstChars = apiKey.substring(0, 8);
     const keyLastChars = apiKey.substring(apiKey.length - 4);
 
-    // For admin keys, set resume_id to null
-    const resumeId = data.is_admin ? null : data.resume_id;
-
-    // Default permissions based on admin status
-    const permissions = data.permissions || (data.is_admin 
-      ? ['read', 'write', 'delete', 'admin'] 
-      : ['read']);
+    // Default permissions if not provided
+    const permissions = data.permissions || ['read'];
 
     // Default rate limit
-    const rateLimit = data.rate_limit || (data.is_admin ? 10000 : 1000);
+    const rateLimit = data.rate_limit || 1000;
 
     // Calculate next rotation date if policy is set
     let nextRotationDate = null;
@@ -70,9 +65,8 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
       key_hash: keyHash,
       key_prefix: keyFirstChars,
       user_id: user.id,
-      resume_id: resumeId,
+      resume_id: data.resume_id,
       name: data.name,
-      is_admin: data.is_admin,
       expires_at: data.expires_at || null,
       max_uses: data.max_uses || null,
       notes: data.notes || null,
@@ -476,26 +470,5 @@ export const checkApiKeyPermission = async (
   } catch (error) {
     console.error('Error checking API key permission:', error);
     return { hasPermission: false, error: 'Failed to check API key permission' };
-  }
-};
-
-// Get available API key permissions
-export const getAvailableApiKeyPermissions = async (): Promise<{ data: ApiKeyScope[] | null; error: string | null }> => {
-  try {
-    const { data: scopes, error } = await supabase
-      .from('api_key_scopes')
-      .select('*')
-      .eq('is_active', true)
-      .order('name');
-
-    if (error) {
-      console.error('Error fetching API key permissions:', error);
-      return { data: null, error: error.message };
-    }
-
-    return { data: scopes || [], error: null };
-  } catch (error) {
-    console.error('Error fetching API key permissions:', error);
-    return { data: null, error: 'Failed to fetch API key permissions' };
   }
 };

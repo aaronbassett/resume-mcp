@@ -1,22 +1,19 @@
 export interface ApiKey {
   id: string;
   key?: string; // Full key - only available when first created
-  key_first_chars?: string; // First 8 characters
-  key_last_chars?: string; // Last 4 characters
+  key_prefix?: string; // First 8 characters
   key_hash?: string; // Hashed key for verification
   user_id: string;
   resume_id: string | null;
   name: string;
-  is_admin: boolean;
   expires_at: string | null;
   max_uses: number | null;
   created_at: string;
-  first_used_at: string | null;
   last_used_at: string | null;
   use_count: number;
   unique_ips: number;
   notes: string | null;
-  is_revoked: boolean;
+  is_active: boolean;
   
   // Enhanced fields
   key_version: number;
@@ -35,7 +32,6 @@ export interface ApiKey {
 export interface CreateApiKeyData {
   name: string;
   resume_id: string | null; // Null for admin keys
-  is_admin: boolean;
   expires_at?: string | null;
   max_uses?: number | null;
   notes?: string;
@@ -52,7 +48,7 @@ export interface CreateApiKeyData {
 export interface UpdateApiKeyData {
   name?: string;
   notes?: string;
-  is_revoked?: boolean;
+  is_active?: boolean;
   
   // Enhanced fields
   rotation_policy?: 'never' | 'monthly' | 'quarterly' | 'yearly' | null;
@@ -77,7 +73,6 @@ export interface ApiKeyScope {
   description: string;
   resource_pattern: string;
   is_active: boolean;
-  created_at?: string;
 }
 
 export interface ApiKeyRotation {

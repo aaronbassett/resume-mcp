@@ -1,28 +1,22 @@
 import type { FC } from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle, Calendar, Key, Info, Globe, Code, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { TextInput, Select, Textarea } from 'flowbite-react';
-import { createApiKey } from '../../lib/apiKeyService';
+import { createApiKey, getApiKeyScopes } from '../../lib/apiKeyService';
 import type { CreateApiKeyData, ApiKey, ApiKeyScope } from '../../types/apiKeys';
 import type { Resume } from '../../lib/resumeService';
 
 interface ApiKeyFormProps {
   resumes: Resume[];
-  availablePermissions: ApiKeyScope[];
   onKeyCreated: (key: ApiKey) => void;
 }
 
-export const ApiKeyForm: FC<ApiKeyFormProps> = ({ 
-  resumes, 
-  availablePermissions,
-  onKeyCreated 
-}) => {
+export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
   const [formData, setFormData] = useState<CreateApiKeyData>({
     name: '',
     resume_id: resumes.length > 0 ? resumes[0].id : '',
-    is_admin: false,
     expires_at: '',
     max_uses: null,
     notes: '',
@@ -35,10 +29,32 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [showAdvancedPermissions, setShowAdvancedPermissions] = useState(false);
+  const [isAdminKey, setIsAdminKey] = useState(false);
+  const [availableScopes, setAvailableScopes] = useState<ApiKeyScope[]>([]);
+  const [isLoadingScopes, setIsLoadingScopes] = useState(false);
+
+  // Load available scopes
+  useEffect(() => {
+    const loadScopes = async () => {
+      setIsLoadingScopes(true);
+      try {
+        const result = await getApiKeyScopes();
+        if (result.data) {
+          setAvailableScopes(result.data);
+        }
+      } catch (error) {
+        console.error('Error loading API key scopes:', error);
+      } finally {
+        setIsLoadingScopes(false);
+      }
+    };
+
+    loadScopes();
+  }, []);
 
   // Set default expiration date for admin keys (3 months from now)
   useEffect(() => {
-    if (formData.is_admin) {
+    if (isAdminKey) {
       const threeMonthsFromNow = new Date();
       threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
       
@@ -49,7 +65,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
         ...prev,
         expires_at: formattedDate,
         resume_id: null, // Admin keys apply to all resumes
-        permissions: ['read', 'write', 'delete', 'admin'],
+        permissions: ['read:all', 'write:all'],
         rate_limit: 10000
       }));
     } else {
@@ -59,7 +75,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
         permissions: ['read']
       }));
     }
-  }, [formData.is_admin]);
+  }, [isAdminKey]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -94,34 +110,6 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
     });
   };
 
-  // Handle global permission toggles
-  const handleGlobalPermissionChange = (type: 'read' | 'write') => {
-    const permissionPrefix = `${type}:`;
-    const globalPermission = type === 'read' ? 'read:all' : 'write:all';
-    
-    setFormData(prev => {
-      const currentPermissions = [...(prev.permissions || [])];
-      const hasGlobalPermission = currentPermissions.includes(globalPermission);
-      
-      if (hasGlobalPermission) {
-        // Remove global permission
-        return {
-          ...prev,
-          permissions: currentPermissions.filter(p => p !== globalPermission)
-        };
-      } else {
-        // Add global permission and remove specific permissions of same type
-        return {
-          ...prev,
-          permissions: [
-            ...currentPermissions.filter(p => !p.startsWith(permissionPrefix) && p !== type),
-            globalPermission
-          ]
-        };
-      }
-    });
-  };
-
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     
@@ -129,11 +117,11 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
       newErrors.name = 'Key name is required';
     }
     
-    if (!formData.is_admin && !formData.resume_id) {
+    if (!isAdminKey && !formData.resume_id) {
       newErrors.resume_id = 'Please select a resume';
     }
     
-    if (formData.is_admin && !formData.expires_at) {
+    if (isAdminKey && !formData.expires_at) {
       newErrors.expires_at = 'Expiration date is required for admin keys';
     }
     
@@ -184,23 +172,10 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
   const maxExpiryString = maxExpiryDate.toISOString().split('T')[0] + 'T23:59';
 
   // Group permissions by category
-  const groupedPermissions = availablePermissions.reduce((acc, permission) => {
-    // Extract category from permission name (e.g., "resume:read" -> "resume")
-    const category = permission.name.includes(':') 
-      ? permission.name.split(':')[0] 
-      : 'general';
-    
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    
-    acc[category].push(permission);
-    return acc;
-  }, {} as Record<string, ApiKeyScope[]>);
-
-  // Check if read:all or write:all permissions are selected
-  const hasReadAll = formData.permissions?.includes('read:all') || false;
-  const hasWriteAll = formData.permissions?.includes('write:all') || false;
+  const basicPermissions = ['read:all', 'write:all'];
+  const advancedPermissions = availableScopes
+    .filter(scope => !basicPermissions.includes(scope.name))
+    .map(scope => scope.name);
 
   return (
     <Card>
@@ -219,9 +194,8 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
             <label className="relative inline-flex items-center cursor-pointer">
               <input 
                 type="checkbox"
-                name="is_admin"
-                checked={formData.is_admin}
-                onChange={handleChange}
+                checked={isAdminKey}
+                onChange={(e) => setIsAdminKey(e.target.checked)}
                 className="sr-only peer"
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
@@ -230,7 +204,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
         </div>
         
         {/* Admin Key Warning */}
-        {formData.is_admin && (
+        {isAdminKey && (
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mt-4">
             <div className="flex items-start space-x-3">
               <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
@@ -270,9 +244,9 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               onChange={handleChange}
               color={errors.resume_id ? 'failure' : 'gray'}
               helperText={errors.resume_id}
-              disabled={formData.is_admin}
+              disabled={isAdminKey}
             >
-              {formData.is_admin ? (
+              {isAdminKey ? (
                 <option value="">All Resumes</option>
               ) : resumes.length === 0 ? (
                 <option value="">No resumes available</option>
@@ -285,7 +259,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               )}
             </Select>
             <p className="text-xs text-muted-foreground">
-              {formData.is_admin 
+              {isAdminKey 
                 ? 'Admin keys have access to all resumes' 
                 : 'This key will only provide access to the selected resume'}
             </p>
@@ -297,108 +271,83 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               <Shield className="h-4 w-4" />
               <span>Permissions</span>
             </label>
-            
-            {/* Global Permissions */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className={`flex items-center space-x-2 p-2 rounded border ${
-                errors.permissions ? 'border-red-500' : 'border-input'
-              }`}>
-                <input
-                  type="checkbox"
-                  id="perm-read-all"
-                  checked={hasReadAll || formData.is_admin}
-                  onChange={() => handleGlobalPermissionChange('read')}
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                  disabled={formData.is_admin}
-                />
-                <label htmlFor="perm-read-all" className={`text-sm ${formData.is_admin ? 'opacity-50' : ''}`}>
-                  Read All
-                </label>
-              </div>
-              <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                <input
-                  type="checkbox"
-                  id="perm-write-all"
-                  checked={hasWriteAll || formData.is_admin}
-                  onChange={() => handleGlobalPermissionChange('write')}
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                  disabled={formData.is_admin}
-                />
-                <label htmlFor="perm-write-all" className={`text-sm ${formData.is_admin ? 'opacity-50' : ''}`}>
-                  Write All
-                </label>
-              </div>
-            </div>
-            
-            {/* Advanced Permissions Toggle */}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowAdvancedPermissions(!showAdvancedPermissions)}
-              className="w-full justify-between mt-2"
-              disabled={formData.is_admin}
-            >
-              <span>Advanced Permissions</span>
-              {showAdvancedPermissions ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-            
-            {/* Advanced Permissions */}
-            {showAdvancedPermissions && (
-              <div className="space-y-4 mt-4 border-t pt-4">
-                {Object.entries(groupedPermissions).map(([category, permissions]) => (
-                  <div key={category} className="space-y-2">
-                    <h4 className="text-sm font-medium capitalize">{category} Permissions</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {permissions.map(permission => (
-                        <div 
-                          key={permission.id} 
-                          className={`flex items-center space-x-2 p-2 rounded border ${
-                            errors.permissions && !formData.permissions?.length 
-                              ? 'border-red-500' 
-                              : 'border-input'
-                          }`}
-                          title={permission.description || ''}
-                        >
-                          <input
-                            type="checkbox"
-                            id={`perm-${permission.name}`}
-                            checked={formData.permissions?.includes(permission.name) || formData.is_admin}
-                            onChange={() => handlePermissionChange(permission.name)}
-                            className="rounded border-gray-300 text-primary focus:ring-primary"
-                            disabled={formData.is_admin || 
-                              (permission.name.startsWith('read:') && hasReadAll) ||
-                              (permission.name.startsWith('write:') && hasWriteAll)}
-                          />
-                          <label 
-                            htmlFor={`perm-${permission.name}`} 
-                            className={`text-sm ${formData.is_admin ? 'opacity-50' : ''}`}
-                          >
-                            {permission.name}
-                          </label>
-                          {permission.description && (
-                            <div className="group relative">
-                              <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-popover text-popover-foreground text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
-                                {permission.description}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+            <div className={`space-y-4 ${errors.permissions ? 'border border-red-500 rounded-lg p-4' : ''}`}>
+              {/* Basic Permissions */}
+              <div className="grid grid-cols-2 gap-2">
+                {basicPermissions.map(permission => (
+                  <div 
+                    key={permission}
+                    className="flex items-center space-x-2 p-2 rounded border border-input"
+                  >
+                    <input
+                      type="checkbox"
+                      id={`perm-${permission}`}
+                      checked={formData.permissions?.includes(permission)}
+                      onChange={() => handlePermissionChange(permission)}
+                      disabled={isAdminKey && ['read:all', 'write:all'].includes(permission)}
+                      className="rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <label htmlFor={`perm-${permission}`} className="text-sm">
+                      {permission === 'read:all' ? 'Read (All Resources)' : 
+                       permission === 'write:all' ? 'Write (All Resources)' : 
+                       permission}
+                    </label>
                   </div>
                 ))}
               </div>
-            )}
-            
+              
+              {/* Advanced Permissions Toggle */}
+              {advancedPermissions.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAdvancedPermissions(!showAdvancedPermissions)}
+                    className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    {showAdvancedPermissions ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                    <span>Advanced Permissions</span>
+                  </button>
+                  
+                  {/* Advanced Permissions List */}
+                  {showAdvancedPermissions && (
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {advancedPermissions.map(permission => {
+                        const scope = availableScopes.find(s => s.name === permission);
+                        return (
+                          <div 
+                            key={permission}
+                            className="flex items-center space-x-2 p-2 rounded border border-input"
+                          >
+                            <input
+                              type="checkbox"
+                              id={`perm-${permission}`}
+                              checked={formData.permissions?.includes(permission)}
+                              onChange={() => handlePermissionChange(permission)}
+                              disabled={isAdminKey}
+                              className="rounded border-gray-300 text-primary focus:ring-primary"
+                            />
+                            <div>
+                              <label htmlFor={`perm-${permission}`} className="text-sm">
+                                {permission}
+                              </label>
+                              {scope?.description && (
+                                <p className="text-xs text-muted-foreground">{scope.description}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             {errors.permissions && (
               <p className="text-xs text-red-500">{errors.permissions}</p>
-            )}
-            
-            {formData.is_admin && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Admin keys automatically have all permissions
-              </p>
             )}
           </div>
           
@@ -406,7 +355,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center space-x-2">
               <Calendar className="h-4 w-4" />
-              <span>{formData.is_admin ? 'Expiration Date (Required)' : 'Expiration Date (Optional)'}</span>
+              <span>{isAdminKey ? 'Expiration Date (Required)' : 'Expiration Date (Optional)'}</span>
             </label>
             <TextInput
               type="datetime-local"
@@ -414,10 +363,10 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               value={formData.expires_at}
               onChange={handleChange}
               min={new Date().toISOString().slice(0, 16)}
-              max={formData.is_admin ? maxExpiryString : undefined}
+              max={isAdminKey ? maxExpiryString : undefined}
               color={errors.expires_at ? 'failure' : 'gray'}
-              helperText={errors.expires_at || (formData.is_admin ? 'Admin keys must expire within 3 months' : 'Leave blank for a key that never expires')}
-              required={formData.is_admin}
+              helperText={errors.expires_at || (isAdminKey ? 'Admin keys must expire within 3 months' : 'Leave blank for a key that never expires')}
+              required={isAdminKey}
             />
           </div>
           
@@ -447,7 +396,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               className="w-full justify-between"
             >
               <span>Advanced Settings</span>
-              {showAdvancedSettings ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              <span>{showAdvancedSettings ? '▲' : '▼'}</span>
             </Button>
           </div>
           
