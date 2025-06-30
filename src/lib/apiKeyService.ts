@@ -67,8 +67,6 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
       resume_id: data.resume_id,
       name: data.name,
       expires_at: data.expires_at || null,
-      max_uses: data.max_uses || null,
-      notes: data.notes || null,
       
       // Enhanced fields
       key_version: 1,
