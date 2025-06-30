@@ -299,3 +299,18 @@ import('../components/blocks/SocialNetworksBlockWrapper').then((module) => {
 import('../components/blocks/ExperienceBlockWrapper').then((module) => {
   blockRegistry.register(BlockType.EXPERIENCE, module.experienceBlockConfig);
 });
+
+// Auto-register Education Block
+import('../components/blocks/EducationBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.EDUCATION, module.educationBlockConfig);
+});
+
+// Auto-register Volunteer Block
+import('../components/blocks/VolunteerBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.VOLUNTEER, module.volunteerBlockConfig);
+});
+
+// Auto-register Award Block
+import('../components/blocks/AwardBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.AWARD, module.awardBlockConfig);
+});
