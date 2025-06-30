@@ -14,23 +14,39 @@ export interface Resume {
   tags: Tag[];
   created_at: string;
   updated_at: string;
-  // Resume Page Settings
-  publish_resume_page: boolean;
-  presence_badge: 'none' | 'count-only' | 'show-profile';
-  enable_resume_downloads: boolean;
-  resume_page_template: 'standard' | 'traditional' | 'neo-brutalist' | 'namaste' | 'zine' | 'enterprise';
-  allow_users_switch_template: boolean;
-  visibility: 'public' | 'authenticated' | 'unlisted';
-  // Mischief & LLMs
-  enable_mischief_mode: boolean;
-  include_custom_mischief: boolean;
-  custom_mischief_instructions: string;
-  attempt_avoid_detection: boolean;
-  embed_llm_instructions: boolean;
-  // Metadata
-  meta_title: string;
-  meta_description: string;
-  robots_directives: string[];
+  // Settings stored as a JSON object
+  settings: {
+    publishResumePage: boolean;
+    presenceBadge: 'none' | 'count-only' | 'show-profile';
+    enableResumeDownloads: boolean;
+    resumePageTemplate: 'standard' | 'traditional' | 'neo-brutalist' | 'namaste' | 'zine' | 'enterprise';
+    allowUsersSwitchTemplate: boolean;
+    visibility: 'public' | 'authenticated' | 'unlisted';
+    enableMischiefMode: boolean;
+    includeCustomMischief: boolean;
+    customMischiefInstructions: string;
+    attemptAvoidDetection: boolean;
+    embedLLMInstructions: boolean;
+    urlSlug?: string;
+    metaTitle: string;
+    metaDescription: string;
+    robotsDirectives: string[];
+  };
+  // Legacy columns - will be migrated to settings
+  publish_resume_page?: boolean;
+  presence_badge?: 'none' | 'count-only' | 'show-profile';
+  enable_resume_downloads?: boolean;
+  resume_page_template?: 'standard' | 'traditional' | 'neo-brutalist' | 'namaste' | 'zine' | 'enterprise';
+  allow_users_switch_template?: boolean;
+  visibility?: 'public' | 'authenticated' | 'unlisted';
+  enable_mischief_mode?: boolean;
+  include_custom_mischief?: boolean;
+  custom_mischief_instructions?: string;
+  attempt_avoid_detection?: boolean;
+  embed_llm_instructions?: boolean;
+  meta_title?: string;
+  meta_description?: string;
+  robots_directives?: string[];
 }
 
 export interface CreateResumeData {
@@ -78,7 +94,24 @@ export const createResume = async (data: CreateResumeData): Promise<{ data: Resu
       title: data.title || 'Untitled Resume',
       role: data.role || '',
       display_name: data.display_name || '',
-      tags: data.tags || []
+      tags: data.tags || [],
+      settings: {
+        publishResumePage: true,
+        presenceBadge: 'none',
+        enableResumeDownloads: true,
+        resumePageTemplate: 'standard',
+        allowUsersSwitchTemplate: false,
+        visibility: 'public',
+        enableMischiefMode: false,
+        includeCustomMischief: false,
+        customMischiefInstructions: '',
+        attemptAvoidDetection: false,
+        embedLLMInstructions: true,
+        urlSlug: slug,
+        metaTitle: '',
+        metaDescription: '',
+        robotsDirectives: ['index', 'follow']
+      }
     };
 
     const { data: resume, error } = await supabase
@@ -120,29 +153,29 @@ export const updateResume = async (
 
     // Handle settings update if provided
     if (data.settings) {
-      const settings = data.settings;
+      // Get current resume to merge settings
+      const { data: currentResume, error: fetchError } = await supabase
+        .from('resumes')
+        .select('settings')
+        .eq('id', resumeId)
+        .single();
       
-      // Map settings object to database column names
-      if (settings.publishResumePage !== undefined) updateData.publish_resume_page = settings.publishResumePage;
-      if (settings.presenceBadge !== undefined) updateData.presence_badge = settings.presenceBadge;
-      if (settings.enableResumeDownloads !== undefined) updateData.enable_resume_downloads = settings.enableResumeDownloads;
-      if (settings.resumePageTemplate !== undefined) updateData.resume_page_template = settings.resumePageTemplate;
-      if (settings.allowUsersSwitchTemplate !== undefined) updateData.allow_users_switch_template = settings.allowUsersSwitchTemplate;
-      if (settings.visibility !== undefined) updateData.visibility = settings.visibility;
+      if (fetchError) {
+        console.error('Error fetching current resume settings:', fetchError);
+        return { data: null, error: fetchError.message };
+      }
       
-      if (settings.enableMischiefMode !== undefined) updateData.enable_mischief_mode = settings.enableMischiefMode;
-      if (settings.includeCustomMischief !== undefined) updateData.include_custom_mischief = settings.includeCustomMischief;
-      if (settings.customMischiefInstructions !== undefined) updateData.custom_mischief_instructions = settings.customMischiefInstructions;
-      if (settings.attemptAvoidDetection !== undefined) updateData.attempt_avoid_detection = settings.attemptAvoidDetection;
-      if (settings.embedLLMInstructions !== undefined) updateData.embed_llm_instructions = settings.embedLLMInstructions;
+      // Merge current settings with new settings
+      const currentSettings = currentResume.settings || {};
+      updateData.settings = {
+        ...currentSettings,
+        ...data.settings
+      };
       
-      if (settings.metaTitle !== undefined) updateData.meta_title = settings.metaTitle;
-      if (settings.metaDescription !== undefined) updateData.meta_description = settings.metaDescription;
-      if (settings.robotsDirectives !== undefined) updateData.robots_directives = settings.robotsDirectives;
-      
-      // If urlSlug is provided, update the slug
-      if (settings.urlSlug !== undefined && settings.urlSlug.trim() !== '') {
-        updateData.slug = settings.urlSlug.trim();
+      // If urlSlug is provided, update the slug field as well
+      if (data.settings.urlSlug !== undefined && data.settings.urlSlug.trim() !== '') {
+        updateData.slug = data.settings.urlSlug.trim();
+        updateData.settings.urlSlug = data.settings.urlSlug.trim();
       }
     }
 
