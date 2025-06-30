@@ -136,7 +136,7 @@ export const LandingPage: FC = () => {
               <SwitchRevealHeading
                 headingText="Turn Your Resume into"
                 auroraTexts={auroraTexts}
-                className="text-6xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl leading-tight"
+                className="text-6xl font-extrabold tracking-tight leading-tight"
                 pauseDuration={6000}
                 fadeDuration={0.3}
               />
