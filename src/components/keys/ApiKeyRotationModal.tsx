@@ -78,7 +78,7 @@ export const ApiKeyRotationModal: FC<ApiKeyRotationModalProps> = ({
             onRotationComplete(result);
           }
         } else {
-          setError("Failed to rotate key - no new key was returned");
+          setError("Failed to rotate API key - no new key was generated");
         }
       } catch (err) {
         console.error("Key rotation error:", err);
