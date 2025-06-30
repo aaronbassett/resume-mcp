@@ -274,3 +274,8 @@ export const blockValidators = {
     return !!(data.name && data.description);
   },
 };
+
+// Auto-register Avatar Block
+import('../components/blocks/AvatarBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.AVATAR, module.avatarBlockConfig);
+});
