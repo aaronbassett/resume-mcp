@@ -5,7 +5,7 @@
 import React from 'react';
 import { SkillBlock } from './skill';
 import { BlockType } from '../../config/blockEditorConfig';
-import { SkillBlockData, defaultSkillBlockData } from '../../types/blocks';
+import { SkillBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const skillBlockConfig: BlockConfig<SkillBlockData> = createBlockConfig(
   {
     displayName: 'Skills',
     component: SkillBlockWrapper,
-    defaultData: defaultSkillBlockData,
+    defaultData: defaultBlockData[BlockType.SKILL],
     category: 'skills',
     description: 'Technical and professional skills',
     icon: 'Zap',

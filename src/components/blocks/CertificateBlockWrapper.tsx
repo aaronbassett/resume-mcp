@@ -5,7 +5,7 @@
 import React from 'react';
 import { CertificateBlock } from './certificate';
 import { BlockType } from '../../config/blockEditorConfig';
-import { CertificateBlockData, defaultCertificateBlockData } from '../../types/blocks';
+import { CertificateBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const certificateBlockConfig: BlockConfig<CertificateBlockData> = createB
   {
     displayName: 'Certifications',
     component: CertificateBlockWrapper,
-    defaultData: defaultCertificateBlockData,
+    defaultData: defaultBlockData[BlockType.CERTIFICATE],
     category: 'achievements',
     description: 'Professional certifications and licenses',
     icon: 'Award',

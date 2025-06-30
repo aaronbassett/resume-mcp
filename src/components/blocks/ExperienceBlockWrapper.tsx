@@ -5,7 +5,7 @@
 import React from 'react';
 import { ExperienceBlock } from './experience';
 import { BlockType } from '../../config/blockEditorConfig';
-import { ExperienceBlockData, defaultExperienceBlockData } from '../../types/blocks';
+import { ExperienceBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const experienceBlockConfig: BlockConfig<ExperienceBlockData> = createBlo
   {
     displayName: 'Work Experience',
     component: ExperienceBlockWrapper,
-    defaultData: defaultExperienceBlockData,
+    defaultData: defaultBlockData[BlockType.EXPERIENCE],
     category: 'professional',
     description: 'Employment history and achievements',
     icon: 'Briefcase',

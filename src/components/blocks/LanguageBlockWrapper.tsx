@@ -5,7 +5,7 @@
 import React from 'react';
 import { LanguageBlock } from './language';
 import { BlockType } from '../../config/blockEditorConfig';
-import { NaturalLanguageBlockData, defaultNaturalLanguageBlockData } from '../../types/blocks';
+import { NaturalLanguageBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const languageBlockConfig: BlockConfig<NaturalLanguageBlockData> = create
   {
     displayName: 'Languages',
     component: LanguageBlockWrapper,
-    defaultData: defaultNaturalLanguageBlockData,
+    defaultData: defaultBlockData[BlockType.NATURAL_LANGUAGE],
     category: 'skills',
     description: 'Spoken and written languages',
     icon: 'Languages',

@@ -5,7 +5,7 @@
 import React from 'react';
 import { ContactBlock } from './contact';
 import { BlockType } from '../../config/blockEditorConfig';
-import { ContactBlockData, defaultContactBlockData } from '../../types/blocks';
+import { ContactBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const contactBlockConfig: BlockConfig<ContactBlockData> = createBlockConf
   {
     displayName: 'Contact Information',
     component: ContactBlockWrapper,
-    defaultData: defaultContactBlockData,
+    defaultData: defaultBlockData[BlockType.CONTACT],
     category: 'personal',
     description: 'Email, phone, and website contact information',
     icon: 'Mail',

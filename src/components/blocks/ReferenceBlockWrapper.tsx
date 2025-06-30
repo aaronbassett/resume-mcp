@@ -5,7 +5,7 @@
 import React from 'react';
 import { ReferenceBlock } from './reference';
 import { BlockType } from '../../config/blockEditorConfig';
-import { ReferenceBlockData, defaultReferenceBlockData } from '../../types/blocks';
+import { ReferenceBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const referenceBlockConfig: BlockConfig<ReferenceBlockData> = createBlock
   {
     displayName: 'References',
     component: ReferenceBlockWrapper,
-    defaultData: defaultReferenceBlockData,
+    defaultData: defaultBlockData[BlockType.REFERENCE],
     category: 'personal',
     description: 'Professional references',
     icon: 'UserCheck',

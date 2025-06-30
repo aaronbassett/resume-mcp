@@ -5,7 +5,7 @@
 import React from 'react';
 import { PublicationBlock } from './publication';
 import { BlockType } from '../../config/blockEditorConfig';
-import { PublicationBlockData, defaultPublicationBlockData } from '../../types/blocks';
+import { PublicationBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const publicationBlockConfig: BlockConfig<PublicationBlockData> = createB
   {
     displayName: 'Publications',
     component: PublicationBlockWrapper,
-    defaultData: defaultPublicationBlockData,
+    defaultData: defaultBlockData[BlockType.PUBLICATION],
     category: 'achievements',
     description: 'Academic papers and articles',
     icon: 'BookOpen',

@@ -5,7 +5,7 @@
 import React from 'react';
 import { EducationBlock } from './education';
 import { BlockType } from '../../config/blockEditorConfig';
-import { EducationBlockData, defaultEducationBlockData } from '../../types/blocks';
+import { EducationBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const educationBlockConfig: BlockConfig<EducationBlockData> = createBlock
   {
     displayName: 'Education',
     component: EducationBlockWrapper,
-    defaultData: defaultEducationBlockData,
+    defaultData: defaultBlockData[BlockType.EDUCATION],
     category: 'professional',
     description: 'Academic degrees and coursework',
     icon: 'GraduationCap',

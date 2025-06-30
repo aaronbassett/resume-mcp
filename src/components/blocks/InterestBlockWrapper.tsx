@@ -5,7 +5,7 @@
 import React from 'react';
 import { InterestBlock } from './interest';
 import { BlockType } from '../../config/blockEditorConfig';
-import { InterestBlockData, defaultInterestBlockData } from '../../types/blocks';
+import { InterestBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const interestBlockConfig: BlockConfig<InterestBlockData> = createBlockCo
   {
     displayName: 'Interests',
     component: InterestBlockWrapper,
-    defaultData: defaultInterestBlockData,
+    defaultData: defaultBlockData[BlockType.INTEREST],
     category: 'personal',
     description: 'Personal interests and hobbies',
     icon: 'Sparkles',

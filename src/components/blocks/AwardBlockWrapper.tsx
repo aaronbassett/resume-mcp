@@ -5,7 +5,7 @@
 import React from 'react';
 import { AwardBlock } from './award';
 import { BlockType } from '../../config/blockEditorConfig';
-import { AwardBlockData, defaultAwardBlockData } from '../../types/blocks';
+import { AwardBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const awardBlockConfig: BlockConfig<AwardBlockData> = createBlockConfig(
   {
     displayName: 'Awards & Recognition',
     component: AwardBlockWrapper,
-    defaultData: defaultAwardBlockData,
+    defaultData: defaultBlockData[BlockType.AWARD],
     category: 'achievements',
     description: 'Professional awards and honors',
     icon: 'Trophy',

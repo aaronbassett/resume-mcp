@@ -5,7 +5,7 @@
 import React from 'react';
 import { AddressBlock } from './address';
 import { BlockType } from '../../config/blockEditorConfig';
-import { AddressBlockData, defaultAddressBlockData } from '../../types/blocks';
+import { AddressBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const addressBlockConfig: BlockConfig<AddressBlockData> = createBlockConf
   {
     displayName: 'Address & Location',
     component: AddressBlockWrapper,
-    defaultData: defaultAddressBlockData,
+    defaultData: defaultBlockData[BlockType.ADDRESS],
     category: 'personal',
     description: 'Physical location or remote work status',
     icon: 'MapPin',

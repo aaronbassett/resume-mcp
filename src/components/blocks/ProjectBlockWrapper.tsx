@@ -5,7 +5,7 @@
 import React from 'react';
 import { ProjectBlock } from './project';
 import { BlockType } from '../../config/blockEditorConfig';
-import { ProjectBlockData, defaultProjectBlockData } from '../../types/blocks';
+import { ProjectBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const projectBlockConfig: BlockConfig<ProjectBlockData> = createBlockConf
   {
     displayName: 'Projects',
     component: ProjectBlockWrapper,
-    defaultData: defaultProjectBlockData,
+    defaultData: defaultBlockData[BlockType.PROJECT],
     category: 'professional',
     description: 'Personal or professional projects',
     icon: 'Folder',

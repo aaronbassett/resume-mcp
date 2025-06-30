@@ -5,7 +5,7 @@
 import React from 'react';
 import { VolunteerBlock } from './volunteer';
 import { BlockType } from '../../config/blockEditorConfig';
-import { VolunteerBlockData, defaultVolunteerBlockData } from '../../types/blocks';
+import { VolunteerBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const volunteerBlockConfig: BlockConfig<VolunteerBlockData> = createBlock
   {
     displayName: 'Volunteer Experience',
     component: VolunteerBlockWrapper,
-    defaultData: defaultVolunteerBlockData,
+    defaultData: defaultBlockData[BlockType.VOLUNTEER],
     category: 'professional',
     description: 'Community service and volunteer work',
     icon: 'Heart',

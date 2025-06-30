@@ -5,7 +5,7 @@
 import React from 'react';
 import { SocialNetworksBlock } from './social';
 import { BlockType } from '../../config/blockEditorConfig';
-import { SocialNetworksBlockData, defaultSocialNetworksBlockData } from '../../types/blocks';
+import { SocialNetworksBlockData, defaultBlockData } from '../../types/blocks';
 import { createBlockConfig } from '../../blocks/registry';
 import type { BlockConfig } from '@aaronbassett/block-party';
 
@@ -30,7 +30,7 @@ export const socialNetworksBlockConfig: BlockConfig<SocialNetworksBlockData> = c
   {
     displayName: 'Social Networks',
     component: SocialNetworksBlockWrapper,
-    defaultData: defaultSocialNetworksBlockData,
+    defaultData: defaultBlockData[BlockType.SOCIAL_NETWORKS],
     category: 'personal',
     description: 'Professional and social media profiles',
     icon: 'Users',
