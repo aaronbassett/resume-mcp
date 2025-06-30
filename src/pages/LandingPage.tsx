@@ -248,66 +248,52 @@ export const LandingPage: FC = () => {
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
-            className="gradient-primary rounded-3xl p-16 text-center relative overflow-hidden"
+            className="text-center relative overflow-hidden"
             initial={{ opacity: 0, y: 40 }}
             animate={ctaInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative z-10">
+            <div className="relative z-10 flex flex-col items-center">
               <PointerHighlight
-                rectangleClassName="bg-white/10 border-white/30"
-                pointerClassName="text-white"
+                rectangleClassName="bg-primary/10 border-primary/30"
+                pointerClassName="text-primary"
               >
                 <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-50 mb-6">
                   Ready to supercharge your career?
                 </h2>
               </PointerHighlight>
-              <p className="mt-6 text-xl leading-8 text-primary-foreground/90 max-w-2xl mx-auto">
+              <p className="mt-6 text-base leading-8 text-muted-foreground max-w-2xl mx-auto hidden md:block">
                 Join thousands of developers who are already using Resume MCP to land better opportunities.
               </p>
               <div className="mt-12">
                 {isAuthenticated ? (
                   <Link to="/dashboard">
-                    <Button size="lg" variant="secondary" className="text-xl px-10 py-7">
+                    <Button 
+                      size="lg" 
+                      className="text-xl px-10 py-7 relative overflow-hidden animate-aurora"
+                      style={{
+                        background: 'linear-gradient(90deg, hsl(var(--color-1)), hsl(var(--color-2)), hsl(var(--color-3)), hsl(var(--color-4)), hsl(var(--color-5)))',
+                        backgroundSize: '400% 400%',
+                      }}
+                    >
                       Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                 ) : (
                   <Link to="/auth/signup">
-                    <Button size="lg" variant="secondary" className="text-xl px-10 py-7">
+                    <Button 
+                      size="lg" 
+                      className="text-xl px-10 py-7 relative overflow-hidden animate-aurora"
+                      style={{
+                        background: 'linear-gradient(90deg, hsl(var(--color-1)), hsl(var(--color-2)), hsl(var(--color-3)), hsl(var(--color-4)), hsl(var(--color-5)))',
+                        backgroundSize: '400% 400%',
+                      }}
+                    >
                       Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                 )}
               </div>
-            </div>
-            
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden">
-              <motion.div 
-                className="absolute -top-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"
-                animate={{ 
-                  x: [0, 30, 0],
-                  y: [0, -30, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                }}
-              />
-              <motion.div 
-                className="absolute -bottom-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"
-                animate={{ 
-                  x: [0, -30, 0],
-                  y: [0, 30, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                }}
-              />
             </div>
           </motion.div>
         </div>
