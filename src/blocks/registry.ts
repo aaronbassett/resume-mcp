@@ -279,3 +279,13 @@ export const blockValidators = {
 import('../components/blocks/AvatarBlockWrapper').then((module) => {
   blockRegistry.register(BlockType.AVATAR, module.avatarBlockConfig);
 });
+
+// Auto-register Contact Block
+import('../components/blocks/ContactBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.CONTACT, module.contactBlockConfig);
+});
+
+// Auto-register Address Block
+import('../components/blocks/AddressBlockWrapper').then((module) => {
+  blockRegistry.register(BlockType.ADDRESS, module.addressBlockConfig);
+});
