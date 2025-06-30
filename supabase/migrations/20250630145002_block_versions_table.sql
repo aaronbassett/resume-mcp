@@ -1,17 +1,33 @@
 -- Block Versions Table Migration
 -- This migration creates the block_versions table for tracking historical versions of blocks
 
--- Create block_versions table
-CREATE TABLE IF NOT EXISTS block_versions (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    block_id UUID NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
-    version_number INTEGER NOT NULL,
-    data JSONB NOT NULL,
-    metadata JSONB,
-    changed_by UUID REFERENCES auth.users(id),
-    change_description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- Create or enhance block_versions table
+DO $$ 
+BEGIN
+    -- Check if block_versions exists from old migration
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'block_versions') THEN
+        -- Table exists, add missing columns
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name = 'block_versions' AND column_name = 'metadata') THEN
+            ALTER TABLE block_versions ADD COLUMN metadata JSONB;
+        END IF;
+        
+        -- Note: old schema has 'created_by' instead of 'changed_by'
+        -- We'll work with the existing column name to avoid conflicts
+    ELSE
+        -- Table doesn't exist, create it with our schema
+        CREATE TABLE block_versions (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            block_id UUID NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+            version_number INTEGER NOT NULL,
+            data JSONB NOT NULL,
+            metadata JSONB,
+            changed_by UUID REFERENCES auth.users(id),
+            change_description TEXT,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+        );
+    END IF;
+END $$;
 
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_block_versions_block_id ON block_versions(block_id);
@@ -181,7 +197,20 @@ CREATE POLICY "Users can restore their own block versions" ON block_versions
 COMMENT ON TABLE block_versions IS 'Tracks historical versions of block content for version control and rollback';
 COMMENT ON COLUMN block_versions.version_number IS 'Sequential version number for each block';
 COMMENT ON COLUMN block_versions.data IS 'Snapshot of block data at this version';
-COMMENT ON COLUMN block_versions.changed_by IS 'User who made the change';
-COMMENT ON COLUMN block_versions.change_description IS 'Auto-generated description of what changed';
+
+-- Only add comments for columns that exist
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns 
+               WHERE table_name = 'block_versions' AND column_name = 'changed_by') THEN
+        COMMENT ON COLUMN block_versions.changed_by IS 'User who made the change';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns 
+               WHERE table_name = 'block_versions' AND column_name = 'change_description') THEN
+        COMMENT ON COLUMN block_versions.change_description IS 'Auto-generated description of what changed';
+    END IF;
+END $$;
+
 COMMENT ON FUNCTION restore_block_version IS 'Restore a block to a specific historical version';
 COMMENT ON FUNCTION get_block_version_history IS 'Get paginated version history for a block';
