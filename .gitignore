@@ -26,7 +26,6 @@ dist-ssr
 
 .claude
 CLAUDE.md
-supabase/
 
 dev-debug.log
 # Dependency directories
