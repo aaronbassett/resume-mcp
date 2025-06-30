@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { SwitchRevealHeading } from '../components/ui/SwitchRevealHeading';
-import { VantaBackground } from '../components/VantaBackground';
 import { useAuthStore } from '../store/auth';
 
 const features = [
@@ -93,8 +92,8 @@ export const LandingPage: FC = () => {
         </div>
       </header>
 
-      {/* Hero Section with Vanta.js Background */}
-      <VantaBackground className="py-20 sm:py-32">
+      {/* Hero Section */}
+      <section className="py-20 sm:py-32 bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mx-auto max-w-4xl text-center">
             <motion.div
@@ -134,7 +133,7 @@ export const LandingPage: FC = () => {
             </motion.div>
           </div>
         </div>
-      </VantaBackground>
+      </section>
 
       {/* Features Section */}
       <section className="py-20 bg-muted/50">
