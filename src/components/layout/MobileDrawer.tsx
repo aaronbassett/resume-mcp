@@ -10,7 +10,8 @@ import {
   Bell, 
   Settings, 
   User, 
-  LogOut 
+  LogOut,
+  Key
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Horizon } from '@theme-toggles/react';

@@ -8,7 +8,8 @@ import {
   BarChart3, 
   Plus,
   Zap,
-  Star
+  Star,
+  Key
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparklesText } from '../ui/SparklesText';
@@ -38,6 +39,7 @@ const navSections: NavSection[] = [
     items: [
       { label: 'Resumes', href: '/resumes', icon: FileText },
       { label: 'Block Library', href: '/blocks', icon: Blocks },
+      { label: 'API Keys', href: '/keys', icon: Key },
     ],
   },
 ];

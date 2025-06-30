@@ -15,6 +15,8 @@ import { EditResumePage } from './pages/EditResumePage';
 import { BlocksPage } from './pages/BlocksPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { ResumePreviewPage } from './pages/ResumePreviewPage';
+import { ApiKeysPage } from './pages/keys/ApiKeysPage';
+import { CreateApiKeyPage } from './pages/keys/CreateApiKeyPage';
 import { useAuthStore } from './store/auth';
 import { customTheme } from './flowbite-theme';
 
@@ -98,6 +100,10 @@ function App() {
               <Route path="/blocks" element={isAuthenticated ? <BlocksPage /> : <Navigate to="/auth/login" />} />
               <Route path="/blocks/:blockType" element={isAuthenticated ? <PlaceholderPage title="Block Type View" /> : <Navigate to="/auth/login" />} />
               <Route path="/blocks/:blockType/:blockId" element={isAuthenticated ? <PlaceholderPage title="Edit Block" /> : <Navigate to="/auth/login" />} />
+              
+              {/* API Keys Routes */}
+              <Route path="/keys" element={isAuthenticated ? <ApiKeysPage /> : <Navigate to="/auth/login" />} />
+              <Route path="/keys/new" element={isAuthenticated ? <CreateApiKeyPage /> : <Navigate to="/auth/login" />} />
               
               {/* Analytics */}
               <Route path="/analytics" element={isAuthenticated ? <AnalyticsPage /> : <Navigate to="/auth/login" />} />
