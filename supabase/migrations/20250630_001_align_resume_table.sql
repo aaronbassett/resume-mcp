@@ -10,7 +10,7 @@ ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS display_name TEXT DEFAULT ''
 
 -- Add Resume Page Settings columns
 ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS publish_resume_page BOOLEAN DEFAULT true;
-ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS presence_badge TEXT DEFAULT 'none';
+-- presence_badge is already added as BOOLEAN in the base migration, skip it here
 ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS enable_resume_downloads BOOLEAN DEFAULT true;
 ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS resume_page_template TEXT DEFAULT 'standard';
 ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS allow_users_switch_template BOOLEAN DEFAULT false;
@@ -33,8 +33,7 @@ ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS tags JSONB DEFAULT '[]'::jso
 ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS custom_data JSONB DEFAULT '{}'::jsonb;
 
 -- Add constraints
-ALTER TABLE public.resumes ADD CONSTRAINT chk_presence_badge 
-  CHECK (presence_badge IN ('none', 'available', 'busy', 'away', 'dnd'));
+-- Skip presence_badge constraint since it's now a boolean field
 
 ALTER TABLE public.resumes ADD CONSTRAINT chk_resume_page_template 
   CHECK (resume_page_template IN ('standard', 'modern', 'classic', 'minimal', 'creative'));
@@ -84,7 +83,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_resumes_one_default_per_user
 -- Add comment describing the table
 COMMENT ON TABLE public.resumes IS 'Resume configurations with settings, SEO metadata, and mischief mode features';
 COMMENT ON COLUMN public.resumes.nanoid IS 'URL-friendly unique identifier for public resume URLs';
-COMMENT ON COLUMN public.resumes.presence_badge IS 'Availability indicator shown on resume page';
+-- Skip comment for presence_badge since it's now a boolean field
 COMMENT ON COLUMN public.resumes.enable_mischief_mode IS 'Enable hidden messages in resume for LLM detection';
 COMMENT ON COLUMN public.resumes.robots_directives IS 'SEO robot directives as array (index, follow, noindex, nofollow, etc)';
 COMMENT ON COLUMN public.resumes.custom_data IS 'Reserved for future extensibility and custom features';
