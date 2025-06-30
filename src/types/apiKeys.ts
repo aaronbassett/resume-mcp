@@ -10,7 +10,6 @@ export interface ApiKey {
   max_uses: number | null;
   created_at: string;
   last_used_at: string | null;
-  use_count: number;
   unique_ips: number;
   notes: string | null;
   is_active: boolean;

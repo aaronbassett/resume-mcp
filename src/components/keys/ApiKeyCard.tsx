@@ -82,7 +82,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
   };
 
   const isExpired = apiKey.expires_at && new Date(apiKey.expires_at) < new Date();
-  const isMaxedOut = apiKey.max_uses !== null && apiKey.use_count >= apiKey.max_uses;
+  const isMaxedOut = apiKey.max_uses !== null && apiKey.usage_count >= apiKey.max_uses;
   const needsRotation = apiKey.next_rotation_date && new Date(apiKey.next_rotation_date) < new Date();
   
   // Format the masked key

@@ -52,7 +52,7 @@ export const ApiKeysPage: FC = () => {
         key.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (key.resume?.title && key.resume.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (key.notes && key.notes.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (key.key_first_chars && key.key_first_chars.toLowerCase().includes(searchQuery.toLowerCase()))
+        (key.key_prefix && key.key_prefix.toLowerCase().includes(searchQuery.toLowerCase()))
       ));
     } else {
       setFilteredKeys(apiKeys);
@@ -73,14 +73,14 @@ export const ApiKeysPage: FC = () => {
   };
 
   // Group keys by active and inactive
-  const activeKeys = filteredKeys.filter(key => !key.is_revoked && 
+  const activeKeys = filteredKeys.filter(key => key.is_active && 
     (!key.expires_at || new Date(key.expires_at) > new Date()) &&
-    (key.max_uses === null || key.use_count < key.max_uses)
+    (key.max_uses === null || key.usage_count < key.max_uses)
   );
   
-  const inactiveKeys = filteredKeys.filter(key => key.is_revoked || 
+  const inactiveKeys = filteredKeys.filter(key => !key.is_active || 
     (key.expires_at && new Date(key.expires_at) <= new Date()) ||
-    (key.max_uses !== null && key.use_count >= key.max_uses)
+    (key.max_uses !== null && key.usage_count >= key.max_uses)
   );
 
   // Keys that need rotation
