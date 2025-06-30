@@ -10,7 +10,7 @@ import type { Resume } from '../../lib/resumeService';
 
 interface ApiKeyFormProps {
   resumes: Resume[];
-  onKeyCreated: (key: ApiKey) => void;
+  onKeyCreated: (key: ApiKey, plainKey: string) => void;
 }
 
 export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
@@ -155,8 +155,9 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
       
       if (result.error) {
         alert(`Failed to create API key: ${result.error}`);
-      } else if (result.data) {
-        onKeyCreated(result.data);
+      } else if (result.data && result.plainKey) {
+        // Pass both the API key record and the plain text key
+        onKeyCreated(result.data, result.plainKey);
       }
     } catch (error) {
       console.error('Error creating API key:', error);
