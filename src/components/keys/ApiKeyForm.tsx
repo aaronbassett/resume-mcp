@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import { useState, useEffect } from 'react';
-import { AlertTriangle, Calendar, Key, Info, Globe, Code, Shield } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { AlertTriangle, Calendar, Key, Info, Globe, Code, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { TextInput, Select, Textarea } from 'flowbite-react';
@@ -34,6 +34,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [showAdvancedPermissions, setShowAdvancedPermissions] = useState(false);
 
   // Set default expiration date for admin keys (3 months from now)
   useEffect(() => {
@@ -89,6 +90,34 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
         return { ...prev, permissions: permissions.filter(p => p !== permission) };
       } else {
         return { ...prev, permissions: [...permissions, permission] };
+      }
+    });
+  };
+
+  // Handle global permission toggles
+  const handleGlobalPermissionChange = (type: 'read' | 'write') => {
+    const permissionPrefix = `${type}:`;
+    const globalPermission = type === 'read' ? 'read:all' : 'write:all';
+    
+    setFormData(prev => {
+      const currentPermissions = [...(prev.permissions || [])];
+      const hasGlobalPermission = currentPermissions.includes(globalPermission);
+      
+      if (hasGlobalPermission) {
+        // Remove global permission
+        return {
+          ...prev,
+          permissions: currentPermissions.filter(p => p !== globalPermission)
+        };
+      } else {
+        // Add global permission and remove specific permissions of same type
+        return {
+          ...prev,
+          permissions: [
+            ...currentPermissions.filter(p => !p.startsWith(permissionPrefix) && p !== type),
+            globalPermission
+          ]
+        };
       }
     });
   };
@@ -168,6 +197,10 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
     acc[category].push(permission);
     return acc;
   }, {} as Record<string, ApiKeyScope[]>);
+
+  // Check if read:all or write:all permissions are selected
+  const hasReadAll = formData.permissions?.includes('read:all') || false;
+  const hasWriteAll = formData.permissions?.includes('write:all') || false;
 
   return (
     <Card>
@@ -265,55 +298,53 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               <span>Permissions</span>
             </label>
             
-            {Object.keys(groupedPermissions).length === 0 ? (
-              <div className="grid grid-cols-2 gap-2">
-                <div className={`flex items-center space-x-2 p-2 rounded border ${errors.permissions ? 'border-red-500' : 'border-input'}`}>
-                  <input
-                    type="checkbox"
-                    id="perm-read"
-                    checked={formData.permissions?.includes('read')}
-                    onChange={() => handlePermissionChange('read')}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                    disabled={formData.is_admin}
-                  />
-                  <label htmlFor="perm-read" className="text-sm">Read</label>
-                </div>
-                <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                  <input
-                    type="checkbox"
-                    id="perm-write"
-                    checked={formData.permissions?.includes('write')}
-                    onChange={() => handlePermissionChange('write')}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                    disabled={formData.is_admin}
-                  />
-                  <label htmlFor="perm-write" className="text-sm">Write</label>
-                </div>
-                <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                  <input
-                    type="checkbox"
-                    id="perm-delete"
-                    checked={formData.permissions?.includes('delete')}
-                    onChange={() => handlePermissionChange('delete')}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                    disabled={formData.is_admin}
-                  />
-                  <label htmlFor="perm-delete" className="text-sm">Delete</label>
-                </div>
-                <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                  <input
-                    type="checkbox"
-                    id="perm-admin"
-                    checked={formData.permissions?.includes('admin')}
-                    onChange={() => handlePermissionChange('admin')}
-                    disabled={!formData.is_admin}
-                    className="rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
-                  />
-                  <label htmlFor="perm-admin" className={`text-sm ${!formData.is_admin ? 'opacity-50' : ''}`}>Admin</label>
-                </div>
+            {/* Global Permissions */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className={`flex items-center space-x-2 p-2 rounded border ${
+                errors.permissions ? 'border-red-500' : 'border-input'
+              }`}>
+                <input
+                  type="checkbox"
+                  id="perm-read-all"
+                  checked={hasReadAll || formData.is_admin}
+                  onChange={() => handleGlobalPermissionChange('read')}
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                  disabled={formData.is_admin}
+                />
+                <label htmlFor="perm-read-all" className={`text-sm ${formData.is_admin ? 'opacity-50' : ''}`}>
+                  Read All
+                </label>
               </div>
-            ) : (
-              <div className="space-y-4">
+              <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                <input
+                  type="checkbox"
+                  id="perm-write-all"
+                  checked={hasWriteAll || formData.is_admin}
+                  onChange={() => handleGlobalPermissionChange('write')}
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                  disabled={formData.is_admin}
+                />
+                <label htmlFor="perm-write-all" className={`text-sm ${formData.is_admin ? 'opacity-50' : ''}`}>
+                  Write All
+                </label>
+              </div>
+            </div>
+            
+            {/* Advanced Permissions Toggle */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowAdvancedPermissions(!showAdvancedPermissions)}
+              className="w-full justify-between mt-2"
+              disabled={formData.is_admin}
+            >
+              <span>Advanced Permissions</span>
+              {showAdvancedPermissions ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+            
+            {/* Advanced Permissions */}
+            {showAdvancedPermissions && (
+              <div className="space-y-4 mt-4 border-t pt-4">
                 {Object.entries(groupedPermissions).map(([category, permissions]) => (
                   <div key={category} className="space-y-2">
                     <h4 className="text-sm font-medium capitalize">{category} Permissions</h4>
@@ -331,10 +362,12 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
                           <input
                             type="checkbox"
                             id={`perm-${permission.name}`}
-                            checked={formData.permissions?.includes(permission.name)}
+                            checked={formData.permissions?.includes(permission.name) || formData.is_admin}
                             onChange={() => handlePermissionChange(permission.name)}
                             className="rounded border-gray-300 text-primary focus:ring-primary"
-                            disabled={formData.is_admin}
+                            disabled={formData.is_admin || 
+                              (permission.name.startsWith('read:') && hasReadAll) ||
+                              (permission.name.startsWith('write:') && hasWriteAll)}
                           />
                           <label 
                             htmlFor={`perm-${permission.name}`} 
@@ -342,6 +375,14 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
                           >
                             {permission.name}
                           </label>
+                          {permission.description && (
+                            <div className="group relative">
+                              <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-popover text-popover-foreground text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                                {permission.description}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -406,7 +447,7 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({
               className="w-full justify-between"
             >
               <span>Advanced Settings</span>
-              <span>{showAdvancedSettings ? '▲' : '▼'}</span>
+              {showAdvancedSettings ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </div>
           
