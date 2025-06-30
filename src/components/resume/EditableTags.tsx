@@ -72,7 +72,7 @@ export const EditableTags: FC<EditableTagsProps> = ({
       <div ref={containerRef} className={`${className} min-h-[2.5rem]`}>
         <ReactTags
           tags={tags}
-          suggestions={[]} // Empty suggestions array to disable suggestions
+          
           separators={[SEPARATORS.TAB, SEPARATORS.ENTER, SEPARATORS.COMMA]}
           handleAddition={handleAddition}
           handleDelete={handleDelete}
