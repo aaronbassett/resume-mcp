@@ -5,15 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Button } from '../ui/Button';
 import { TextInput, Select, Textarea } from 'flowbite-react';
 import { createApiKey } from '../../lib/apiKeyService';
-import type { CreateApiKeyData, ApiKey } from '../../types/apiKeys';
+import type { CreateApiKeyData, ApiKey, ApiKeyScope } from '../../types/apiKeys';
 import type { Resume } from '../../lib/resumeService';
 
 interface ApiKeyFormProps {
   resumes: Resume[];
+  availablePermissions: ApiKeyScope[];
   onKeyCreated: (key: ApiKey) => void;
 }
 
-export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
+export const ApiKeyForm: FC<ApiKeyFormProps> = ({ 
+  resumes, 
+  availablePermissions,
+  onKeyCreated 
+}) => {
   const [formData, setFormData] = useState<CreateApiKeyData>({
     name: '',
     resume_id: resumes.length > 0 ? resumes[0].id : '',
@@ -149,6 +154,21 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
   maxExpiryDate.setMonth(maxExpiryDate.getMonth() + 3);
   const maxExpiryString = maxExpiryDate.toISOString().split('T')[0] + 'T23:59';
 
+  // Group permissions by category
+  const groupedPermissions = availablePermissions.reduce((acc, permission) => {
+    // Extract category from permission name (e.g., "resume:read" -> "resume")
+    const category = permission.name.includes(':') 
+      ? permission.name.split(':')[0] 
+      : 'general';
+    
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    
+    acc[category].push(permission);
+    return acc;
+  }, {} as Record<string, ApiKeyScope[]>);
+
   return (
     <Card>
       <CardHeader>
@@ -244,51 +264,100 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
               <Shield className="h-4 w-4" />
               <span>Permissions</span>
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <div className={`flex items-center space-x-2 p-2 rounded border ${errors.permissions ? 'border-red-500' : 'border-input'}`}>
-                <input
-                  type="checkbox"
-                  id="perm-read"
-                  checked={formData.permissions?.includes('read')}
-                  onChange={() => handlePermissionChange('read')}
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                />
-                <label htmlFor="perm-read" className="text-sm">Read</label>
+            
+            {Object.keys(groupedPermissions).length === 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                <div className={`flex items-center space-x-2 p-2 rounded border ${errors.permissions ? 'border-red-500' : 'border-input'}`}>
+                  <input
+                    type="checkbox"
+                    id="perm-read"
+                    checked={formData.permissions?.includes('read')}
+                    onChange={() => handlePermissionChange('read')}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    disabled={formData.is_admin}
+                  />
+                  <label htmlFor="perm-read" className="text-sm">Read</label>
+                </div>
+                <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                  <input
+                    type="checkbox"
+                    id="perm-write"
+                    checked={formData.permissions?.includes('write')}
+                    onChange={() => handlePermissionChange('write')}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    disabled={formData.is_admin}
+                  />
+                  <label htmlFor="perm-write" className="text-sm">Write</label>
+                </div>
+                <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                  <input
+                    type="checkbox"
+                    id="perm-delete"
+                    checked={formData.permissions?.includes('delete')}
+                    onChange={() => handlePermissionChange('delete')}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    disabled={formData.is_admin}
+                  />
+                  <label htmlFor="perm-delete" className="text-sm">Delete</label>
+                </div>
+                <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                  <input
+                    type="checkbox"
+                    id="perm-admin"
+                    checked={formData.permissions?.includes('admin')}
+                    onChange={() => handlePermissionChange('admin')}
+                    disabled={!formData.is_admin}
+                    className="rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
+                  />
+                  <label htmlFor="perm-admin" className={`text-sm ${!formData.is_admin ? 'opacity-50' : ''}`}>Admin</label>
+                </div>
               </div>
-              <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                <input
-                  type="checkbox"
-                  id="perm-write"
-                  checked={formData.permissions?.includes('write')}
-                  onChange={() => handlePermissionChange('write')}
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                />
-                <label htmlFor="perm-write" className="text-sm">Write</label>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(groupedPermissions).map(([category, permissions]) => (
+                  <div key={category} className="space-y-2">
+                    <h4 className="text-sm font-medium capitalize">{category} Permissions</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {permissions.map(permission => (
+                        <div 
+                          key={permission.id} 
+                          className={`flex items-center space-x-2 p-2 rounded border ${
+                            errors.permissions && !formData.permissions?.length 
+                              ? 'border-red-500' 
+                              : 'border-input'
+                          }`}
+                          title={permission.description || ''}
+                        >
+                          <input
+                            type="checkbox"
+                            id={`perm-${permission.name}`}
+                            checked={formData.permissions?.includes(permission.name)}
+                            onChange={() => handlePermissionChange(permission.name)}
+                            className="rounded border-gray-300 text-primary focus:ring-primary"
+                            disabled={formData.is_admin}
+                          />
+                          <label 
+                            htmlFor={`perm-${permission.name}`} 
+                            className={`text-sm ${formData.is_admin ? 'opacity-50' : ''}`}
+                          >
+                            {permission.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                <input
-                  type="checkbox"
-                  id="perm-delete"
-                  checked={formData.permissions?.includes('delete')}
-                  onChange={() => handlePermissionChange('delete')}
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                />
-                <label htmlFor="perm-delete" className="text-sm">Delete</label>
-              </div>
-              <div className="flex items-center space-x-2 p-2 rounded border border-input">
-                <input
-                  type="checkbox"
-                  id="perm-admin"
-                  checked={formData.permissions?.includes('admin')}
-                  onChange={() => handlePermissionChange('admin')}
-                  disabled={!formData.is_admin}
-                  className="rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
-                />
-                <label htmlFor="perm-admin" className={`text-sm ${!formData.is_admin ? 'opacity-50' : ''}`}>Admin</label>
-              </div>
-            </div>
+            )}
+            
             {errors.permissions && (
               <p className="text-xs text-red-500">{errors.permissions}</p>
+            )}
+            
+            {formData.is_admin && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Admin keys automatically have all permissions
+              </p>
             )}
           </div>
           

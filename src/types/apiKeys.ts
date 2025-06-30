@@ -77,6 +77,7 @@ export interface ApiKeyScope {
   description: string;
   resource_pattern: string;
   is_active: boolean;
+  created_at?: string;
 }
 
 export interface ApiKeyRotation {

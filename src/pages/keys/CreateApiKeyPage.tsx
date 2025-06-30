@@ -7,38 +7,52 @@ import { Button } from '../../components/ui/Button';
 import { ApiKeyForm } from '../../components/keys/ApiKeyForm';
 import { ApiKeySuccess } from '../../components/keys/ApiKeySuccess';
 import { getUserResumes } from '../../lib/resumeService';
-import type { ApiKey } from '../../types/apiKeys';
+import { getAvailableApiKeyPermissions } from '../../lib/apiKeyService';
+import type { ApiKey, ApiKeyScope } from '../../types/apiKeys';
 import type { Resume } from '../../lib/resumeService';
 
 export const CreateApiKeyPage: FC = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
+  const [availablePermissions, setAvailablePermissions] = useState<ApiKeyScope[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [createdKey, setCreatedKey] = useState<ApiKey | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadResumes = async () => {
+    const loadData = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const result = await getUserResumes();
+        // Fetch resumes and permissions in parallel
+        const [resumesResult, permissionsResult] = await Promise.all([
+          getUserResumes(),
+          getAvailableApiKeyPermissions()
+        ]);
 
-        if (result.error) {
-          setError(result.error);
+        if (resumesResult.error) {
+          setError(resumesResult.error);
         } else {
-          setResumes(result.data || []);
+          setResumes(resumesResult.data || []);
+        }
+
+        if (permissionsResult.error) {
+          console.error('Error loading permissions:', permissionsResult.error);
+          // Don't set error state for permissions to avoid blocking the form
+          // Just log the error and continue with empty permissions
+        } else {
+          setAvailablePermissions(permissionsResult.data || []);
         }
       } catch (error) {
-        console.error('Error loading resumes:', error);
-        setError('Failed to load resumes');
+        console.error('Error loading data:', error);
+        setError('Failed to load necessary data');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadResumes();
+    loadData();
   }, []);
 
   const handleKeyCreated = (key: ApiKey) => {
@@ -73,7 +87,7 @@ export const CreateApiKeyPage: FC = () => {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your resumes...</p>
+            <p className="text-muted-foreground">Loading your resumes and permissions...</p>
           </div>
         </div>
       )}
@@ -113,7 +127,11 @@ export const CreateApiKeyPage: FC = () => {
           {createdKey ? (
             <ApiKeySuccess apiKey={createdKey} onDone={handleDone} />
           ) : (
-            <ApiKeyForm resumes={resumes} onKeyCreated={handleKeyCreated} />
+            <ApiKeyForm 
+              resumes={resumes} 
+              availablePermissions={availablePermissions}
+              onKeyCreated={handleKeyCreated} 
+            />
           )}
         </>
       )}

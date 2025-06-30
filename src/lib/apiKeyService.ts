@@ -68,8 +68,7 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
     const keyData = {
       key: apiKey, // Store full key temporarily for return value
       key_hash: keyHash,
-      key_first_chars: keyFirstChars,
-      key_last_chars: keyLastChars,
+      key_prefix: keyFirstChars,
       user_id: user.id,
       resume_id: resumeId,
       name: data.name,
@@ -184,7 +183,7 @@ export const revokeApiKey = async (keyId: string): Promise<{ error: string | nul
   try {
     const { error } = await supabase
       .from('api_keys')
-      .update({ is_revoked: true })
+      .update({ is_active: false })
       .eq('id', keyId);
 
     if (error) {
@@ -477,5 +476,26 @@ export const checkApiKeyPermission = async (
   } catch (error) {
     console.error('Error checking API key permission:', error);
     return { hasPermission: false, error: 'Failed to check API key permission' };
+  }
+};
+
+// Get available API key permissions
+export const getAvailableApiKeyPermissions = async (): Promise<{ data: ApiKeyScope[] | null; error: string | null }> => {
+  try {
+    const { data: scopes, error } = await supabase
+      .from('api_key_scopes')
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching API key permissions:', error);
+      return { data: null, error: error.message };
+    }
+
+    return { data: scopes || [], error: null };
+  } catch (error) {
+    console.error('Error fetching API key permissions:', error);
+    return { data: null, error: 'Failed to fetch API key permissions' };
   }
 };
