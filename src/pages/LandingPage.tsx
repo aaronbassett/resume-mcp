@@ -258,7 +258,7 @@ export const LandingPage: FC = () => {
                 rectangleClassName="bg-white/10 border-white/30"
                 pointerClassName="text-white"
               >
-                <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight text-secondary mb-6">
+                <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-50 mb-6">
                   Ready to supercharge your career?
                 </h2>
               </PointerHighlight>
