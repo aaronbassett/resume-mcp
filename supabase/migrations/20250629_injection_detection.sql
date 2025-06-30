@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS public.injection_transactions (
 );
 
 -- Create indexes
-CREATE INDEX idx_injection_transactions_lookup ON public.injection_transactions(transaction_id, api_key_id);
-CREATE INDEX idx_injection_transactions_expires ON public.injection_transactions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_injection_transactions_lookup ON public.injection_transactions(transaction_id, api_key_id);
+CREATE INDEX IF NOT EXISTS idx_injection_transactions_expires ON public.injection_transactions(expires_at);
 
 -- Create table for captured injection attempts
 CREATE TABLE IF NOT EXISTS public.injection_captures (
@@ -177,15 +177,15 @@ CREATE POLICY "Admins can manage patterns" ON public.injection_patterns
   );
 
 -- Create indexes for performance
-CREATE INDEX idx_api_key_settings_api_key ON public.api_key_settings(api_key_id);
-CREATE INDEX idx_injection_transactions_cleanup ON public.injection_transactions(expires_at);
-CREATE INDEX idx_injection_captures_api_key ON public.injection_captures(api_key_id);
-CREATE INDEX idx_injection_captures_user ON public.injection_captures(user_id);
-CREATE INDEX idx_injection_captures_confidence ON public.injection_captures(confidence_score);
-CREATE INDEX idx_injection_captures_reviewed ON public.injection_captures(reviewed);
-CREATE INDEX idx_injection_captures_captured ON public.injection_captures(captured_at DESC);
-CREATE INDEX idx_injection_captures_request ON public.injection_captures(request_id);
-CREATE INDEX idx_injection_captures_transaction ON public.injection_captures(transaction_id) WHERE transaction_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_api_key_settings_api_key ON public.api_key_settings(api_key_id);
+CREATE INDEX IF NOT EXISTS idx_injection_transactions_cleanup ON public.injection_transactions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_api_key ON public.injection_captures(api_key_id);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_user ON public.injection_captures(user_id);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_confidence ON public.injection_captures(confidence_score);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_reviewed ON public.injection_captures(reviewed);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_captured ON public.injection_captures(captured_at DESC);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_request ON public.injection_captures(request_id);
+CREATE INDEX IF NOT EXISTS idx_injection_captures_transaction ON public.injection_captures(transaction_id) WHERE transaction_id IS NOT NULL;
 
 -- Add comments
 COMMENT ON TABLE public.api_key_settings IS 'Per-API key configuration for injection detection';

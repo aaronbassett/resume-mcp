@@ -18,6 +18,9 @@ export const EditableTags: FC<EditableTagsProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Ensure tags is always an array
+  const safeTags = Array.isArray(tags) ? tags : [];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,31 +51,35 @@ export const EditableTags: FC<EditableTagsProps> = ({
   };
 
   const handleAddition = (tag: Tag) => {
-    const newTags = [...tags, { ...tag, id: tag.id || tag.text }];
+    // Ensure tag has valid text before adding
+    if (!tag || !tag.text || tag.text.trim() === '') {
+      return;
+    }
+    const newTags = [...safeTags, { ...tag, id: tag.id || tag.text }];
     onTagsChange(newTags);
   };
 
   const handleDelete = (index: number) => {
-    const newTags = tags.filter((_, i) => i !== index);
+    const newTags = safeTags.filter((_, i) => i !== index);
     onTagsChange(newTags);
   };
 
   const handleDrag = (tag: Tag, currPos: number, newPos: number) => {
-    const newTags = [...tags];
+    const newTags = [...safeTags];
     newTags.splice(currPos, 1);
     newTags.splice(newPos, 0, tag);
     onTagsChange(newTags);
   };
 
-  const displayValue = tags.length > 0 ? '' : placeholder;
-  const isPlaceholder = tags.length === 0;
+  const displayValue = safeTags.length > 0 ? '' : placeholder;
+  const isPlaceholder = safeTags.length === 0;
 
   if (isEditing) {
     return (
       <div ref={containerRef} className={`${className} min-h-[2.5rem]`}>
         <ReactTags
-          tags={tags}
-          
+          tags={safeTags}
+          suggestions={[]} // Empty suggestions array to disable suggestions
           separators={[SEPARATORS.TAB, SEPARATORS.ENTER, SEPARATORS.COMMA]}
           handleAddition={handleAddition}
           handleDelete={handleDelete}
@@ -110,8 +117,8 @@ export const EditableTags: FC<EditableTagsProps> = ({
       role="button"
       aria-label="Edit tags"
     >
-      {tags.length > 0 ? (
-        tags.map((tag, index) => (
+      {safeTags.length > 0 ? (
+        safeTags.map((tag, index) => (
           <span
             key={index}
             className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary text-primary-foreground"
