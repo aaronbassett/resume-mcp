@@ -168,9 +168,7 @@ export const LandingPage: FC = () => {
                     </PointerHighlight>
                   </Link>
                 )}
-                <Link to="/demo" className="text-lg font-semibold leading-6 text-foreground hover:text-primary transition-colors">
-                  View Demo <span aria-hidden="true">→</span>
-                </Link>
+                
               </div>
             </motion.div>
           </motion.div>
