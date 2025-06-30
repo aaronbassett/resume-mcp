@@ -7,7 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { ApiKeyForm } from '../../components/keys/ApiKeyForm';
 import { ApiKeySuccess } from '../../components/keys/ApiKeySuccess';
 import { getUserResumes } from '../../lib/resumeService';
-import { getAvailableApiKeyPermissions } from '../../lib/apiKeyService';
+import { getApiKeyScopes } from '../../lib/apiKeyService';
 import type { ApiKey, ApiKeyScope } from '../../types/apiKeys';
 import type { Resume } from '../../lib/resumeService';
 
@@ -28,7 +28,7 @@ export const CreateApiKeyPage: FC = () => {
         // Fetch resumes and permissions in parallel
         const [resumesResult, permissionsResult] = await Promise.all([
           getUserResumes(),
-          getAvailableApiKeyPermissions()
+          getApiKeyScopes()
         ]);
 
         if (resumesResult.error) {
