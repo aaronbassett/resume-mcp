@@ -99,14 +99,9 @@ export const LandingPage: FC = () => {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <Link to="/dashboard">
-                  <PointerHighlight 
-                    rectangleClassName="bg-primary/10 border-primary/30"
-                    pointerClassName="text-primary"
-                  >
                     <Button variant="fluid-secondary">
                       Dashboard
                     </Button>
-                  </PointerHighlight>
                 </Link>
               ) : (
                 <>
@@ -186,8 +181,8 @@ export const LandingPage: FC = () => {
 
       {/* Scrolling Text */}
       <section className="py-16 overflow-hidden">
-        <div className="transform rotate-[30deg] origin-center">
-          <VelocityScroll defaultVelocity={3} className="text-5xl md:text-7xl font-bold opacity-20">
+        <div className="opacity-25">
+          <VelocityScroll defaultVelocity={3} className="text-9xl font-bold opacity-20">
             AI-POWERED RESUMES • INTELLIGENT AGENTS • CAREER ACCELERATION • SMART PROFILES •
           </VelocityScroll>
         </div>
