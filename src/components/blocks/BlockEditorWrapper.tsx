@@ -17,12 +17,12 @@ export const BlockEditorWrapper: React.FC<BlockEditorWrapperProps> = ({
   onBlocksChange,
   onError,
 }) => {
-  const store = useBlockStore();
+  const blocks = useBlockStore((state) => state.blocks);
   
   // Subscribe to block changes
   React.useEffect(() => {
     if (onBlocksChange) {
-      const unsubscribe = store.subscribe(
+      const unsubscribe = useBlockStore.subscribe(
         (state) => state.blocks,
         (blocks) => {
           onBlocksChange(Object.values(blocks));
@@ -31,7 +31,7 @@ export const BlockEditorWrapper: React.FC<BlockEditorWrapperProps> = ({
       
       return unsubscribe;
     }
-  }, [store, onBlocksChange]);
+  }, [onBlocksChange]);
 
   // Handle global errors
   React.useEffect(() => {
@@ -74,7 +74,7 @@ export const useBlockEditor = () => {
     canAddBlock: store.canAddBlock,
     
     // State
-    blocks: Object.values(store.blocks),
+    blocks: Object.values(store.blocks || {}),
     editingBlockId: store.editingBlockId,
   };
 };
