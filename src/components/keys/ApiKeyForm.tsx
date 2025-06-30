@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Calendar, Key, Info, Globe, Code, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertTriangle, Calendar, Key, Globe, Code, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { TextInput, Select, Textarea } from 'flowbite-react';
+import { TextInput, Select } from 'flowbite-react';
 import { createApiKey, getApiKeyScopes } from '../../lib/apiKeyService';
 import type { CreateApiKeyData, ApiKey, ApiKeyScope } from '../../types/apiKeys';
 import type { Resume } from '../../lib/resumeService';
@@ -18,8 +18,6 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
     name: '',
     resume_id: resumes.length > 0 ? resumes[0].id : '',
     expires_at: '',
-    max_uses: null,
-    notes: '',
     rotation_policy: 'never',
     permissions: ['read'],
     rate_limit: 1000
@@ -83,11 +81,6 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
-    } else if (name === 'max_uses') {
-      setFormData(prev => ({ 
-        ...prev, 
-        [name]: value === '' ? null : parseInt(value) 
-      }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -123,10 +116,6 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
     
     if (isAdminKey && !formData.expires_at) {
       newErrors.expires_at = 'Expiration date is required for admin keys';
-    }
-    
-    if (formData.max_uses !== null && (formData.max_uses <= 0 || isNaN(formData.max_uses))) {
-      newErrors.max_uses = 'Max uses must be a positive number';
     }
 
     if (formData.rate_limit <= 0 || isNaN(formData.rate_limit)) {
@@ -371,23 +360,6 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
             />
           </div>
           
-          {/* Max Uses */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Maximum Uses (Optional)</label>
-            <TextInput
-              type="number"
-              name="max_uses"
-              value={formData.max_uses === null ? '' : formData.max_uses}
-              onChange={handleChange}
-              min="1"
-              color={errors.max_uses ? 'failure' : 'gray'}
-              helperText={errors.max_uses}
-            />
-            <p className="text-xs text-muted-foreground">
-              Leave blank for unlimited uses
-            </p>
-          </div>
-          
           {/* Advanced Settings Toggle */}
           <div>
             <Button 
@@ -482,18 +454,6 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
               </div>
             </div>
           )}
-          
-          {/* Notes */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Notes (Optional)</label>
-            <Textarea
-              name="notes"
-              value={formData.notes || ''}
-              onChange={handleChange}
-              placeholder="Add notes about this key's purpose or usage"
-              rows={3}
-            />
-          </div>
           
           {/* Submit Button */}
           <div className="flex justify-end">
