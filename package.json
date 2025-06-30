@@ -43,6 +43,7 @@
     "react-select": "^5.8.0",
     "react-tag-input": "^6.10.3",
     "tailwind-merge": "^2.2.0",
+    "zod": "^3.25.67",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
