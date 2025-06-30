@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk } from 'lucide-react';
+import { Zap, AlertCircle, Eye, EyeOff, AtSign, SquareAsterisk, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TextInput } from 'flowbite-react';
 import { BorderBottomBeam } from '../../components/ui/BorderBottomBeam';
@@ -26,12 +26,14 @@ export const LoginPage: FC = () => {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [error, setError] = useState('');
+  const [isEmailNotConfirmed, setIsEmailNotConfirmed] = useState(false);
   const { login, isLoading } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsEmailNotConfirmed(false);
 
     if (!email || !password) {
       setError('Please fill in all fields');
@@ -41,7 +43,13 @@ export const LoginPage: FC = () => {
     const result = await login(email, password);
     
     if (result.error) {
-      setError(result.error);
+      // Check for specific email not confirmed error
+      if (result.error.includes('email_not_confirmed') || result.error.includes('Email not confirmed')) {
+        setIsEmailNotConfirmed(true);
+        setError('Please check your email and click the confirmation link to activate your account before signing in.');
+      } else {
+        setError(result.error);
+      }
     } else {
       // Successfully logged in - navigate to dashboard
       navigate('/dashboard');
@@ -120,13 +128,28 @@ export const LoginPage: FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <motion.div 
-                  className="flex items-center space-x-3 text-sm text-red-400 bg-red-500/10 p-4 rounded-xl border border-red-500/20"
+                  className={`flex items-start space-x-3 text-sm p-4 rounded-xl border ${
+                    isEmailNotConfirmed 
+                      ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' 
+                      : 'text-red-400 bg-red-500/10 border-red-500/20'
+                  }`}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                  <span>{error}</span>
+                  {isEmailNotConfirmed ? (
+                    <Mail className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                  )}
+                  <div>
+                    <span>{error}</span>
+                    {isEmailNotConfirmed && (
+                      <div className="mt-2 text-xs text-amber-300">
+                        Didn't receive the email? Check your spam folder or contact support.
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               )}
 

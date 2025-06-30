@@ -109,32 +109,26 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           });
           setIsNewResume(false);
           
-          // Set settings from the loaded resume
-          if (result.data.settings) {
-            // Use settings from the settings column
-            setResumeSettings(result.data.settings);
-          } else {
-            // Fallback to individual columns for backward compatibility
-            setResumeSettings({
-              publishResumePage: result.data.publish_resume_page ?? true,
-              presenceBadge: result.data.presence_badge ?? 'none',
-              enableResumeDownloads: result.data.enable_resume_downloads ?? true,
-              resumePageTemplate: result.data.resume_page_template ?? 'standard',
-              allowUsersSwitchTemplate: result.data.allow_users_switch_template ?? false,
-              visibility: result.data.visibility ?? 'public',
-              
-              enableMischiefMode: result.data.enable_mischief_mode ?? false,
-              includeCustomMischief: result.data.include_custom_mischief ?? false,
-              customMischiefInstructions: result.data.custom_mischief_instructions ?? '',
-              attemptAvoidDetection: result.data.attempt_avoid_detection ?? false,
-              embedLLMInstructions: result.data.embed_llm_instructions ?? true,
-              
-              urlSlug: result.data.slug || '',
-              metaTitle: result.data.meta_title ?? '',
-              metaDescription: result.data.meta_description ?? '',
-              robotsDirectives: result.data.robots_directives ?? ['index', 'follow']
-            });
-          }
+          // Set settings from individual columns (no more nested settings object)
+          setResumeSettings({
+            publishResumePage: result.data.publish_resume_page ?? true,
+            presenceBadge: result.data.presence_badge ?? 'none',
+            enableResumeDownloads: result.data.enable_resume_downloads ?? true,
+            resumePageTemplate: result.data.resume_page_template ?? 'standard',
+            allowUsersSwitchTemplate: result.data.allow_users_switch_template ?? false,
+            visibility: result.data.visibility ?? 'public',
+            
+            enableMischiefMode: result.data.enable_mischief_mode ?? false,
+            includeCustomMischief: result.data.include_custom_mischief ?? false,
+            customMischiefInstructions: result.data.custom_mischief_instructions ?? '',
+            attemptAvoidDetection: result.data.attempt_avoid_detection ?? false,
+            embedLLMInstructions: result.data.embed_llm_instructions ?? true,
+            
+            urlSlug: result.data.slug || '',
+            metaTitle: result.data.meta_title ?? '',
+            metaDescription: result.data.meta_description ?? '',
+            robotsDirectives: result.data.robots_directives ?? ['index', 'follow']
+          });
         } else {
           setNotFound(true);
         }
@@ -185,17 +179,10 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           clearUnsavedChanges();
 
           // Set URL slug from the created resume
-          if (result.data.settings?.urlSlug) {
-            setResumeSettings(prev => ({
-              ...prev,
-              urlSlug: result.data.settings.urlSlug || ''
-            }));
-          } else {
-            setResumeSettings(prev => ({
-              ...prev,
-              urlSlug: result.data.slug || ''
-            }));
-          }
+          setResumeSettings(prev => ({
+            ...prev,
+            urlSlug: result.data.slug || ''
+          }));
 
           // Update URL to edit route without navigation/refresh
           const newUrl = `/resumes/${result.data.id}/edit`;
