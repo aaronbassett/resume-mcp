@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { Key, Plus, Search, AlertTriangle } from 'lucide-react';
+import { Key, Plus, Search, AlertTriangle, RefreshCw, Shield, Globe, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Card, CardContent } from '../../components/ui/Card';
@@ -16,6 +16,10 @@ export const ApiKeysPage: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showRotatedKeyModal, setShowRotatedKeyModal] = useState<{
+    show: boolean;
+    newKey: string;
+  }>({ show: false, newKey: '' });
 
   const loadApiKeys = async () => {
     setIsLoading(true);
@@ -47,7 +51,8 @@ export const ApiKeysPage: FC = () => {
       setFilteredKeys(apiKeys.filter(key => 
         key.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (key.resume?.title && key.resume.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (key.notes && key.notes.toLowerCase().includes(searchQuery.toLowerCase()))
+        (key.notes && key.notes.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (key.key_first_chars && key.key_first_chars.toLowerCase().includes(searchQuery.toLowerCase()))
       ));
     } else {
       setFilteredKeys(apiKeys);
@@ -62,6 +67,11 @@ export const ApiKeysPage: FC = () => {
     loadApiKeys();
   };
 
+  const handleKeyRotated = (newKey: string) => {
+    setShowRotatedKeyModal({ show: true, newKey });
+    loadApiKeys();
+  };
+
   // Group keys by active and inactive
   const activeKeys = filteredKeys.filter(key => !key.is_revoked && 
     (!key.expires_at || new Date(key.expires_at) > new Date()) &&
@@ -71,6 +81,11 @@ export const ApiKeysPage: FC = () => {
   const inactiveKeys = filteredKeys.filter(key => key.is_revoked || 
     (key.expires_at && new Date(key.expires_at) <= new Date()) ||
     (key.max_uses !== null && key.use_count >= key.max_uses)
+  );
+
+  // Keys that need rotation
+  const keysNeedingRotation = activeKeys.filter(key => 
+    key.next_rotation_date && new Date(key.next_rotation_date) < new Date()
   );
 
   return (
@@ -104,6 +119,35 @@ export const ApiKeysPage: FC = () => {
           />
         </div>
       </div>
+
+      {/* Rotated Key Modal */}
+      {showRotatedKeyModal.show && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-background border rounded-xl shadow-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">API Key Rotated</h3>
+            <p className="mb-4">Your API key has been rotated. Please update any applications using this key.</p>
+            <div className="bg-muted p-3 rounded-lg font-mono text-sm mb-4 overflow-x-auto">
+              {showRotatedKeyModal.newKey}
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
+              <div className="flex items-start space-x-3">
+                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-amber-700 dark:text-amber-400">
+                  This is the only time your new API key will be displayed. Please copy it now.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={() => {
+                navigator.clipboard.writeText(showRotatedKeyModal.newKey);
+                setShowRotatedKeyModal({ show: false, newKey: '' });
+              }}>
+                Copy & Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -164,18 +208,41 @@ export const ApiKeysPage: FC = () => {
         </Card>
       )}
 
+      {/* Keys Needing Rotation */}
+      {keysNeedingRotation.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <RefreshCw className="h-5 w-5 text-amber-500" />
+            <h3 className="text-lg font-semibold text-amber-500">Keys Needing Rotation ({keysNeedingRotation.length})</h3>
+          </div>
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+            {keysNeedingRotation.map(key => (
+              <ApiKeyCard 
+                key={key.id} 
+                apiKey={key} 
+                onKeyRevoked={handleKeyRevoked} 
+                onKeyRotated={handleKeyRotated}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Active Keys */}
       {activeKeys.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Active Keys ({activeKeys.length})</h3>
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-            {activeKeys.map(key => (
-              <ApiKeyCard 
-                key={key.id} 
-                apiKey={key} 
-                onKeyRevoked={handleKeyRevoked} 
-              />
-            ))}
+            {activeKeys
+              .filter(key => !keysNeedingRotation.includes(key))
+              .map(key => (
+                <ApiKeyCard 
+                  key={key.id} 
+                  apiKey={key} 
+                  onKeyRevoked={handleKeyRevoked} 
+                  onKeyRotated={handleKeyRotated}
+                />
+              ))}
           </div>
         </div>
       )}
@@ -189,7 +256,7 @@ export const ApiKeysPage: FC = () => {
               <ApiKeyCard 
                 key={key.id} 
                 apiKey={key} 
-                onKeyRevoked={handleKeyRevoked} 
+                onKeyRevoked={handleKeyRevoked}
               />
             ))}
           </div>

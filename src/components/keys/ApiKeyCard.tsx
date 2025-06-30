@@ -1,20 +1,23 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { Key, Calendar, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
+import { Key, Calendar, RefreshCw, Trash2, AlertTriangle, Globe, Shield, Code, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { DeleteConfirmationModal } from '../ui/DeleteConfirmationModal';
-import { revokeApiKey } from '../../lib/apiKeyService';
+import { revokeApiKey, rotateApiKey } from '../../lib/apiKeyService';
 import type { ApiKeyWithResume } from '../../types/apiKeys';
 
 interface ApiKeyCardProps {
   apiKey: ApiKeyWithResume;
   onKeyRevoked: () => void;
+  onKeyRotated?: (newKey: string) => void;
 }
 
-export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
+export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRotated }) => {
   const [isRevoking, setIsRevoking] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never';
@@ -44,13 +47,44 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
     }
   };
 
+  const handleRotateKey = async () => {
+    if (!confirm('Are you sure you want to rotate this API key? The current key will no longer work and you will need to update any applications using it.')) {
+      return;
+    }
+
+    setIsRotating(true);
+    try {
+      const result = await rotateApiKey(apiKey.id, 'manual');
+      if (result.error) {
+        alert(`Failed to rotate key: ${result.error}`);
+      } else if (result.data?.newKey) {
+        if (onKeyRotated) {
+          onKeyRotated(result.data.newKey);
+        } else {
+          alert(`New API key: ${result.data.newKey}\n\nMake sure to copy this key as it won't be shown again!`);
+        }
+      }
+    } catch (error) {
+      console.error('Error rotating key:', error);
+      alert('Failed to rotate key');
+    } finally {
+      setIsRotating(false);
+    }
+  };
+
   const isExpired = apiKey.expires_at && new Date(apiKey.expires_at) < new Date();
   const isMaxedOut = apiKey.max_uses !== null && apiKey.use_count >= apiKey.max_uses;
+  const needsRotation = apiKey.next_rotation_date && new Date(apiKey.next_rotation_date) < new Date();
   
   // Format the masked key
   const maskedKey = apiKey.key_first_chars && apiKey.key_last_chars 
-    ? `${apiKey.key_first_chars}••••••••••••${apiKey.key_last_chars}`
+    ? `${apiKey.key_first_chars}••••••••••••••••••••••${apiKey.key_last_chars}`
     : '••••••••••••••••••••••••••••••••••••••••';
+
+  // Get permissions as a string
+  const permissionsString = Array.isArray(apiKey.permissions) 
+    ? apiKey.permissions.join(', ') 
+    : 'read';
 
   return (
     <>
@@ -72,6 +106,12 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
             {(apiKey.is_revoked || isExpired || isMaxedOut) && (
               <div className="bg-destructive/10 text-destructive text-xs font-medium px-2 py-1 rounded-full">
                 {apiKey.is_revoked ? 'Revoked' : isExpired ? 'Expired' : 'Max Uses Reached'}
+              </div>
+            )}
+            
+            {needsRotation && !apiKey.is_revoked && !isExpired && !isMaxedOut && (
+              <div className="bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-xs font-medium px-2 py-1 rounded-full">
+                Rotation Needed
               </div>
             )}
           </div>
@@ -112,6 +152,17 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
             </div>
           </div>
           
+          {/* Permissions */}
+          <div className="bg-muted/30 p-3 rounded-lg">
+            <div className="flex items-center space-x-2 mb-1">
+              <Shield className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Permissions</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {permissionsString}
+            </div>
+          </div>
+          
           {/* Max Uses */}
           {apiKey.max_uses !== null && (
             <div className="bg-muted/50 p-3 rounded-lg">
@@ -124,6 +175,96 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
                   className={`h-2 rounded-full ${apiKey.is_revoked ? 'bg-gray-400' : 'bg-primary'}`}
                   style={{ width: `${Math.min(100, (apiKey.use_count / apiKey.max_uses) * 100)}%` }}
                 ></div>
+              </div>
+            </div>
+          )}
+          
+          {/* Rate Limit */}
+          {apiKey.rate_limit && (
+            <div className="bg-muted/30 p-3 rounded-lg">
+              <div className="flex items-center space-x-2 mb-1">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Rate Limit</span>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {apiKey.rate_limit} requests per hour
+              </div>
+            </div>
+          )}
+          
+          {/* Advanced Details Toggle */}
+          {!apiKey.is_revoked && !isExpired && !isMaxedOut && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowDetails(!showDetails)}
+              className="w-full justify-center text-muted-foreground"
+            >
+              {showDetails ? 'Hide Details' : 'Show Details'}
+            </Button>
+          )}
+          
+          {/* Advanced Details */}
+          {showDetails && (
+            <div className="space-y-3 border-t pt-3">
+              {/* Rotation Policy */}
+              {apiKey.rotation_policy && apiKey.rotation_policy !== 'never' && (
+                <div className="bg-muted/30 p-3 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Rotation Policy</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {apiKey.rotation_policy.charAt(0).toUpperCase() + apiKey.rotation_policy.slice(1)}
+                    {apiKey.next_rotation_date && (
+                      <div className="mt-1">
+                        Next rotation: {formatDate(apiKey.next_rotation_date)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* IP Whitelist */}
+              {apiKey.ip_whitelist && apiKey.ip_whitelist.length > 0 && (
+                <div className="bg-muted/30 p-3 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <Shield className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">IP Whitelist</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {apiKey.ip_whitelist.join(', ')}
+                  </div>
+                </div>
+              )}
+              
+              {/* User Agent Pattern */}
+              {apiKey.user_agent_pattern && (
+                <div className="bg-muted/30 p-3 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <Code className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">User Agent Pattern</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground font-mono">
+                    {apiKey.user_agent_pattern}
+                  </div>
+                </div>
+              )}
+              
+              {/* Key Version */}
+              <div className="bg-muted/30 p-3 rounded-lg">
+                <div className="flex items-center space-x-2 mb-1">
+                  <Key className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Key Details</span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  <div>Version: {apiKey.key_version || 1}</div>
+                  {apiKey.metadata && Object.keys(apiKey.metadata).length > 0 && (
+                    <div className="mt-1">
+                      Metadata: {JSON.stringify(apiKey.metadata)}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -147,6 +288,25 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRotateKey}
+                disabled={isRotating}
+              >
+                {isRotating ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Rotating...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Rotate Key
+                  </>
+                )}
               </Button>
               
               <Button 

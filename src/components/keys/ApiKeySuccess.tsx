@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { CheckCircle, Copy, Key, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Copy, Key, AlertTriangle, Shield, Clock, Globe } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { CodeSnippets } from './CodeSnippets';
@@ -15,10 +15,15 @@ export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, onDone }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(apiKey.key);
+    navigator.clipboard.writeText(apiKey.key || '');
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
+
+  // Format permissions for display
+  const permissionsString = Array.isArray(apiKey.permissions) 
+    ? apiKey.permissions.join(', ') 
+    : 'read';
 
   return (
     <div className="space-y-8">
@@ -51,6 +56,61 @@ export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, onDone }) => {
             </div>
           </div>
           
+          {/* Key Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="bg-muted/30 p-3 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">Permissions</span>
+              </div>
+              <div className="text-muted-foreground">
+                {permissionsString}
+              </div>
+            </div>
+            
+            <div className="bg-muted/30 p-3 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">Expiration</span>
+              </div>
+              <div className="text-muted-foreground">
+                {apiKey.expires_at 
+                  ? new Date(apiKey.expires_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })
+                  : 'Never expires'}
+              </div>
+            </div>
+            
+            {apiKey.rate_limit && (
+              <div className="bg-muted/30 p-3 rounded-lg">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Rate Limit</span>
+                </div>
+                <div className="text-muted-foreground">
+                  {apiKey.rate_limit} requests per hour
+                </div>
+              </div>
+            )}
+            
+            {apiKey.rotation_policy && apiKey.rotation_policy !== 'never' && (
+              <div className="bg-muted/30 p-3 rounded-lg">
+                <div className="flex items-center space-x-2 mb-2">
+                  <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Rotation Policy</span>
+                </div>
+                <div className="text-muted-foreground">
+                  {apiKey.rotation_policy.charAt(0).toUpperCase() + apiKey.rotation_policy.slice(1)}
+                </div>
+              </div>
+            )}
+          </div>
+          
           {/* Important Warning */}
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
             <div className="flex items-start space-x-3">
@@ -76,7 +136,7 @@ export const ApiKeySuccess: FC<ApiKeySuccessProps> = ({ apiKey, onDone }) => {
       </Card>
       
       {/* Integration Examples */}
-      <CodeSnippets apiKey={apiKey.key} />
+      <CodeSnippets apiKey={apiKey.key || ''} />
     </div>
   );
 };

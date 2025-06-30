@@ -1,7 +1,16 @@
 import { supabase } from './supabase';
 import { nanoid } from 'nanoid';
 import { sha256 } from 'js-sha256';
-import type { ApiKey, CreateApiKeyData, UpdateApiKeyData, ApiKeyWithResume } from '../types/apiKeys';
+import type { 
+  ApiKey, 
+  CreateApiKeyData, 
+  UpdateApiKeyData, 
+  ApiKeyWithResume,
+  ApiKeyScope,
+  ApiKeyRotation,
+  ApiUsageLog,
+  ApiKeyWebhook
+} from '../types/apiKeys';
 
 // Generate a secure API key
 const generateApiKey = (): string => {
@@ -25,20 +34,34 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
 
     const apiKey = generateApiKey();
     const keyHash = hashApiKey(apiKey);
-    const keyFirstChars = apiKey.substring(0, 4);
+    const keyFirstChars = apiKey.substring(0, 8);
     const keyLastChars = apiKey.substring(apiKey.length - 4);
 
     // For admin keys, set resume_id to null
     const resumeId = data.is_admin ? null : data.resume_id;
 
-    // For admin keys, ensure expiration is set (max 3 months)
-    let expiresAt = data.expires_at;
-    if (data.is_admin) {
-      const maxExpiryDate = new Date();
-      maxExpiryDate.setMonth(maxExpiryDate.getMonth() + 3);
-      
-      if (!expiresAt || new Date(expiresAt) > maxExpiryDate) {
-        expiresAt = maxExpiryDate.toISOString();
+    // Default permissions based on admin status
+    const permissions = data.permissions || (data.is_admin 
+      ? ['read', 'write', 'delete', 'admin'] 
+      : ['read']);
+
+    // Default rate limit
+    const rateLimit = data.rate_limit || (data.is_admin ? 10000 : 1000);
+
+    // Calculate next rotation date if policy is set
+    let nextRotationDate = null;
+    if (data.rotation_policy) {
+      const now = new Date();
+      switch (data.rotation_policy) {
+        case 'monthly':
+          nextRotationDate = new Date(now.setMonth(now.getMonth() + 1));
+          break;
+        case 'quarterly':
+          nextRotationDate = new Date(now.setMonth(now.getMonth() + 3));
+          break;
+        case 'yearly':
+          nextRotationDate = new Date(now.setFullYear(now.getFullYear() + 1));
+          break;
       }
     }
 
@@ -51,9 +74,20 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
       resume_id: resumeId,
       name: data.name,
       is_admin: data.is_admin,
-      expires_at: expiresAt || null,
+      expires_at: data.expires_at || null,
       max_uses: data.max_uses || null,
-      notes: data.notes || null
+      notes: data.notes || null,
+      
+      // Enhanced fields
+      key_version: 1,
+      encryption_key_version: 1,
+      rotation_policy: data.rotation_policy || null,
+      next_rotation_date: nextRotationDate ? nextRotationDate.toISOString() : null,
+      ip_whitelist: data.ip_whitelist || null,
+      user_agent_pattern: data.user_agent_pattern || null,
+      permissions,
+      rate_limit: rateLimit,
+      metadata: data.metadata || {}
     };
 
     const { data: createdKey, error } = await supabase
@@ -182,5 +216,263 @@ export const deleteApiKey = async (keyId: string): Promise<{ error: string | nul
   } catch (error) {
     console.error('Error deleting API key:', error);
     return { error: 'Failed to delete API key' };
+  }
+};
+
+// Rotate an API key
+export const rotateApiKey = async (keyId: string, reason: 'scheduled' | 'manual' | 'security' | 'compromised' = 'manual'): Promise<{ data: { newKey: string } | null; error: string | null }> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('rotate_api_key', {
+        p_api_key_id: keyId,
+        p_reason: reason
+      });
+
+    if (error) {
+      console.error('Error rotating API key:', error);
+      return { data: null, error: error.message };
+    }
+
+    if (!data || !data.new_api_key) {
+      return { data: null, error: 'Failed to rotate API key' };
+    }
+
+    return { data: { newKey: data.new_api_key }, error: null };
+  } catch (error) {
+    console.error('Error rotating API key:', error);
+    return { data: null, error: 'Failed to rotate API key' };
+  }
+};
+
+// Get API key scopes
+export const getApiKeyScopes = async (): Promise<{ data: ApiKeyScope[] | null; error: string | null }> => {
+  try {
+    const { data: scopes, error } = await supabase
+      .from('api_key_scopes')
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching API key scopes:', error);
+      return { data: null, error: error.message };
+    }
+
+    return { data: scopes || [], error: null };
+  } catch (error) {
+    console.error('Error fetching API key scopes:', error);
+    return { data: null, error: 'Failed to fetch API key scopes' };
+  }
+};
+
+// Get API key rotations
+export const getApiKeyRotations = async (keyId: string): Promise<{ data: ApiKeyRotation[] | null; error: string | null }> => {
+  try {
+    const { data: rotations, error } = await supabase
+      .from('api_key_rotations')
+      .select('*')
+      .eq('api_key_id', keyId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching API key rotations:', error);
+      return { data: null, error: error.message };
+    }
+
+    return { data: rotations || [], error: null };
+  } catch (error) {
+    console.error('Error fetching API key rotations:', error);
+    return { data: null, error: 'Failed to fetch API key rotations' };
+  }
+};
+
+// Get API key usage logs
+export const getApiKeyUsageLogs = async (
+  keyId: string,
+  limit: number = 100,
+  offset: number = 0
+): Promise<{ data: ApiUsageLog[] | null; error: string | null }> => {
+  try {
+    const { data: logs, error } = await supabase
+      .from('api_usage_logs')
+      .select('*')
+      .eq('api_key_id', keyId)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      console.error('Error fetching API key usage logs:', error);
+      return { data: null, error: error.message };
+    }
+
+    return { data: logs || [], error: null };
+  } catch (error) {
+    console.error('Error fetching API key usage logs:', error);
+    return { data: null, error: 'Failed to fetch API key usage logs' };
+  }
+};
+
+// Create a webhook for API key events
+export const createApiKeyWebhook = async (
+  webhookUrl: string,
+  events: string[]
+): Promise<{ data: ApiKeyWebhook | null; error: string | null }> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return { data: null, error: 'User not authenticated' };
+    }
+
+    // Generate a secret for webhook signature verification
+    const secret = nanoid(32);
+    const secretHash = sha256(secret);
+
+    const { data: webhook, error } = await supabase
+      .from('api_key_webhooks')
+      .insert({
+        user_id: user.id,
+        webhook_url: webhookUrl,
+        events,
+        secret_hash: secretHash
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating webhook:', error);
+      return { data: null, error: error.message };
+    }
+
+    // Return webhook with the plain text secret (only time it's available)
+    return { 
+      data: { 
+        ...webhook, 
+        secret 
+      } as any, 
+      error: null 
+    };
+  } catch (error) {
+    console.error('Error creating webhook:', error);
+    return { data: null, error: 'Failed to create webhook' };
+  }
+};
+
+// Update a webhook
+export const updateApiKeyWebhook = async (
+  webhookId: string,
+  data: {
+    webhook_url?: string;
+    events?: string[];
+    is_active?: boolean;
+  }
+): Promise<{ data: ApiKeyWebhook | null; error: string | null }> => {
+  try {
+    const { data: webhook, error } = await supabase
+      .from('api_key_webhooks')
+      .update(data)
+      .eq('id', webhookId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating webhook:', error);
+      return { data: null, error: error.message };
+    }
+
+    return { data: webhook, error: null };
+  } catch (error) {
+    console.error('Error updating webhook:', error);
+    return { data: null, error: 'Failed to update webhook' };
+  }
+};
+
+// Delete a webhook
+export const deleteApiKeyWebhook = async (webhookId: string): Promise<{ error: string | null }> => {
+  try {
+    const { error } = await supabase
+      .from('api_key_webhooks')
+      .delete()
+      .eq('id', webhookId);
+
+    if (error) {
+      console.error('Error deleting webhook:', error);
+      return { error: error.message };
+    }
+
+    return { error: null };
+  } catch (error) {
+    console.error('Error deleting webhook:', error);
+    return { error: 'Failed to delete webhook' };
+  }
+};
+
+// Validate an API key (for client-side validation)
+export const validateApiKey = async (
+  apiKey: string,
+  ipAddress?: string,
+  userAgent?: string
+): Promise<{ 
+  isValid: boolean; 
+  apiKeyId?: string; 
+  userId?: string; 
+  resumeId?: string; 
+  permissions?: string[]; 
+  message?: string;
+}> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('validate_api_key', {
+        p_api_key: apiKey,
+        p_ip_address: ipAddress,
+        p_user_agent: userAgent
+      });
+
+    if (error) {
+      console.error('Error validating API key:', error);
+      return { isValid: false, message: error.message };
+    }
+
+    if (!data || !data.is_valid) {
+      return { isValid: false, message: data?.message || 'Invalid API key' };
+    }
+
+    return { 
+      isValid: true, 
+      apiKeyId: data.api_key_id, 
+      userId: data.user_id, 
+      resumeId: data.resume_id,
+      permissions: data.permissions,
+      message: data.message
+    };
+  } catch (error) {
+    console.error('Error validating API key:', error);
+    return { isValid: false, message: 'Failed to validate API key' };
+  }
+};
+
+// Check if an API key has a specific permission
+export const checkApiKeyPermission = async (
+  apiKeyId: string,
+  resource: string,
+  action: string
+): Promise<{ hasPermission: boolean; error: string | null }> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('check_api_key_permission', {
+        p_api_key_id: apiKeyId,
+        p_resource: resource,
+        p_action: action
+      });
+
+    if (error) {
+      console.error('Error checking API key permission:', error);
+      return { hasPermission: false, error: error.message };
+    }
+
+    return { hasPermission: !!data, error: null };
+  } catch (error) {
+    console.error('Error checking API key permission:', error);
+    return { hasPermission: false, error: 'Failed to check API key permission' };
   }
 };

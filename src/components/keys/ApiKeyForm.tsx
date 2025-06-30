@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Calendar, Key, Info } from 'lucide-react';
+import { AlertTriangle, Calendar, Key, Info, Globe, Code, Shield } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { TextInput, Select, Textarea } from 'flowbite-react';
@@ -20,11 +20,15 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
     is_admin: false,
     expires_at: '',
     max_uses: null,
-    notes: ''
+    notes: '',
+    rotation_policy: 'never',
+    permissions: ['read'],
+    rate_limit: 1000
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
   // Set default expiration date for admin keys (3 months from now)
   useEffect(() => {
@@ -38,7 +42,15 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
       setFormData(prev => ({
         ...prev,
         expires_at: formattedDate,
-        resume_id: null // Admin keys apply to all resumes
+        resume_id: null, // Admin keys apply to all resumes
+        permissions: ['read', 'write', 'delete', 'admin'],
+        rate_limit: 10000
+      }));
+    } else {
+      // Reset permissions for non-admin keys
+      setFormData(prev => ({
+        ...prev,
+        permissions: ['read']
       }));
     }
   }, [formData.is_admin]);
@@ -64,6 +76,18 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
     }
   };
 
+  const handlePermissionChange = (permission: string) => {
+    setFormData(prev => {
+      const permissions = [...(prev.permissions || [])];
+      
+      if (permissions.includes(permission)) {
+        return { ...prev, permissions: permissions.filter(p => p !== permission) };
+      } else {
+        return { ...prev, permissions: [...permissions, permission] };
+      }
+    });
+  };
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     
@@ -81,6 +105,14 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
     
     if (formData.max_uses !== null && (formData.max_uses <= 0 || isNaN(formData.max_uses))) {
       newErrors.max_uses = 'Max uses must be a positive number';
+    }
+
+    if (formData.rate_limit <= 0 || isNaN(formData.rate_limit)) {
+      newErrors.rate_limit = 'Rate limit must be a positive number';
+    }
+    
+    if (!formData.permissions || formData.permissions.length === 0) {
+      newErrors.permissions = 'At least one permission is required';
     }
     
     setErrors(newErrors);
@@ -206,6 +238,60 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
             </p>
           </div>
           
+          {/* Permissions */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center space-x-2">
+              <Shield className="h-4 w-4" />
+              <span>Permissions</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className={`flex items-center space-x-2 p-2 rounded border ${errors.permissions ? 'border-red-500' : 'border-input'}`}>
+                <input
+                  type="checkbox"
+                  id="perm-read"
+                  checked={formData.permissions?.includes('read')}
+                  onChange={() => handlePermissionChange('read')}
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <label htmlFor="perm-read" className="text-sm">Read</label>
+              </div>
+              <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                <input
+                  type="checkbox"
+                  id="perm-write"
+                  checked={formData.permissions?.includes('write')}
+                  onChange={() => handlePermissionChange('write')}
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <label htmlFor="perm-write" className="text-sm">Write</label>
+              </div>
+              <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                <input
+                  type="checkbox"
+                  id="perm-delete"
+                  checked={formData.permissions?.includes('delete')}
+                  onChange={() => handlePermissionChange('delete')}
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <label htmlFor="perm-delete" className="text-sm">Delete</label>
+              </div>
+              <div className="flex items-center space-x-2 p-2 rounded border border-input">
+                <input
+                  type="checkbox"
+                  id="perm-admin"
+                  checked={formData.permissions?.includes('admin')}
+                  onChange={() => handlePermissionChange('admin')}
+                  disabled={!formData.is_admin}
+                  className="rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
+                />
+                <label htmlFor="perm-admin" className={`text-sm ${!formData.is_admin ? 'opacity-50' : ''}`}>Admin</label>
+              </div>
+            </div>
+            {errors.permissions && (
+              <p className="text-xs text-red-500">{errors.permissions}</p>
+            )}
+          </div>
+          
           {/* Expiration */}
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center space-x-2">
@@ -241,6 +327,101 @@ export const ApiKeyForm: FC<ApiKeyFormProps> = ({ resumes, onKeyCreated }) => {
               Leave blank for unlimited uses
             </p>
           </div>
+          
+          {/* Advanced Settings Toggle */}
+          <div>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+              className="w-full justify-between"
+            >
+              <span>Advanced Settings</span>
+              <span>{showAdvancedSettings ? '▲' : '▼'}</span>
+            </Button>
+          </div>
+          
+          {/* Advanced Settings */}
+          {showAdvancedSettings && (
+            <div className="space-y-6 border-t pt-6">
+              {/* Rate Limit */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center space-x-2">
+                  <Globe className="h-4 w-4" />
+                  <span>Rate Limit (requests per hour)</span>
+                </label>
+                <TextInput
+                  type="number"
+                  name="rate_limit"
+                  value={formData.rate_limit}
+                  onChange={handleChange}
+                  min="1"
+                  color={errors.rate_limit ? 'failure' : 'gray'}
+                  helperText={errors.rate_limit}
+                />
+              </div>
+              
+              {/* Rotation Policy */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Key Rotation Policy</label>
+                <Select
+                  name="rotation_policy"
+                  value={formData.rotation_policy || 'never'}
+                  onChange={handleChange}
+                >
+                  <option value="never">Never (Manual rotation only)</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  How often this key should be automatically rotated
+                </p>
+              </div>
+              
+              {/* IP Whitelist */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center space-x-2">
+                  <Shield className="h-4 w-4" />
+                  <span>IP Whitelist (Optional)</span>
+                </label>
+                <TextInput
+                  name="ip_whitelist"
+                  value={formData.ip_whitelist?.join(', ') || ''}
+                  onChange={(e) => {
+                    const ips = e.target.value.split(',').map(ip => ip.trim()).filter(Boolean);
+                    setFormData(prev => ({ ...prev, ip_whitelist: ips.length > 0 ? ips : undefined }));
+                  }}
+                  placeholder="e.g., 192.168.1.1, 10.0.0.0/24"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Comma-separated list of IP addresses or CIDR ranges. Leave blank to allow all IPs.
+                </p>
+              </div>
+              
+              {/* User Agent Pattern */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center space-x-2">
+                  <Code className="h-4 w-4" />
+                  <span>User Agent Pattern (Optional)</span>
+                </label>
+                <TextInput
+                  name="user_agent_pattern"
+                  value={formData.user_agent_pattern || ''}
+                  onChange={(e) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      user_agent_pattern: e.target.value.trim() || undefined 
+                    }));
+                  }}
+                  placeholder="e.g., ^Mozilla.*"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Regular expression to match allowed user agents. Leave blank to allow all.
+                </p>
+              </div>
+            </div>
+          )}
           
           {/* Notes */}
           <div className="space-y-2">
