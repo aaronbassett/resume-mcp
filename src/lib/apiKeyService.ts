@@ -1,11 +1,17 @@
 import { supabase } from './supabase';
 import { nanoid } from 'nanoid';
+import { sha256 } from 'js-sha256';
 import type { ApiKey, CreateApiKeyData, UpdateApiKeyData, ApiKeyWithResume } from '../types/apiKeys';
 
 // Generate a secure API key
 const generateApiKey = (): string => {
   // Format: mcp_[random string]
   return `mcp_${nanoid(32)}`;
+};
+
+// Hash an API key for secure storage
+const hashApiKey = (key: string): string => {
+  return sha256(key);
 };
 
 // Create a new API key
@@ -18,14 +24,34 @@ export const createApiKey = async (data: CreateApiKeyData): Promise<{ data: ApiK
     }
 
     const apiKey = generateApiKey();
+    const keyHash = hashApiKey(apiKey);
+    const keyFirstChars = apiKey.substring(0, 4);
+    const keyLastChars = apiKey.substring(apiKey.length - 4);
+
+    // For admin keys, set resume_id to null
+    const resumeId = data.is_admin ? null : data.resume_id;
+
+    // For admin keys, ensure expiration is set (max 3 months)
+    let expiresAt = data.expires_at;
+    if (data.is_admin) {
+      const maxExpiryDate = new Date();
+      maxExpiryDate.setMonth(maxExpiryDate.getMonth() + 3);
+      
+      if (!expiresAt || new Date(expiresAt) > maxExpiryDate) {
+        expiresAt = maxExpiryDate.toISOString();
+      }
+    }
 
     const keyData = {
-      key: apiKey,
+      key: apiKey, // Store full key temporarily for return value
+      key_hash: keyHash,
+      key_first_chars: keyFirstChars,
+      key_last_chars: keyLastChars,
       user_id: user.id,
-      resume_id: data.resume_id,
+      resume_id: resumeId,
       name: data.name,
       is_admin: data.is_admin,
-      expires_at: data.expires_at || null,
+      expires_at: expiresAt || null,
       max_uses: data.max_uses || null,
       notes: data.notes || null
     };

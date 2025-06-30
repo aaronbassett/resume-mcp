@@ -46,7 +46,7 @@ export const ApiKeysPage: FC = () => {
     if (searchQuery) {
       setFilteredKeys(apiKeys.filter(key => 
         key.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        key.resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (key.resume?.title && key.resume.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (key.notes && key.notes.toLowerCase().includes(searchQuery.toLowerCase()))
       ));
     } else {

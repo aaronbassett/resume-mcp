@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Key } from 'lucide-react';
+import { ArrowLeft, Key, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -82,7 +82,7 @@ export const CreateApiKeyPage: FC = () => {
       {error && !isLoading && (
         <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
           <div className="flex items-center space-x-3">
-            <div className="text-destructive">⚠️</div>
+            <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0" />
             <div>
               <p className="font-medium text-destructive">{error}</p>
               <p className="text-sm text-destructive/80 mt-1">Please try again or contact support if the issue persists.</p>

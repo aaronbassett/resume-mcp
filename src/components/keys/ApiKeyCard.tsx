@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState } from 'react';
-import { Key, Calendar, RefreshCw, Trash2, AlertTriangle, Eye, EyeOff, Copy, CheckCircle } from 'lucide-react';
+import { Key, Calendar, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { DeleteConfirmationModal } from '../ui/DeleteConfirmationModal';
@@ -13,8 +13,6 @@ interface ApiKeyCardProps {
 }
 
 export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
-  const [showKey, setShowKey] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
   const [isRevoking, setIsRevoking] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -27,12 +25,6 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
-
-  const handleCopyKey = () => {
-    navigator.clipboard.writeText(apiKey.key);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
   };
 
   const handleRevokeKey = async () => {
@@ -54,6 +46,11 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
 
   const isExpired = apiKey.expires_at && new Date(apiKey.expires_at) < new Date();
   const isMaxedOut = apiKey.max_uses !== null && apiKey.use_count >= apiKey.max_uses;
+  
+  // Format the masked key
+  const maskedKey = apiKey.key_first_chars && apiKey.key_last_chars 
+    ? `${apiKey.key_first_chars}••••••••••••${apiKey.key_last_chars}`
+    : '••••••••••••••••••••••••••••••••••••••••';
 
   return (
     <>
@@ -67,7 +64,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
               <div>
                 <CardTitle className="text-lg">{apiKey.name}</CardTitle>
                 <CardDescription>
-                  {apiKey.is_admin ? 'Admin Key' : 'Standard Key'} • {apiKey.resume.title}
+                  {apiKey.is_admin ? 'Admin Key' : 'Standard Key'} • {apiKey.resume?.title || 'All Resumes'}
                 </CardDescription>
               </div>
             </div>
@@ -82,26 +79,8 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked }) => {
         
         <CardContent className="space-y-4">
           {/* Key Display */}
-          <div className="flex items-center space-x-2">
-            <div className="flex-1 font-mono text-sm bg-muted p-2 rounded-lg overflow-hidden">
-              {showKey ? apiKey.key : apiKey.key.substring(0, 8) + '••••••••••••••••••••••••••••••'}
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowKey(!showKey)}
-              className="flex-shrink-0"
-            >
-              {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleCopyKey}
-              className="flex-shrink-0"
-            >
-              {isCopied ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-            </Button>
+          <div className="font-mono text-sm bg-muted p-2 rounded-lg overflow-hidden">
+            {maskedKey}
           </div>
           
           {/* Key Details */}
