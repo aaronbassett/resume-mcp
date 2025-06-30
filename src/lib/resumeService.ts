@@ -12,6 +12,7 @@ export interface Resume {
   role: string;
   display_name: string;
   tags: Tag[];
+  body_content?: string;
   created_at: string;
   updated_at: string;
   // Individual setting columns (no longer nested in settings object)
@@ -37,6 +38,7 @@ export interface CreateResumeData {
   role: string;
   display_name: string;
   tags: Tag[];
+  body_content?: string;
 }
 
 export interface UpdateResumeData {
@@ -44,6 +46,7 @@ export interface UpdateResumeData {
   role?: string;
   display_name?: string;
   tags?: Tag[];
+  body_content?: string;
   // Individual setting properties (no longer nested)
   publish_resume_page?: boolean;
   presence_badge?: 'none' | 'available' | 'busy' | 'away' | 'dnd';

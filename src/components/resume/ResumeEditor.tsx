@@ -10,13 +10,10 @@ import { EditableText } from './EditableText';
 import { EditableTags } from './EditableTags';
 import { AutoSaveIndicator, type SaveStatus } from './AutoSaveIndicator';
 import { ResumeSettingsDrawer, type ResumeSettings } from './ResumeSettingsDrawer';
-import { BlockEditor } from '../blocks/BlockEditor';
-import { BlockEditorWrapper } from '../blocks/BlockEditorWrapper';
 import { useResumeStore } from '../../store/resume';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { createResume, updateResume, getResume, updateResumeSettings } from '../../lib/resumeService';
 import type { CreateResumeData, UpdateResumeData } from '../../lib/resumeService';
-import type { Block } from '@aaronbassett/block-party';
 
 interface ResumeEditorProps {
   resumeId?: string;
@@ -70,7 +67,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     robotsDirectives: ['index', 'follow']
   });
   
-  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [bodyContent, setBodyContent] = useState<string>('');
 
   // Load resume data on mount if editing an existing resume
   useEffect(() => {
@@ -134,6 +131,9 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
             metaDescription: result.data.meta_description ?? '',
             robotsDirectives: result.data.robots_directives ?? ['index', 'follow']
           });
+          
+          // Load body content
+          setBodyContent(result.data.body_content || '');
         } else {
           setNotFound(true);
         }
@@ -154,7 +154,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
   }, [resumeId, isNew, setResume, setIsNewResume, resetResume]);
 
   // Auto-save function
-  const handleSave = useCallback(async (data: typeof currentResume) => {
+  const handleSave = useCallback(async (data: typeof currentResume & { bodyContent?: string }) => {
     try {
       if (isNewResume) {
         // Create new resume
@@ -162,7 +162,8 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           title: data.title,
           role: data.role,
           display_name: data.displayName,
-          tags: data.tags
+          tags: data.tags,
+          body_content: data.bodyContent || ''
         };
 
         const result = await createResume(createData);
@@ -205,7 +206,8 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           title: data.title,
           role: data.role,
           display_name: data.displayName,
-          tags: data.tags
+          tags: data.tags,
+          body_content: data.bodyContent
         };
 
         const result = await updateResume(data.id, updateData);
@@ -225,7 +227,7 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
 
   // Set up auto-save
   const { manualSave } = useAutoSave({
-    data: currentResume,
+    data: { ...currentResume, bodyContent },
     onSave: handleSave,
     delay: 1500, // 1.5 second delay
     onStatusChange: setSaveStatus,
@@ -264,11 +266,6 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
     setIsAdvancedSettingsOpen(false);
   };
 
-  const handleBlocksChange = useCallback((newBlocks: Block[]) => {
-    setBlocks(newBlocks);
-    // TODO: Implement block saving logic here
-    // This would integrate with your block service to persist changes
-  }, []);
 
   // Loading state
   if (isLoading) {
@@ -457,25 +454,26 @@ export const ResumeEditor: FC<ResumeEditorProps> = ({
           </AnimatePresence>
         </Card>
 
-        {/* Content Builder Section */}
-        {!isNewResume && currentResume.id && (
-          <Card>
-            <CardContent className="p-8">
-              <BlockEditorWrapper
-                onBlocksChange={handleBlocksChange}
-                onError={(error) => {
-                  console.error('Block editor error:', error);
-                  setError(error.message);
-                }}
-              >
-                <BlockEditor 
-                  resumeId={currentResume.id}
-                  onBlocksChange={handleBlocksChange}
-                />
-              </BlockEditorWrapper>
-            </CardContent>
-          </Card>
-        )}
+        {/* Resume Body Content */}
+        <Card>
+          <CardContent className="p-8">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Resume Content</h3>
+                <p className="text-sm text-muted-foreground">
+                  Write your resume content here. This will be the main body of your resume.
+                </p>
+              </div>
+              <textarea
+                value={bodyContent}
+                onChange={(e) => setBodyContent(e.target.value)}
+                placeholder="Start writing your resume content..."
+                className="w-full min-h-[400px] p-4 text-base leading-relaxed rounded-lg border border-input bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
+                style={{ fontFamily: 'inherit' }}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DndProvider>
   );
