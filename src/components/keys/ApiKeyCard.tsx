@@ -4,6 +4,7 @@ import { Key, Calendar, RefreshCw, Trash2, AlertTriangle, Globe, Shield, Code, C
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { DeleteConfirmationModal } from '../ui/DeleteConfirmationModal';
+import { ApiKeyRotationModal } from './ApiKeyRotationModal';
 import { revokeApiKey, rotateApiKey } from '../../lib/apiKeyService';
 import type { ApiKeyWithResume } from '../../types/apiKeys';
 
@@ -17,6 +18,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
   const [isRevoking, setIsRevoking] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showRotationModal, setShowRotationModal] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
   const formatDate = (dateString: string | null) => {
@@ -48,28 +50,32 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
   };
 
   const handleRotateKey = async () => {
-    if (!confirm('Are you sure you want to rotate this API key? The current key will no longer work and you will need to update any applications using it.')) {
-      return;
-    }
+    setShowRotationModal(true);
+  };
 
+  const performRotation = async (): Promise<string | null> => {
     setIsRotating(true);
     try {
       const result = await rotateApiKey(apiKey.id, 'manual');
       if (result.error) {
-        alert(`Failed to rotate key: ${result.error}`);
+        throw new Error(result.error);
       } else if (result.data?.newKey) {
-        if (onKeyRotated) {
-          onKeyRotated(result.data.newKey);
-        } else {
-          alert(`New API key: ${result.data.newKey}\n\nMake sure to copy this key as it won't be shown again!`);
-        }
+        return result.data.newKey;
       }
+      return null;
     } catch (error) {
       console.error('Error rotating key:', error);
-      alert('Failed to rotate key');
+      throw new Error('Failed to rotate key');
     } finally {
       setIsRotating(false);
     }
+  };
+
+  const handleRotationComplete = (newKey: string) => {
+    if (onKeyRotated) {
+      onKeyRotated(newKey);
+    }
+    setShowRotationModal(false);
   };
 
   const isExpired = apiKey.expires_at && new Date(apiKey.expires_at) < new Date();
@@ -332,6 +338,7 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
         </CardContent>
       </Card>
       
+      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -340,6 +347,15 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
         itemName={apiKey.name}
         itemType="API key"
         isLoading={isRevoking}
+      />
+
+      {/* Rotation Confirmation Modal */}
+      <ApiKeyRotationModal
+        isOpen={showRotationModal}
+        onClose={() => setShowRotationModal(false)}
+        onConfirm={performRotation}
+        apiKey={apiKey}
+        isLoading={isRotating}
       />
     </>
   );
