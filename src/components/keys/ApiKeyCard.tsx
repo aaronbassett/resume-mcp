@@ -58,11 +58,15 @@ export const ApiKeyCard: FC<ApiKeyCardProps> = ({ apiKey, onKeyRevoked, onKeyRot
     try {
       const result = await rotateApiKey(apiKey.id, 'manual');
       if (result.error) {
-        // Just return the error message directly, don't wrap in Error
-        throw result.error;
+        // Return null instead of throwing to let the modal handle the error display
+        return null;
       } else if (result.data?.newKey) {
         return result.data.newKey;
       }
+      return null;
+    } catch (error) {
+      // Catch any unexpected errors and return null
+      console.error('Unexpected error during key rotation:', error);
       return null;
     } finally {
       setIsRotating(false);
